@@ -6,6 +6,43 @@ class Node {
     }
 }
 
+// Queue implementation, FIFO, through linked list
+class Queue{
+    constructor(){
+        this.first = null;
+        this.last = null;
+        this.size = 0;
+    }
+
+    // add to the end and return the size of this queue
+    enQueue(node){
+        if(this.size === 0 ){
+            this.first = node;
+            this.last = node;
+        } else {
+            this.last.next = node;
+            this.last = node;
+        }
+        this.size++;
+        return this.size;
+    }
+
+    // remove the first node and return it
+    deQueue(){
+        if(this.size === 0) return null
+        let removed = this.first;
+        if(this.size === 1){
+            this.first = null;
+            this.last = null;
+        } else {
+            this.first = removed.next;
+            removed.next = null;
+        }
+        this.size--;
+        return removed;
+    }
+}
+
 class BST {
     constructor(){
         this.root = null;
@@ -58,17 +95,42 @@ class BST {
         // if we didnt find return flase
         return false;
     }
+
+    bfs(){
+        if(!this.root) return undefined;
+        let q = new Queue();
+        let visited= [];
+        let current;
+        q.enQueue(this.root);
+        while(q.size !== 0){
+            current = q.deQueue();
+            visited.push(current.val);
+            if(current.left) q.enQueue(current.left);
+            if(current.right) q.enQueue(current.right);
+        }
+        return visited;
+    }
 }
 
 let tree = new BST();
-console.log(tree.insert(7));
-console.log(tree.insert(3));
-console.log(tree.insert(10));
-console.log(tree.insert(10));
-console.log(tree.insert(13));
-console.log(tree.insert(1));
-console.log(tree.insert(17));
-console.log(tree.find(7));
-console.log(tree.find(60));
-console.log(tree.find(17));
-console.log(tree.find(1));
+// console.log(tree.insert(7));
+// console.log(tree.insert(3));
+// console.log(tree.insert(10));
+// console.log(tree.insert(10));
+// console.log(tree.insert(13));
+// console.log(tree.insert(1));
+// console.log(tree.insert(17));
+// console.log(tree.find(7));
+// console.log(tree.find(60));
+// console.log(tree.find(17));
+// console.log(tree.find(1));
+tree.insert(10);
+tree.insert(6);
+tree.insert(15);
+tree.insert(3);
+tree.insert(8);
+tree.insert(20);
+console.log(tree.bfs());
+
+let q =new Queue();
+q.enQueue(10);
