@@ -43,6 +43,44 @@ class Queue{
     }
 }
 
+// simple implementation using SLL, shift and unshift, here called as push and pop
+// First in Last Out
+class Stack {
+    constructor(){
+        this.first = null;
+        this.last = null;
+        this.size = 0;
+    }
+
+    // add a node at the beginning and return the size of this stack
+    push(node){
+        if(this.size === 0){
+            this.first = node;
+            this.last = node;
+        } else {
+            node.next = this.first;
+            this.first = node;
+        }
+        this.size++;
+        return this.size;
+    }
+    // remove the first node and return it
+    pop(){
+        // empty stack 
+        if(this.size === 0 ) return null;
+        let removed = this.first;
+        if(this.size === 1){
+            this.first = null;
+            this.last = null;
+        } else {
+            this.first = removed.next;
+            removed.next = null;
+        }  
+        this.size--;
+        return removed;
+    }
+}
+
 class BST {
     constructor(){
         this.root = null;
@@ -110,6 +148,20 @@ class BST {
         }
         return visited;
     }
+    dfsPreOrder(){
+        if(!this.root) return undefined;
+        let stack = new Stack();
+        let visited = [];
+        let current;
+        stack.push(this.root);
+        while(stack.size !== 0){
+            current = stack.pop();
+            visited.push(current.val);
+            if(current.right) stack.push(current.right);
+            if(current.left) stack.push(current.left);
+        }
+        return visited;
+    }
 }
 
 let tree = new BST();
@@ -130,7 +182,5 @@ tree.insert(15);
 tree.insert(3);
 tree.insert(8);
 tree.insert(20);
-console.log(tree.bfs());
-
-let q =new Queue();
-q.enQueue(10);
+// console.log(tree.bfs());
+console.log(tree.dfsPreOrder());
