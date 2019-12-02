@@ -1,4 +1,11 @@
-class MaxBinaryHeap{
+class Node{
+    constructor(val,priority){
+        this.val = val;
+        this.priority = priority;
+    }
+}
+
+class PriorityQueue{
     constructor(){
         this.values = [];
     }
@@ -8,15 +15,16 @@ class MaxBinaryHeap{
         // out of bounds
         if(i < 0||k <0 ) return false;
         if(i > this.values.length - 1 || k > this.values.length - 1) return false;
-        let val = this.values[i];
-        let parent = this.values[k];
+        let val = this.values[i].priority;
+        let parent = this.values[k].priority;
         if(val > parent) return true;
         return false;
     }
 
     // insert an element in the next free spot and then sort the Heap if it's needed
-    insert(val){
-        this.values.push(val);
+    enqueue(val,priority){
+        let node = new Node(val,priority);
+        this.values.push(node);
         let idx = this.values.length - 1;
         let parentIdx = Math.floor( (idx-1)/2);
         // sort
@@ -31,7 +39,7 @@ class MaxBinaryHeap{
 
     // Remove the root (max), put the last element in the top and then rearrange
     // return the root and the new arrangement
-    remove(){
+    dequeue(){
         // if is empty return undefined
         if(this.values.length === 0 ) return undefined;
         if(this.values.length === 1  ) return {element:this.values.pop(),heap:this};
@@ -59,19 +67,17 @@ class MaxBinaryHeap{
     }
 }
 
-let heap = new MaxBinaryHeap();
-console.log(heap.insert(41));
-// console.log(heap.insert(39));
-// console.log(heap.insert(18));
-// console.log(heap.insert(27));
-// console.log(heap.insert(12));
-// console.log(heap.insert(55));
-// console.log(heap.insert(33));
-// console.log(heap.insert(1));
-// console.log(heap.insert(45));
-// console.log(heap.insert(200));
-console.log(heap.remove());
-console.log(heap.remove());
+let pq = new PriorityQueue();
+console.log(pq.enqueue("first",1));
+console.log(pq.enqueue("second",2));
+console.log(pq.enqueue("third",3));
+console.log(pq.dequeue());
+console.log(pq.dequeue());
+console.log(pq.dequeue());
+console.log(pq.dequeue());
+console.log(pq.dequeue());
+console.log(pq.dequeue());
+console.log(pq.dequeue());
 
 
 //              55
