@@ -5,6 +5,44 @@ class Node{
     }
 }
 
+// Queue implementation, FIFO, through linked list
+class Queue{
+    constructor(){
+        this.first = null;
+        this.last = null;
+        this.size = 0;
+    }
+
+    // add to the end and return the size of this queue
+    enQueue(val){
+        let node = new Node(val);
+        if(this.size === 0 ){
+            this.first = node;
+            this.last = node;
+        } else {
+            this.last.next = node;
+            this.last = node;
+        }
+        this.size++;
+        return this.size;
+    }
+
+    // remove the first node and return it
+    deQueue(){
+        if(this.size === 0) return null
+        let removed = this.first;
+        if(this.size === 1){
+            this.first = null;
+            this.last = null;
+        } else {
+            this.first = removed.next;
+            removed.next = null;
+        }
+        this.size--;
+        return removed;
+    }
+}
+
 // simple implementation using SLL, shift and unshift, here called as push and pop
 // First in Last Out
 class Stack {
@@ -139,7 +177,37 @@ class Graph {
             })
         }
         return {result:result,parents:parents,dist:dist};
+    }
 
+    bfs(s){
+        let result = [];
+        let dist ={};
+        let parents ={};
+        let visited = {};
+        let q = new Queue();
+        // add s tothe stack
+        q.enQueue(s);
+        // mark s as visited
+        visited[s] = true;
+        dist[s] = 0;
+        parents[s] = null;
+        let v;
+        while(q.size !== 0){
+            v = q.deQueue();
+            result.push(v.val);
+            this.list[v.val].forEach(u => {
+                // if u unvisited
+                if(!visited[u]){
+                    // mark u as visited
+                    visited[u] = true;
+                    // add u to the queue
+                    q.enQueue(u);
+                    parents[u] = v.val;
+                    dist[u] = dist[v.val] + 1;
+                }
+            })
+        }
+        return {result:result,parents:parents,dist:dist};
     }
 }
 
@@ -171,7 +239,8 @@ g.addEdge("D","E")
 g.addEdge("D","F")
 g.addEdge("E","F")
 // console.log(g.dfsr("A"));
-console.log(g.dfs("A"));
+// console.log(g.dfs("A"));
+console.log(g.bfs("A"));
 
 
 //          A
