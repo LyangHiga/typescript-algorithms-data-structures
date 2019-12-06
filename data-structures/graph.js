@@ -1,3 +1,49 @@
+class Node{
+    constructor(val){
+        this.val= val;
+        this.next = null;
+    }
+}
+
+// simple implementation using SLL, shift and unshift, here called as push and pop
+// First in Last Out
+class Stack {
+    constructor(){
+        this.first = null;
+        this.last = null;
+        this.size = 0;
+    }
+
+    // add a node at the beginning and return the size of this stack
+    push(val){
+        let node = new Node(val);
+        if(this.size === 0){
+            this.first = node;
+            this.last = node;
+        } else {
+            node.next = this.first;
+            this.first = node;
+        }
+        this.size++;
+        return this.size;
+    }
+    // remove the first node and return it
+    pop(){
+        // empty stack 
+        if(this.size === 0 ) return null;
+        let removed = this.first;
+        if(this.size === 1){
+            this.first = null;
+            this.last = null;
+        } else {
+            this.first = removed.next;
+            removed.next = null;
+        }  
+        this.size--;
+        return removed;
+    }
+}
+
 class Graph {
     constructor(){
         this.list = {};
@@ -33,22 +79,54 @@ class Graph {
         return this;
     }
 
-    // Recursive Depth-First Search
-    dsfr(s){
-        const result = [];
-        const visited = {};
-        const list = this.list;
+    // Recursive Depth First Search
+    dfsr(s){
+        let result = [];
+        let visited = {};
+        let list = this.list;
         (function dfs(v){
             if(!v) return;
+            // mark v as visited
             visited[v] = true;
             result.push(v);
+            // for every edge of v
             list[v].forEach(u => {
+                // if v unvisited
                 if(!visited[u]){
                     return dfs(u);
                 }
             });
         })(s);
         return result;
+    }
+
+    // dfs iterative
+    dfs(s){
+        let result = [];
+        let visited = {};
+        let stack = new Stack();
+        // add s tothe stack
+        stack.push(s);
+        // mark s as visited
+        visited[s] = true;
+        let v;
+        while(stack.size !==0){
+            // take from the top of the stack
+            v = stack.pop();
+            result.push(v.val);
+            // for every edge of v
+            this.list[v.val].forEach(u => {
+                // if v unvisited
+                if(!visited[u]){
+                    // mark u as visited 
+                    visited[u] = true;
+                    // add u to the stack
+                    stack.push(u);
+                }
+            })
+        }
+        return result;
+
     }
 }
 
@@ -79,7 +157,8 @@ g.addEdge("C","E")
 g.addEdge("D","E")
 g.addEdge("D","F")
 g.addEdge("E","F")
-console.log(g.dsfr("A"));
+console.log(g.dfsr("A"));
+console.log(g.dfs("A"));
 
 
 //          A

@@ -184,5 +184,5 @@ tree.insert(3);
 tree.insert(8);
 tree.insert(20);
 // console.log(tree.bfs());
-console.log(tree.dfsPostOrder());
-// console.log(tree.dfsPreOrder());
+// console.log(tree.dfsPostOrder());
+console.log(tree.dfsPreOrder());
