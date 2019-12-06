@@ -103,17 +103,28 @@ class Graph {
     // dfs iterative
     dfs(s){
         let result = [];
+        let dist ={};
+        let parents ={};
         let visited = {};
         let stack = new Stack();
         // add s tothe stack
         stack.push(s);
         // mark s as visited
         visited[s] = true;
+        dist[s] = 0;
         let v;
+        let i= 0 ;
         while(stack.size !==0){
             // take from the top of the stack
             v = stack.pop();
             result.push(v.val);
+            // add parent of v wich is the last one poped
+            if(i===0){
+                parents[v.val] = null;    
+            } else {
+                parents[v.val] = result[i-1];
+            }
+            i++;
             // for every edge of v
             this.list[v.val].forEach(u => {
                 // if v unvisited
@@ -122,10 +133,12 @@ class Graph {
                     visited[u] = true;
                     // add u to the stack
                     stack.push(u);
+                    // calc dist 
+                    dist[u] = dist[v.val] + 1;
                 }
             })
         }
-        return result;
+        return {result:result,parents:parents,dist:dist};
 
     }
 }
@@ -157,7 +170,7 @@ g.addEdge("C","E")
 g.addEdge("D","E")
 g.addEdge("D","F")
 g.addEdge("E","F")
-console.log(g.dfsr("A"));
+// console.log(g.dfsr("A"));
 console.log(g.dfs("A"));
 
 
