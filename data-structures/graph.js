@@ -207,7 +207,25 @@ class Graph {
                 }
             })
         }
-        return {result:result,parents:parents,dist:dist};
+        return {result:result,parents:parents,dist:dist,visited:visited};
+    }
+
+    // returns a list with all connected components of G 
+    undirectConnectivity(){
+        let components = [];
+        let visited = {};
+        let r, u;
+        for(u in this.list) {
+            // check if u node was already visited
+            if(!visited[u]){
+                r = this.bfs(u);
+                // updtade visited nodes after this bfs
+                visited = r.visited;
+                // add this new component
+                components.push(r.result);
+            }
+        };
+        return components;
     }
 }
 
@@ -223,24 +241,35 @@ class Graph {
 
 let g = new Graph();
 
-g.addVertex("A")
-g.addVertex("B")
-g.addVertex("C")
-g.addVertex("D")
-g.addVertex("E")
-g.addVertex("F")
+g.addVertex("A");
+g.addVertex("B");
+g.addVertex("C");
+g.addVertex("D");
+g.addVertex("E");
+g.addVertex("F");
+g.addVertex("G");
+g.addVertex("H");
+g.addVertex("I");
+g.addVertex("J");
+g.addVertex("K");
 
 
-g.addEdge("A", "B")
-g.addEdge("A", "C")
-g.addEdge("B","D")
-g.addEdge("C","E")
-g.addEdge("D","E")
-g.addEdge("D","F")
-g.addEdge("E","F")
+
+g.addEdge("A","B");
+g.addEdge("A","C");
+g.addEdge("B","D");
+g.addEdge("C","E");
+g.addEdge("D","E");
+g.addEdge("D","F");
+g.addEdge("E","F");
+g.addEdge("G","H");
+g.addEdge("I","J");
+g.addEdge("K","J");
+
 // console.log(g.dfsr("A"));
 // console.log(g.dfs("A"));
-console.log(g.bfs("A"));
+// console.log(g.bfs("A"));
+console.log(g.undirectConnectivity());
 
 
 //          A
@@ -250,3 +279,7 @@ console.log(g.bfs("A"));
 //       D --- E
 //        \   /
 //          F
+//       G --- H
+//          I
+//        /   \
+//      J       K
