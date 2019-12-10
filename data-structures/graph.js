@@ -86,11 +86,15 @@ class Graph {
     constructor(directed = false){
         this.list = {};
         this.directed = directed;
+        this.currentLabel = null;
+        this.size = 0;
+        this.labeledOder = {};
     };
     
     // adds a empty array to the new v
     addVertex(v){
         if(!this.list[v]) this.list[v] = [];
+        this.size ++;
         return this;
     }
 
@@ -115,6 +119,7 @@ class Graph {
             this.removeEdge(u,v);
         }
         delete this.list[v];
+        this.size--;
         return this;
     }
 
@@ -176,8 +181,30 @@ class Graph {
                     dist[u] = dist[v.val] + 1;
                 }
             })
+            if(!this.labeledOder[v.val]){
+                this.labeledOder[v.val] = this.currentLabel;
+                this.currentLabel++;
+            }
         }
-        return {result:result,parents:parents,dist:dist};
+        return {result:result,parents:parents,dist:dist,labeledOder:this.labeledOder, visited:visited};
+    }
+
+// returns the labeled order of each node this not work for cycled graphs, only DAGs
+    topologicalSort(){
+        let labeledOrder = {};
+        let visited = {};
+        // to keep track of ordering
+        this.currentLabel = 0;
+        let u, r;
+        for(u in this.list){
+            if(!visited[u]){
+                r = this.dfs(u);
+                // update values
+                visited = r.visited;
+                labeledOrder = r.labeledOder;
+            }
+        }
+        return labeledOrder;
     }
 
     bfs(s){
@@ -242,37 +269,37 @@ class Graph {
 // // console.log(g.removeEdge("Aspen","Tokyo"));
 // console.log(g.removeVertex("Aspen"));
 
-let g = new Graph();
+// let g = new Graph();
 
-g.addVertex("A");
-g.addVertex("B");
-g.addVertex("C");
-g.addVertex("D");
-g.addVertex("E");
-g.addVertex("F");
-g.addVertex("G");
-g.addVertex("H");
-g.addVertex("I");
-g.addVertex("J");
-g.addVertex("K");
+// g.addVertex("A");
+// g.addVertex("B");
+// g.addVertex("C");
+// g.addVertex("D");
+// g.addVertex("E");
+// g.addVertex("F");
+// g.addVertex("G");
+// g.addVertex("H");
+// g.addVertex("I");
+// g.addVertex("J");
+// g.addVertex("K");
 
 
 
-g.addEdge("A","B");
-g.addEdge("A","C");
-g.addEdge("B","D");
-g.addEdge("C","E");
-g.addEdge("D","E");
-g.addEdge("D","F");
-g.addEdge("E","F");
-g.addEdge("G","H");
-g.addEdge("I","J");
-g.addEdge("K","J");
+// g.addEdge("A","B");
+// g.addEdge("A","C");
+// g.addEdge("B","D");
+// g.addEdge("C","E");
+// g.addEdge("D","E");
+// g.addEdge("D","F");
+// g.addEdge("E","F");
+// g.addEdge("G","H");
+// g.addEdge("I","J");
+// g.addEdge("I","K");
 
-// console.log(g.dfsr("A"));
-// console.log(g.dfs("A"));
-// console.log(g.bfs("A"));
-console.log(g.undirectConnectivity());
+// // console.log(g.dfsr("A"));
+// // console.log(g.dfs("A"));
+// // console.log(g.bfs("A"));
+// console.log(g.undirectConnectivity());
 
 
 //          A
@@ -282,7 +309,36 @@ console.log(g.undirectConnectivity());
 //       D --- E
 //        \   /
 //          F
+// 
 //       G --- H
+// 
+//      DIRECTED!!!!!!!! all arrows point down
 //          I
 //        /   \
 //      J       K
+//      |       |
+//      L       M
+//      |
+//      N
+//      |
+//      O
+
+let g = new Graph(true);
+
+g.addVertex("I");
+g.addVertex("J");
+g.addVertex("K");
+g.addVertex("L");
+g.addVertex("M");
+g.addVertex("N");
+g.addVertex("O");
+
+g.addEdge("I","J");
+g.addEdge("J","L");
+g.addEdge("L","N");
+g.addEdge("N","O");
+g.addEdge("I","K");
+g.addEdge("K","M");
+
+
+console.log(g.topologicalSort());
