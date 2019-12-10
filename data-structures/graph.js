@@ -83,8 +83,9 @@ class Stack {
 }
 
 class Graph {
-    constructor(){
+    constructor(directed = false){
         this.list = {};
+        this.directed = directed;
     };
     
     // adds a empty array to the new v
@@ -93,17 +94,17 @@ class Graph {
         return this;
     }
 
-    // adds v to neighbour list of u and v to u neighbour list
+    // adds v to neighbour list of u ( and v to u neighbour list if it's a undirected graph )
     addEdge(u,v){
         this.list[u].push(v);
-        this.list[v].push(u);
+        if(!this.directed) this.list[v].push(u);
         return this;
     }
     
-    // removes v from neighbour list of u and v from u neighbour list
+    // removes v from neighbour list of u (and v from u neighbour list if undirected)
     removeEdge(u,v){
         this.list[u] = this.list[u].filter(w => w !== v);
-        this.list[v] = this.list[v].filter(w => w !== u);
+        if(!this.directed) this.list[v] = this.list[v].filter(w => w !== u);    
         return this;
     }
 
@@ -227,6 +228,8 @@ class Graph {
         };
         return components;
     }
+
+
 }
 
 // let g = new Graph();
