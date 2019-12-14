@@ -99,10 +99,17 @@ class Graph {
     }
 
     // adds v to neighbour list of u ( and v to u neighbour list if it's a undirected graph )
-    addEdge(u,v){
-        this.list[u].push(v);
-        if(!this.directed) this.list[v].push(u);
+    addEdge(u,v,weight=0){
+        // unweighted graph
+        if(weight ===0){
+            this.list[u].push(v);
+            if(!this.directed) this.list[v].push(u);
+            return this;
+        }
+        this.list[u].push({node:v,weight})
+        if(!this.directed) this.list[v].push({node:u,weight})
         return this;
+        
     }
     
     // removes v from neighbour list of u (and v from u neighbour list if undirected)
@@ -269,37 +276,39 @@ class Graph {
 // // console.log(g.removeEdge("Aspen","Tokyo"));
 // console.log(g.removeVertex("Aspen"));
 
-// let g = new Graph();
+let g = new Graph();
 
-// g.addVertex("A");
-// g.addVertex("B");
-// g.addVertex("C");
-// g.addVertex("D");
-// g.addVertex("E");
-// g.addVertex("F");
-// g.addVertex("G");
-// g.addVertex("H");
-// g.addVertex("I");
-// g.addVertex("J");
-// g.addVertex("K");
+g.addVertex("A");
+g.addVertex("B");
+g.addVertex("C");
+g.addVertex("D");
+g.addVertex("E");
+g.addVertex("F");
+g.addVertex("G");
+g.addVertex("H");
+g.addVertex("I");
+g.addVertex("J");
+g.addVertex("K");
 
 
 
-// g.addEdge("A","B");
-// g.addEdge("A","C");
-// g.addEdge("B","D");
-// g.addEdge("C","E");
-// g.addEdge("D","E");
-// g.addEdge("D","F");
-// g.addEdge("E","F");
-// g.addEdge("G","H");
-// g.addEdge("I","J");
-// g.addEdge("I","K");
+g.addEdge("A","B",7);
+g.addEdge("A","C",6);
+g.addEdge("B","D",3);
+g.addEdge("C","E",5);
+g.addEdge("D","E",2);
+g.addEdge("D","F",1);
+g.addEdge("E","F",1);
+g.addEdge("G","H",7);
+g.addEdge("I","J",8);
+g.addEdge("I","K",9);
 
-// // console.log(g.dfsr("A"));
-// // console.log(g.dfs("A"));
-// // console.log(g.bfs("A"));
+// console.log(g.dfsr("A"));
+// console.log(g.dfs("A"));
+// console.log(g.bfs("A"));
 // console.log(g.undirectConnectivity());
+console.log(g);
+console.log(g.list);
 
 
 //          A
@@ -312,6 +321,10 @@ class Graph {
 // 
 //       G --- H
 // 
+//          I
+//        /   \
+//      J       K
+// 
 //      DIRECTED!!!!!!!! all arrows point down
 //          I
 //        /   \
@@ -323,22 +336,22 @@ class Graph {
 //      |
 //      O
 
-let g = new Graph(true);
+// let g = new Graph(true);
 
-g.addVertex("I");
-g.addVertex("J");
-g.addVertex("K");
-g.addVertex("L");
-g.addVertex("M");
-g.addVertex("N");
-g.addVertex("O");
+// g.addVertex("I");
+// g.addVertex("J");
+// g.addVertex("K");
+// g.addVertex("L");
+// g.addVertex("M");
+// g.addVertex("N");
+// g.addVertex("O");
 
-g.addEdge("I","J");
-g.addEdge("J","L");
-g.addEdge("L","N");
-g.addEdge("N","O");
-g.addEdge("I","K");
-g.addEdge("K","M");
+// g.addEdge("I","J");
+// g.addEdge("J","L");
+// g.addEdge("L","N");
+// g.addEdge("N","O");
+// g.addEdge("I","K");
+// g.addEdge("K","M");
 
 
-console.log(g.topologicalSort());
+// console.log(g.topologicalSort());
