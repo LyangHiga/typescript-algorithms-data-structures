@@ -53,8 +53,10 @@ class PriorityQueue{
         while(this.greaterThan(lChild,idx) || this.greaterThan(rChild,idx)){
             if(this.greaterThan(lChild,rChild)){
                 greatIdx = lChild;
-            } else {
+            } else if (this.greaterThan(rChild,lChild)){
                 greatIdx = rChild;
+            } else {
+                greatIdx = lChild;
             }
             // swap element from idx with greater
             [this.values[idx],this.values[greatIdx]] = [this.values[greatIdx],this.values[idx]];
@@ -70,6 +72,9 @@ class PriorityQueue{
 let pq = new PriorityQueue();
 console.log(pq.enqueue("first",1));
 console.log(pq.enqueue("second",2));
+console.log(pq.enqueue("second",2));
+console.log(pq.enqueue("second",2));
+console.log(pq.enqueue("third",3));
 console.log(pq.enqueue("third",3));
 console.log(pq.dequeue());
 console.log(pq.dequeue());
