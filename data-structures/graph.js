@@ -82,6 +82,77 @@ class Stack {
     }
 }
 
+class NodeP{
+    constructor(val,priority){
+        this.val = val;
+        this.priority = priority;
+    }
+}
+
+class PriorityQueue{
+    constructor(){
+        this.values = [];
+    }
+
+     // return if the element from index i is less than k idx element
+     lessThan(i,k){
+        // out of bounds
+        if(i < 0||k <0 ) return false;
+        if(i > this.values.length - 1 || k > this.values.length - 1) return false;
+        let val = this.values[i].priority;
+        let parent = this.values[k].priority;
+        if(val < parent) return true;
+        return false;
+    }
+
+     // insert an element in the next free spot and then sort the Heap if it's needed
+     enqueue(val,priority){
+        let node = new NodeP(val,priority);
+        this.values.push(node);
+        let idx = this.values.length - 1;
+        let parentIdx = Math.floor( (idx-1)/2);
+        // sort
+        while(this.lessThan(idx,parentIdx)){
+            //swap
+            [this.values[idx],this.values[parentIdx]] = [this.values[parentIdx],this.values[idx]];
+            idx = parentIdx;
+            parentIdx = Math.floor((idx-1)/2);
+        }
+        return this;
+    }
+
+    // Remove the root (min), put the last element in the top and then rearrange
+    // return the root and the new arrangement
+    dequeue(){
+        // if is empty return undefined
+        if(this.values.length === 0 ) return undefined;
+        if(this.values.length === 1  ) return {element:this.values.pop(),heap:this};
+        const min = this.values[0];
+        // replace the root with the last element
+        this.values[0] = this.values.pop();
+        let idx = 0;
+        let lChild = (2 * idx) + 1;
+        let rChild = (2 * idx) + 2;
+        let smallIdx;
+        while(this.lessThan(lChild,idx) || this.lessThan(rChild,idx)){
+            if(this.lessThan(lChild,rChild)){
+                smallIdx = lChild;
+            } else if (this.lessThan(rChild,lChild)){
+                smallIdx = rChild;
+            } else {
+                smallIdx = lChild;
+            }
+            // swap element from idx with greater
+            [this.values[idx],this.values[smallIdx]] = [this.values[smallIdx],this.values[idx]];
+            // update idx and its children
+            idx = smallIdx;
+            lChild = (2 * idx) + 1;
+            rChild = (2 * idx) + 2;
+        }
+        return {element:min,heap:this};
+    }
+}
+
 class Graph {
     constructor(directed = false){
         this.list = {};
@@ -266,6 +337,21 @@ class Graph {
 
 }
 
+let pq = new PriorityQueue();
+console.log(pq.enqueue("first",1));
+console.log(pq.enqueue("second",2));
+console.log(pq.enqueue("second",2));
+console.log(pq.enqueue("second",2));
+console.log(pq.enqueue("third",3));
+console.log(pq.enqueue("third",3));
+console.log(pq.dequeue());
+console.log(pq.dequeue());
+console.log(pq.dequeue());
+console.log(pq.dequeue());
+console.log(pq.dequeue());
+console.log(pq.dequeue());
+console.log(pq.dequeue());
+
 // let g = new Graph();
 // console.log(g.addVertex("Dallas"));
 // console.log(g.addVertex("Tokyo"));
@@ -276,39 +362,39 @@ class Graph {
 // // console.log(g.removeEdge("Aspen","Tokyo"));
 // console.log(g.removeVertex("Aspen"));
 
-let g = new Graph();
+// let g = new Graph();
 
-g.addVertex("A");
-g.addVertex("B");
-g.addVertex("C");
-g.addVertex("D");
-g.addVertex("E");
-g.addVertex("F");
-g.addVertex("G");
-g.addVertex("H");
-g.addVertex("I");
-g.addVertex("J");
-g.addVertex("K");
+// g.addVertex("A");
+// g.addVertex("B");
+// g.addVertex("C");
+// g.addVertex("D");
+// g.addVertex("E");
+// g.addVertex("F");
+// g.addVertex("G");
+// g.addVertex("H");
+// g.addVertex("I");
+// g.addVertex("J");
+// g.addVertex("K");
 
 
 
-g.addEdge("A","B",7);
-g.addEdge("A","C",6);
-g.addEdge("B","D",3);
-g.addEdge("C","E",5);
-g.addEdge("D","E",2);
-g.addEdge("D","F",1);
-g.addEdge("E","F",1);
-g.addEdge("G","H",7);
-g.addEdge("I","J",8);
-g.addEdge("I","K",9);
+// g.addEdge("A","B",7);
+// g.addEdge("A","C",6);
+// g.addEdge("B","D",3);
+// g.addEdge("C","E",5);
+// g.addEdge("D","E",2);
+// g.addEdge("D","F",1);
+// g.addEdge("E","F",1);
+// g.addEdge("G","H",7);
+// g.addEdge("I","J",8);
+// g.addEdge("I","K",9);
 
-// console.log(g.dfsr("A"));
-// console.log(g.dfs("A"));
-// console.log(g.bfs("A"));
-// console.log(g.undirectConnectivity());
-console.log(g);
-console.log(g.list);
+// // console.log(g.dfsr("A"));
+// // console.log(g.dfs("A"));
+// // console.log(g.bfs("A"));
+// // console.log(g.undirectConnectivity());
+// console.log(g);
+// console.log(g.list);
 
 
 //          A
