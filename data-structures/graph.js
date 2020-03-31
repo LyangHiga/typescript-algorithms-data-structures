@@ -347,6 +347,44 @@ class Graph {
     }
     return components;
   }
+
+  //   returns the distance from s to each vertex and their parents
+  dijkstra(s) {
+    const queue = new PriorityQueue();
+    const distances = {};
+    const parents = {};
+    let smallest;
+    for (let vertex in this.list) {
+      if (vertex === s) {
+        distances[vertex] = 0;
+        queue.enqueue(vertex, 0);
+      } else {
+        distances[vertex] = Infinity;
+        queue.enqueue(vertex, Infinity);
+      }
+      parents[vertex] = null;
+    }
+    // while we have nodes to visite:
+    while (queue.values.length) {
+      smallest = queue.dequeue().element.val;
+      if (smallest || distances[smallest] !== Infinity) {
+        for (let neighbour in this.list[smallest]) {
+          let nextNode = this.list[smallest][neighbour];
+          // calculate Dijkstra's  Greedy Criterium
+          let d = distances[smallest] + nextNode.weight;
+          //   compare distance calculated with last distance storaged
+          if (d < distances[nextNode.node]) {
+            //   updating distances and parents
+            distances[nextNode.node] = d;
+            parents[nextNode.node] = smallest;
+            // enqueue with new priority
+            queue.enqueue(nextNode.node, d);
+          }
+        }
+      }
+    }
+    return { distances, parents };
+  }
 }
 
 // let pq = new PriorityQueue();
@@ -382,29 +420,48 @@ g.addVertex("C");
 g.addVertex("D");
 g.addVertex("E");
 g.addVertex("F");
-g.addVertex("G");
-g.addVertex("H");
-g.addVertex("I");
-g.addVertex("J");
-g.addVertex("K");
 
-g.addEdge("A", "B", 7);
-g.addEdge("A", "C", 6);
-g.addEdge("B", "D", 3);
-g.addEdge("C", "E", 5);
-g.addEdge("D", "E", 2);
+g.addEdge("A", "B", 4);
+g.addEdge("A", "C", 2);
+g.addEdge("B", "E", 3);
+g.addEdge("C", "D", 2);
+g.addEdge("C", "F", 4);
+g.addEdge("D", "E", 3);
 g.addEdge("D", "F", 1);
 g.addEdge("E", "F", 1);
-g.addEdge("G", "H", 7);
-g.addEdge("I", "J", 8);
-g.addEdge("I", "K", 9);
 
-console.log(g);
-console.log(g.list);
-console.log(g.dfsr("A"));
-console.log(g.dfs("A"));
-console.log(g.bfs("A"));
-console.log(g.undirectConnectivity());
+// g.addVertex("A");
+// g.addVertex("B");
+// g.addVertex("C");
+// g.addVertex("D");
+// g.addVertex("E");
+// g.addVertex("F");
+// g.addVertex("G");
+// g.addVertex("H");
+// g.addVertex("I");
+// g.addVertex("J");
+// g.addVertex("K");
+
+// g.addEdge("A", "B", 7);
+// g.addEdge("A", "C", 6);
+// g.addEdge("B", "D", 3);
+// g.addEdge("C", "E", 5);
+// g.addEdge("D", "E", 2);
+// g.addEdge("D", "F", 1);
+// g.addEdge("E", "F", 1);
+// g.addEdge("G", "H", 7);
+// g.addEdge("I", "J", 8);
+// g.addEdge("I", "K", 9);
+
+// console.log(g.list);
+console.log(g.dijkstra("A"));
+
+// console.log(g);
+// console.log(g.list);
+// console.log(g.dfsr("A"));
+// console.log(g.dfs("A"));
+// console.log(g.bfs("A"));
+// console.log(g.undirectConnectivity());
 // console.log(g);
 // console.log(g.list);
 
