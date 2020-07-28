@@ -111,12 +111,16 @@ class MinHeap {
     const min = this.values[0];
     // replace the root with the last element
     this.values[0] = this.values.pop();
+    // delete from dict
+    delete this.idxs[min.val];
+    // update idx of the 'new root' in the dict
+    this.idxs[this.values[0].val] = 0;
     // index of this node we have to sort and the idx of its children
     let idx = 0;
     let [lChild, rChild] = this.myChildrenIdx(idx);
     // to keep the smaller
     let smallIdx;
-    // sort (while some child is smaller than the parent)
+    // sort (while any child is smaller than the parent)
     while (this.lessThan(lChild, idx) || this.lessThan(rChild, idx)) {
       if (this.lessThan(lChild, rChild)) {
         smallIdx = lChild;
@@ -146,6 +150,61 @@ class MinHeap {
     }
     return { element: min, heap: this };
   }
+
+  // Remove the node from this respect val
+  //   Return the sorted HEAP
+  deleteKey(val) {
+    // check whether this val belongs to this heap
+    if (this.values[this.idxs[val]] === undefined) return false;
+    // if it is the last element of values: it is already sorted
+    if (this.idxs[val] === this.values.length - 1) {
+      this.values.pop();
+      delete this.idxs[val];
+      return this;
+    }
+    //   get idx of this val
+    let idx = this.idxs[val];
+    // replace this node with the last one
+    this.values[idx] = this.values.pop();
+    // delete from dict
+    delete this.idxs[val];
+    // update idx of the 'new node in idx position' in the dict
+    // we need to sort from idx to bellow
+    this.idxs[this.values[idx].val] = idx;
+    // get the children of idx
+    let [lChild, rChild] = this.myChildrenIdx(idx);
+    // to keep the smaller
+    let smallIdx;
+    // sort (while any child is smaller than the parent)
+    while (this.lessThan(lChild, idx) || this.lessThan(rChild, idx)) {
+      if (this.lessThan(lChild, rChild)) {
+        smallIdx = lChild;
+      } else if (this.lessThan(rChild, lChild)) {
+        smallIdx = rChild;
+      } else {
+        smallIdx = lChild;
+      }
+      // swap element from idx with greater
+      [this.values[idx], this.values[smallIdx]] = [
+        this.values[smallIdx],
+        this.values[idx],
+      ];
+
+      // swap idxs elements in dict val to idx
+      [
+        this.idxs[this.values[idx].val],
+        this.idxs[this.values[smallIdx].val],
+      ] = [
+        this.idxs[this.values[smallIdx].val],
+        this.idxs[this.values[idx].val],
+      ];
+
+      // update idx and its children
+      idx = smallIdx;
+      [lChild, rChild] = this.myChildrenIdx(idx);
+    }
+    return this;
+  }
 }
 
 module.exports = MinHeap;
@@ -153,17 +212,17 @@ module.exports = MinHeap;
 let pq = new MinHeap();
 console.log(pq.enqueue('first', 1));
 console.log(pq.enqueue('second', 2));
-console.log(pq.enqueue('second', 2));
-console.log(pq.enqueue('second', 2));
 console.log(pq.enqueue('third', 3));
-console.log(pq.enqueue('third', 3));
-console.log(pq.dequeue());
-console.log(pq.dequeue());
-console.log(pq.dequeue());
-console.log(pq.dequeue());
-console.log(pq.dequeue());
-console.log(pq.dequeue());
-console.log(pq.dequeue());
+console.log(pq.enqueue('fourth', 4));
+console.log(pq.deleteKey('second'));
+console.log(pq.deleteKey('first'));
+// console.log(pq.dequeue());
+// console.log(pq.dequeue());
+// console.log(pq.dequeue());
+// console.log(pq.dequeue());
+// console.log(pq.dequeue());
+// console.log(pq.dequeue());
+// console.log(pq.dequeue());
 
 //              55
 //        45          41
