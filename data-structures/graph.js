@@ -193,11 +193,13 @@ class Graph {
   //   returns the distance from s to each vertex and their parents
   dijkstra(s) {
     const heap = new MinHeap();
+    // objs to map val to distance and val to parents
     const distances = {};
     const parents = {};
     let smallest;
     distances[s] = 0;
     parents[s] = null;
+    let deacrease = false;
     for (let vertex in this.list) {
       if (vertex !== s) {
         distances[vertex] = Infinity;
@@ -217,8 +219,12 @@ class Graph {
             //   updating distances and parents
             distances[nextNode.node] = d;
             parents[nextNode.node] = smallest;
-            // enqueue with new priority
-            heap.enqueue(nextNode.node, d);
+            // try to deacrease key
+            deacrease = heap.decreaseKey(nextNode.node, d);
+            if (!deacrease) {
+              // enqueue with new priority
+              heap.enqueue(nextNode.node, d);
+            }
           }
         }
       }
