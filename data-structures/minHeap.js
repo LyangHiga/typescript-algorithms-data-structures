@@ -23,6 +23,17 @@ class MinHeap {
     return false;
   }
 
+  //   return the parent's index of the ith node
+  myParentIdx(i) {
+    return Math.floor((i - 1) / 2);
+  }
+
+  //   return the children's index of the ith node
+  myChildrenIdx(i) {
+    // left 2 * i + 1 , right 2 * idx + 2
+    return [2 * i + 1, 2 * i + 2];
+  }
+
   // insert an element in the next free spot and then sort the Heap if it's needed
   //   return Heap sorted
   enqueue(val, key) {
@@ -30,10 +41,9 @@ class MinHeap {
     this.values.push(node);
     // last position to insert this new node
     let idx = this.values.length - 1;
-    // add idx of this val
+    // add the idx of this val on the dict
     this.idxs[val] = idx;
-    // parent of this new node
-    let parentIdx = Math.floor((idx - 1) / 2);
+    let parentIdx = this.myParentIdx(idx);
     // sort (while this new node is smaller than its parent)
     while (this.lessThan(idx, parentIdx)) {
       //swap
@@ -50,23 +60,23 @@ class MinHeap {
         this.idxs[this.values[parentIdx].val],
         this.idxs[this.values[idx].val],
       ];
-      //   recalculate node, parent idx position
+      //   recalculate node idx, parent idx position
       idx = parentIdx;
-      parentIdx = Math.floor((idx - 1) / 2);
+      parentIdx = this.myParentIdx(idx);
     }
     return this;
   }
 
-  //   update node and return this or
-  //   return false if there is not a node with this val in this heap
-  decrease(val, newKey) {
+  //   update key of this node and return this heap sorted
+  //   if there is not any node with this val in this heap return false
+  decreaseKey(val, newKey) {
     // check whether this val belongs to this heap
     if (this.values[this.idxs[val]] === undefined) return false;
     //   get idx of this val
     let idx = this.idxs[val];
-    //   update node with new val
-    this.values[idx].val = newKey;
-    let parentIdx = Math.floor((idx - 1) / 2);
+    //   update node with new key
+    this.values[idx].key = newKey;
+    let parentIdx = this.myParentIdx(idx);
     if (parentIdx < 0) return this;
     while (this.lessThan(idx, parentIdx)) {
       //swap
@@ -83,9 +93,9 @@ class MinHeap {
         this.idxs[this.values[parentIdx].val],
         this.idxs[this.values[idx].val],
       ];
-      //   recalculate node, parent idx position
+      //   recalculate node idx, parent idx position
       idx = parentIdx;
-      parentIdx = Math.floor((idx - 1) / 2);
+      parentIdx = this.myParentIdx(idx);
     }
     return this;
   }
@@ -103,8 +113,7 @@ class MinHeap {
     this.values[0] = this.values.pop();
     // index of this node we have to sort and the idx of its children
     let idx = 0;
-    let lChild = 2 * idx + 1;
-    let rChild = 2 * idx + 2;
+    let [lChild, rChild] = this.myChildrenIdx(idx);
     // to keep the smaller
     let smallIdx;
     // sort (while some child is smaller than the parent)
@@ -133,8 +142,7 @@ class MinHeap {
 
       // update idx and its children
       idx = smallIdx;
-      lChild = 2 * idx + 1;
-      rChild = 2 * idx + 2;
+      [lChild, rChild] = this.myChildrenIdx(idx);
     }
     return { element: min, heap: this };
   }
