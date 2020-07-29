@@ -242,6 +242,69 @@ class Graph {
     }
     return { distances, parents };
   }
+  // return the MST and its cost
+  prim(s) {
+    const heap = new MinHeap();
+    const mst = new Graph();
+    // obj to keep track what element is already in mst
+    const mstSet = {};
+    // objs to map val to edge cost and to parent
+    const edgeCost = {};
+    const parents = {};
+    // sum of each MST's edge
+    let cost = 0;
+    let dequeues = 0;
+    let smallest;
+    let deacrease = false;
+    for (let vertex in this.list) {
+      if (vertex !== s) {
+        edgeCost[vertex] = Infinity;
+        mstSet[vertex] = false;
+      }
+    }
+    heap.enqueue(s, 0);
+    edgeCost[s] = 0;
+    parents[s] = null;
+    mstSet[s] = true;
+    while (heap.values.length) {
+      smallest = heap.dequeue().element.val;
+      dequeues++;
+      //   we found the min cost to add smallest in our MST
+      cost += edgeCost[smallest];
+      mst.addVertex(smallest);
+      mstSet[smallest] = true;
+      if (parents[smallest]) {
+        //   if smallest has a parent (is not s node) add the edge to mst
+        mst.addEdge(smallest, parents[smallest], edgeCost[smallest]);
+      }
+      //   console.log(
+      //     `smallest = ${smallest} - edge cost = ${edgeCost[smallest]} - parent = ${parents[smallest]}`
+      //   );
+      if (smallest || edgeCost[smallest] !== Infinity) {
+        for (let neighbour in this.list[smallest]) {
+          let nextNode = this.list[smallest][neighbour];
+          // compare the the cost of this edge with the last one storaged
+          if (
+            nextNode.weight < edgeCost[nextNode.node] &&
+            !mstSet[nextNode.node]
+          ) {
+            //   updating edgeCost and parents
+            edgeCost[nextNode.node] = nextNode.weight;
+            parents[nextNode.node] = smallest;
+            // try to deacrease key
+            deacrease = heap.decreaseKey(nextNode.node, nextNode.weight);
+            if (!deacrease) {
+              // enqueue with new priority
+              heap.enqueue(nextNode.node, nextNode.weight);
+            }
+          }
+        }
+      }
+    }
+    // mst.print();
+    // console.log(`dequeues =  ${dequeues}`);
+    return { cost, mst };
+  }
 }
 
 // let pq = new MinHeap();
@@ -312,7 +375,7 @@ g.addEdge('E', 'F', 1);
 
 // console.log(g.list);
 // console.log(g.dijkstra('A'));
-// console.log(g.prim('A'));
+console.log(g.prim('A'));
 // g.print();
 
 // console.log(g);

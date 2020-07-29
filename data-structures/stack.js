@@ -45,12 +45,12 @@ class Stack {
 }
 module.exports = Stack;
 
-let stack = new Stack();
-console.log(stack.push(1));
-console.log(stack.push(2));
-console.log(stack.push(3));
-console.log(stack.pop());
-console.log(stack.pop());
-console.log(stack.pop());
-console.log(stack.pop());
-console.log(stack);
+// let stack = new Stack();
+// console.log(stack.push(1));
+// console.log(stack.push(2));
+// console.log(stack.push(3));
+// console.log(stack.pop());
+// console.log(stack.pop());
+// console.log(stack.pop());
+// console.log(stack.pop());
+// console.log(stack);

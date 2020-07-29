@@ -42,15 +42,15 @@ class Queue {
   }
 }
 
-let q = new Queue();
-console.log(q.enQueue(1));
-console.log(q.enQueue(2));
-console.log(q.enQueue(3));
-console.log(q);
-console.log(q.deQueue());
-console.log(q.deQueue());
-console.log(q.deQueue());
-console.log(q.deQueue());
-console.log(q);
+// let q = new Queue();
+// console.log(q.enQueue(1));
+// console.log(q.enQueue(2));
+// console.log(q.enQueue(3));
+// console.log(q);
+// console.log(q.deQueue());
+// console.log(q.deQueue());
+// console.log(q.deQueue());
+// console.log(q.deQueue());
+// console.log(q);
 
 module.exports = Queue;

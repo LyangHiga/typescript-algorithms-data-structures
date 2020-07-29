@@ -209,13 +209,13 @@ class MinHeap {
 
 module.exports = MinHeap;
 
-let pq = new MinHeap();
-console.log(pq.enqueue('first', 1));
-console.log(pq.enqueue('second', 2));
-console.log(pq.enqueue('third', 3));
-console.log(pq.enqueue('fourth', 4));
-console.log(pq.deleteKey('second'));
-console.log(pq.deleteKey('first'));
+// let pq = new MinHeap();
+// console.log(pq.enqueue('first', 1));
+// console.log(pq.enqueue('second', 2));
+// console.log(pq.enqueue('third', 3));
+// console.log(pq.enqueue('fourth', 4));
+// console.log(pq.deleteKey('second'));
+// console.log(pq.deleteKey('first'));
 // console.log(pq.dequeue());
 // console.log(pq.dequeue());
 // console.log(pq.dequeue());
