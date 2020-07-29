@@ -11,7 +11,18 @@ class Graph {
     this.labeledOder = {};
   }
 
-  // adds a empty array to the new v
+  // print this Graph
+  print() {
+    for (let u in this.list) {
+      for (let v in this.list[u]) {
+        console.log(
+          `${u} - ${this.list[u][v].weight} - ${this.list[u][v].node}`
+        );
+      }
+    }
+  }
+
+  // adds an empty array to the new v
   addVertex(v) {
     if (!this.list[v]) this.list[v] = [];
     this.size++;
@@ -300,7 +311,9 @@ g.addEdge('E', 'F', 1);
 // g.addEdge("I", "K", 9);
 
 // console.log(g.list);
-console.log(g.dijkstra('A'));
+// console.log(g.dijkstra('A'));
+// console.log(g.prim('A'));
+// g.print();
 
 // console.log(g);
 // console.log(g.list);
