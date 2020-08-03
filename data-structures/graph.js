@@ -1,3 +1,4 @@
+const fs = require('fs');
 const Queue = require('./queue');
 const Stack = require('./stack');
 const MinHeap = require('./minHeap');
@@ -9,18 +10,6 @@ class Graph {
     this.currentLabel = null;
     this.size = 0;
     this.labeledOder = {};
-  }
-
-  // print this Graph
-  //   FORMAT: <first vertex u> - <second vertex v> - <edge w>
-  print() {
-    for (let u in this.list) {
-      for (let v in this.list[u]) {
-        console.log(
-          `${u} - ${this.list[u][v].node} - ${this.list[u][v].weight}`
-        );
-      }
-    }
   }
 
   // adds an empty array to the new v
@@ -43,6 +32,13 @@ class Graph {
     return this;
   }
 
+  //   add both u and v vertex and their edge w
+  addVertexAndEdge(u, v, w) {
+    this.addVertex(u);
+    this.addVertex(v);
+    this.addEdge(u, v, w);
+  }
+
   // removes v from neighbour list of u (and v from u neighbour list if undirected)
   removeEdge(u, v) {
     this.list[u] = this.list[u].filter((w) => w !== v);
@@ -59,6 +55,37 @@ class Graph {
     delete this.list[v];
     this.size--;
     return this;
+  }
+
+  //   file is the adj list of this Graph
+  // FORMAT: <first vertex u>' '<second vertex v>' ' <edge w>
+  create(file) {
+    const data = fs.readFileSync(file, { encoding: 'utf8', flag: 'r' });
+    let line = '';
+    let split = [];
+    for (let char in data) {
+      if (data[char] !== '\n') {
+        line += data[char];
+      } else {
+        split = line.split(' ');
+        this.addVertexAndEdge(split[0], split[1], parseInt(split[2]));
+        line = '';
+      }
+    }
+    split = line.split(' ');
+    this.addVertexAndEdge(split[0], split[1], parseInt(split[2]));
+  }
+
+  // print this Graph
+  //   FORMAT: <first vertex u> - <second vertex v> - <edge w>
+  print() {
+    for (let u in this.list) {
+      for (let v in this.list[u]) {
+        console.log(
+          `${u} - ${this.list[u][v].node} - ${this.list[u][v].weight}`
+        );
+      }
+    }
   }
 
   // Recursive Depth First Search
