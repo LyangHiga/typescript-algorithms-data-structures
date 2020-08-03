@@ -12,11 +12,12 @@ class Graph {
   }
 
   // print this Graph
+  //   FORMAT: <first vertex u> - <second vertex v> - <edge w>
   print() {
     for (let u in this.list) {
       for (let v in this.list[u]) {
         console.log(
-          `${u} - ${this.list[u][v].weight} - ${this.list[u][v].node}`
+          `${u} - ${this.list[u][v].node} - ${this.list[u][v].weight}`
         );
       }
     }
@@ -66,7 +67,6 @@ class Graph {
     let visited = {};
     let list = this.list;
     (function dfs(v) {
-      //   console.log(`V = ${v}`);
       if (!v) return;
       // mark v as visited
       visited[v] = true;
@@ -74,7 +74,6 @@ class Graph {
       // for every edge of v
       list[v].forEach((u) => {
         // if v unvisited
-        // console.log(`visited[u] = ${visited[u.node]}`);
         if (!visited[u.node]) {
           return dfs(u.node);
         }
@@ -126,11 +125,11 @@ class Graph {
       }
     }
     return {
-      result: result,
-      parents: parents,
-      dist: dist,
+      result,
+      parents,
+      dist,
       labeledOder: this.labeledOder,
-      visited: visited,
+      visited,
     };
   }
 
@@ -180,7 +179,7 @@ class Graph {
         }
       });
     }
-    return { result: result, parents: parents, dist: dist, visited: visited };
+    return { result, parents, dist, visited };
   }
 
   // returns a list with all connected components of G
@@ -277,13 +276,11 @@ class Graph {
         //   if smallest has a parent (is not s node) add the edge to mst
         mst.addEdge(smallest, parents[smallest], edgeCost[smallest]);
       }
-      //   console.log(
-      //     `smallest = ${smallest} - edge cost = ${edgeCost[smallest]} - parent = ${parents[smallest]}`
-      //   );
       if (smallest || edgeCost[smallest] !== Infinity) {
         for (let neighbour in this.list[smallest]) {
           let nextNode = this.list[smallest][neighbour];
-          // compare the the cost of this edge with the last one storaged
+          // compare the cost of this edge with the last one storaged
+          //   and check if this node is already in mstSet
           if (
             nextNode.weight < edgeCost[nextNode.node] &&
             !mstSet[nextNode.node]
@@ -301,132 +298,8 @@ class Graph {
         }
       }
     }
-    // mst.print();
-    // console.log(`dequeues =  ${dequeues}`);
     return { cost, mst };
   }
 }
 
-// let pq = new MinHeap();
-// console.log(pq.enqueue("first",1));
-// console.log(pq.enqueue("second",2));
-// console.log(pq.enqueue("second",2));
-// console.log(pq.enqueue("second",2));
-// console.log(pq.enqueue("third",3));
-// console.log(pq.enqueue("third",3));
-// console.log(pq.dequeue());
-// console.log(pq.dequeue());
-// console.log(pq.dequeue());
-// console.log(pq.dequeue());
-// console.log(pq.dequeue());
-// console.log(pq.dequeue());
-// console.log(pq.dequeue());
-
-// let g = new Graph();
-// console.log(g.addVertex("Dallas"));
-// console.log(g.addVertex("Tokyo"));
-// console.log(g.addVertex("Aspen"));
-// console.log(g.addEdge("Aspen","Tokyo"));
-// console.log(g.addEdge("Aspen","Dallas"));
-// console.log(g.addEdge("Tokyo","Dallas"));
-// // console.log(g.removeEdge("Aspen","Tokyo"));
-// console.log(g.removeVertex("Aspen"));
-
-let g = new Graph();
-
-g.addVertex('A');
-g.addVertex('B');
-g.addVertex('C');
-g.addVertex('D');
-g.addVertex('E');
-g.addVertex('F');
-
-g.addEdge('A', 'B', 4);
-g.addEdge('A', 'C', 2);
-g.addEdge('B', 'E', 3);
-g.addEdge('C', 'D', 2);
-g.addEdge('C', 'F', 4);
-g.addEdge('D', 'E', 3);
-g.addEdge('D', 'F', 1);
-g.addEdge('E', 'F', 1);
-
-// g.addVertex("A");
-// g.addVertex("B");
-// g.addVertex("C");
-// g.addVertex("D");
-// g.addVertex("E");
-// g.addVertex("F");
-// g.addVertex("G");
-// g.addVertex("H");
-// g.addVertex("I");
-// g.addVertex("J");
-// g.addVertex("K");
-
-// g.addEdge("A", "B", 7);
-// g.addEdge("A", "C", 6);
-// g.addEdge("B", "D", 3);
-// g.addEdge("C", "E", 5);
-// g.addEdge("D", "E", 2);
-// g.addEdge("D", "F", 1);
-// g.addEdge("E", "F", 1);
-// g.addEdge("G", "H", 7);
-// g.addEdge("I", "J", 8);
-// g.addEdge("I", "K", 9);
-
-// console.log(g.list);
-// console.log(g.dijkstra('A'));
-console.log(g.prim('A'));
-// g.print();
-
-// console.log(g);
-// console.log(g.list);
-// console.log(g.dfsr("A"));
-// console.log(g.dfs("A"));
-// console.log(g.bfs("A"));
-// console.log(g.undirectConnectivity());
-// console.log(g);
-// console.log(g.list);
-
-//          A
-//        /   \
-//       B     C
-//       |     |
-//       D --- E
-//        \   /
-//          F
-//
-//       G --- H
-//
-//          I
-//        /   \
-//      J       K
-//
-//      DIRECTED!!!!!!!! all arrows point down
-//          I
-//        /   \
-//      J       K
-//      |       |
-//      L       M
-//      |
-//      N
-//      |
-//      O
-
-// let g = new Graph(true);
-
-// g.addVertex("I");
-// g.addVertex("J");
-// g.addVertex("K");
-// g.addVertex("L");
-// g.addVertex("M");
-// g.addVertex("N");
-// g.addVertex("O");
-
-// g.addEdge("I", "J");
-// g.addEdge("J", "L");
-// g.addEdge("L", "N");
-// g.addEdge("N", "O");
-// g.addEdge("I", "K");
-// g.addEdge("K", "M");
-
-// console.log(g.topologicalSort());
+module.exports = Graph;
