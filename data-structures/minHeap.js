@@ -208,6 +208,10 @@ class MinHeap {
     if (newVal < this.values[idx].val) return this.decreaseKey(key, newVal);
   }
 
+  //   **********************************************************
+  //                            DELETE
+  //   **********************************************************
+
   // Removes the root (min),
   // Returns the root and the new arrangement
   // Returns null if this heap is empty
@@ -238,9 +242,9 @@ class MinHeap {
   }
 
   // Removes the node from this respect key
-  //   Return this HEAP
+  // Returns this HEAP
+  // Returns false whether this key is not in this heap
   deleteKey(key) {
-    // check whether this key belongs to this heap
     if (this.values[this.idxs[key]] === undefined) return false;
     // if it is the last element of values: we dont need to rearrange
     if (this.idxs[key] === this.size - 1) {
@@ -272,6 +276,13 @@ class MinHeap {
       [lChild, rChild] = this.myChildrenIdx(idx);
     }
     return this;
+  }
+
+  // to clear the heap instance and frees memory
+  clear() {
+    this.size = 0;
+    while (!this.isEmpty()) this.values.pop();
+    for (k in this.idx) delete this.idx[k];
   }
 }
 
