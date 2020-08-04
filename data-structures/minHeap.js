@@ -12,6 +12,13 @@ class MinHeap {
     this.idxs = {};
   }
 
+  //   return true if this heap constains this key
+  //   otherwise returns false
+  contains(key) {
+    if (this.values[this.idxs[key]] === undefined) return false;
+    return true;
+  }
+
   // return true if the element from index i is smaller than k idx element
   lessThan(i, k) {
     // out of bounds
@@ -37,6 +44,9 @@ class MinHeap {
   // insert an element in the next free spot and rearrange
   //   return Heap
   enqueue(key, val) {
+    // check whether this val belongs to this heap
+    // to avoid duplicate keys
+    if (this.contains(key)) return false;
     let node = new Node(key, val);
     this.values.push(node);
     // last position to insert this new node
@@ -71,7 +81,7 @@ class MinHeap {
   //   if there is not any node with this key in this heap return false
   decreaseKey(key, newVal) {
     // check whether this key belongs to this heap
-    if (this.values[this.idxs[val]] === undefined) return false;
+    if (!this.contains(key)) return false;
     //   get idx of this key
     let idx = this.idxs[key];
     //   update node with new val
