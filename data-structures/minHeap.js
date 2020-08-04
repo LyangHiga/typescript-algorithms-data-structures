@@ -111,10 +111,14 @@ class MinHeap {
     return this.values[idx];
   }
 
-  // insert an element in the next free spot and rearrange
-  // returns Heap
+  //   **********************************************************
+  //                            INSERT
+  //   **********************************************************
+
+  // Inserts a node (key,val) in the last position and rearrange
+  // Returns Heap
+  // Returns false whether this key is already in this heap
   enqueue(key, val) {
-    // check whether this val belongs to this heap
     // to avoid duplicate keys
     if (this.contains(key)) return false;
     let node = new Node(key, val);
@@ -135,17 +139,26 @@ class MinHeap {
     return this;
   }
 
-  //   update val of this key and return this heap
-  //   if there is not any node with this key in this heap return false
+  //   **********************************************************
+  //                            UPDATE
+  //   **********************************************************
+
+  // Update the val of this key
+  // Returns this heap
+  // Returns false if there is not any node with this key in this heap
+  // Returns false if newVal is not smaller than the actual val of key
   decreaseKey(key, newVal) {
     // check whether this key belongs to this heap
     if (!this.contains(key)) return false;
     //   get idx of this key
     let idx = this.idxs[key];
+    // to ensure newVal < val
+    if (newVal > this.values[idx].val) return false;
+    // if they are the same return this
+    if (newVal === this.values[idx].val) return this;
     //   update node with new val
     this.values[idx].val = newVal;
     let parentIdx = this.myParentIdx(idx);
-    if (parentIdx < 0) return this;
     // bubble-up (while this new node is smaller than its parent)
     while (this.lessThan(idx, parentIdx)) {
       this.bubbleUp(idx, parentIdx);
@@ -154,6 +167,45 @@ class MinHeap {
       parentIdx = this.myParentIdx(idx);
     }
     return this;
+  }
+
+  // Update the val of this key
+  // Returns this heap
+  // Returns false if there is not any node with this key in this heap
+  // Returns false if newVal is greater than the actual val
+  increaseKey(key, newVal) {
+    // check whether this key belongs to this heap
+    if (!this.contains(key)) return false;
+    //   get idx of this key
+    let idx = this.idxs[key];
+    // to ensure newVal > val
+    if (newVal < this.values[idx].val) return false;
+    // if they are the same return this
+    if (newVal === this.values[idx].val) return this;
+    //   update node with new val
+    this.values[idx].val = newVal;
+    let [lChild, rChild] = this.myChildrenIdx(idx);
+    // bubble-down (while any child is smaller than the parent)
+    while (this.lessThan(lChild, idx) || this.lessThan(rChild, idx)) {
+      // update idx and its children
+      idx = this.bubbleDown(idx, lChild, rChild);
+      [lChild, rChild] = this.myChildrenIdx(idx);
+    }
+    return this;
+  }
+
+  // Returns false if there is not any node with this key in this heap
+  // Returns this heap if newVal equals to the actual val
+  // if newVal is greater than the actual val calls increaseKey
+  // if newVal is smaller than the actual val calls decreaseKey
+  updateKey(key, newVal) {
+    // check whether this key belongs to this heap
+    if (!this.contains(key)) return false;
+    //   get idx of this key
+    let idx = this.idxs[key];
+    if (newVal === this.values[idx].val) return this;
+    if (newVal > this.values[idx].val) return this.increaseKey(key, newVal);
+    if (newVal < this.values[idx].val) return this.decreaseKey(key, newVal);
   }
 
   // Removes the root (min),
