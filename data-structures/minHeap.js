@@ -1,14 +1,14 @@
 class Node {
-  constructor(val, key) {
-    this.val = val;
+  constructor(key, val) {
     this.key = key;
+    this.val = val;
   }
 }
 
 class MinHeap {
   constructor() {
     this.values = [];
-    // dict: val to array idx => you say the val it returns the idx
+    // dict: key to array idx => you say the key it returns the idx
     this.idxs = {};
   }
 
@@ -17,9 +17,9 @@ class MinHeap {
     // out of bounds
     if (i < 0 || k < 0) return false;
     if (i > this.values.length - 1 || k > this.values.length - 1) return false;
-    let key = this.values[i].key;
-    let parent = this.values[k].key;
-    if (key < parent) return true;
+    let val = this.values[i].val;
+    let parent = this.values[k].val;
+    if (val < parent) return true;
     return false;
   }
 
@@ -34,17 +34,17 @@ class MinHeap {
     return [2 * i + 1, 2 * i + 2];
   }
 
-  // insert an element in the next free spot and then sort the Heap if it's needed
-  //   return Heap sorted
-  enqueue(val, key) {
-    let node = new Node(val, key);
+  // insert an element in the next free spot and rearrange
+  //   return Heap
+  enqueue(key, val) {
+    let node = new Node(key, val);
     this.values.push(node);
     // last position to insert this new node
     let idx = this.values.length - 1;
-    // add the idx of this val on the dict
-    this.idxs[val] = idx;
+    // add the idx of this key on the dict
+    this.idxs[key] = idx;
     let parentIdx = this.myParentIdx(idx);
-    // sort (while this new node is smaller than its parent)
+    // bubble-up (while this new node is smaller than its parent)
     while (this.lessThan(idx, parentIdx)) {
       //swap
       [this.values[idx], this.values[parentIdx]] = [
@@ -52,13 +52,13 @@ class MinHeap {
         this.values[idx],
       ];
 
-      // swap idxs elements in dict val to idx
+      // swap idxs elements in dict key to idx
       [
-        this.idxs[this.values[idx].val],
-        this.idxs[this.values[parentIdx].val],
+        this.idxs[this.values[idx].key],
+        this.idxs[this.values[parentIdx].key],
       ] = [
-        this.idxs[this.values[parentIdx].val],
-        this.idxs[this.values[idx].val],
+        this.idxs[this.values[parentIdx].key],
+        this.idxs[this.values[idx].key],
       ];
       //   recalculate node idx, parent idx position
       idx = parentIdx;
@@ -67,17 +67,18 @@ class MinHeap {
     return this;
   }
 
-  //   update key of this node and return this heap sorted
-  //   if there is not any node with this val in this heap return false
-  decreaseKey(val, newKey) {
-    // check whether this val belongs to this heap
+  //   update val of this key and return this heap
+  //   if there is not any node with this key in this heap return false
+  decreaseKey(key, newVal) {
+    // check whether this key belongs to this heap
     if (this.values[this.idxs[val]] === undefined) return false;
-    //   get idx of this val
-    let idx = this.idxs[val];
-    //   update node with new key
-    this.values[idx].key = newKey;
+    //   get idx of this key
+    let idx = this.idxs[key];
+    //   update node with new val
+    this.values[idx].val = newVal;
     let parentIdx = this.myParentIdx(idx);
     if (parentIdx < 0) return this;
+    // bubble-up (while this new node is smaller than its parent)
     while (this.lessThan(idx, parentIdx)) {
       //swap
       [this.values[idx], this.values[parentIdx]] = [
@@ -85,13 +86,13 @@ class MinHeap {
         this.values[idx],
       ];
 
-      // swap idxs elements in dict val to idx
+      // swap idxs elements in dict key to idx
       [
-        this.idxs[this.values[idx].val],
-        this.idxs[this.values[parentIdx].val],
+        this.idxs[this.values[idx].key],
+        this.idxs[this.values[parentIdx].key],
       ] = [
-        this.idxs[this.values[parentIdx].val],
-        this.idxs[this.values[idx].val],
+        this.idxs[this.values[parentIdx].key],
+        this.idxs[this.values[idx].key],
       ];
       //   recalculate node idx, parent idx position
       idx = parentIdx;
@@ -112,15 +113,15 @@ class MinHeap {
     // replace the root with the last element
     this.values[0] = this.values.pop();
     // delete from dict
-    delete this.idxs[min.val];
+    delete this.idxs[min.key];
     // update idx of the 'new root' in the dict
-    this.idxs[this.values[0].val] = 0;
-    // index of this node we have to sort and the idx of its children
+    this.idxs[this.values[0].key] = 0;
+    // index of this node we have to rearrange and the idx of its children
     let idx = 0;
     let [lChild, rChild] = this.myChildrenIdx(idx);
     // to keep the smaller
     let smallIdx;
-    // sort (while any child is smaller than the parent)
+    // bubble-down (while any child is smaller than the parent)
     while (this.lessThan(lChild, idx) || this.lessThan(rChild, idx)) {
       if (this.lessThan(lChild, rChild)) {
         smallIdx = lChild;
@@ -135,13 +136,13 @@ class MinHeap {
         this.values[idx],
       ];
 
-      // swap idxs elements in dict val to idx
+      // swap idxs elements in dict key to idx
       [
-        this.idxs[this.values[idx].val],
-        this.idxs[this.values[smallIdx].val],
+        this.idxs[this.values[idx].key],
+        this.idxs[this.values[smallIdx].key],
       ] = [
-        this.idxs[this.values[smallIdx].val],
-        this.idxs[this.values[idx].val],
+        this.idxs[this.values[smallIdx].key],
+        this.idxs[this.values[idx].key],
       ];
 
       // update idx and its children
@@ -151,31 +152,31 @@ class MinHeap {
     return { element: min, heap: this };
   }
 
-  // Remove the node from this respect val
-  //   Return the sorted HEAP
-  deleteKey(val) {
-    // check whether this val belongs to this heap
-    if (this.values[this.idxs[val]] === undefined) return false;
-    // if it is the last element of values: it is already sorted
-    if (this.idxs[val] === this.values.length - 1) {
+  // Remove the node from this respect key
+  //   Return this HEAP
+  deleteKey(key) {
+    // check whether this key belongs to this heap
+    if (this.values[this.idxs[key]] === undefined) return false;
+    // if it is the last element of values: we dont need to rearrange
+    if (this.idxs[key] === this.values.length - 1) {
       this.values.pop();
-      delete this.idxs[val];
+      delete this.idxs[key];
       return this;
     }
-    //   get idx of this val
-    let idx = this.idxs[val];
+    //   get idx of this key
+    let idx = this.idxs[key];
     // replace this node with the last one
     this.values[idx] = this.values.pop();
     // delete from dict
-    delete this.idxs[val];
+    delete this.idxs[key];
     // update idx of the 'new node in idx position' in the dict
-    // we need to sort from idx to bellow
-    this.idxs[this.values[idx].val] = idx;
+    // we need to rearrange from idx to bellow
+    this.idxs[this.values[idx].key] = idx;
     // get the children of idx
     let [lChild, rChild] = this.myChildrenIdx(idx);
     // to keep the smaller
     let smallIdx;
-    // sort (while any child is smaller than the parent)
+    // bubble-down (while any child is smaller than the parent)
     while (this.lessThan(lChild, idx) || this.lessThan(rChild, idx)) {
       if (this.lessThan(lChild, rChild)) {
         smallIdx = lChild;
@@ -190,13 +191,13 @@ class MinHeap {
         this.values[idx],
       ];
 
-      // swap idxs elements in dict val to idx
+      // swap idxs elements in dict key to idx
       [
-        this.idxs[this.values[idx].val],
-        this.idxs[this.values[smallIdx].val],
+        this.idxs[this.values[idx].key],
+        this.idxs[this.values[smallIdx].key],
       ] = [
-        this.idxs[this.values[smallIdx].val],
-        this.idxs[this.values[idx].val],
+        this.idxs[this.values[smallIdx].key],
+        this.idxs[this.values[idx].key],
       ];
 
       // update idx and its children

@@ -33,7 +33,7 @@ class Graph {
   }
 
   //   add both u and v vertex and their edge w
-  addVertexAndEdge(u, v, w) {
+  addVertexAndEdge(u, v, w = 0) {
     this.addVertex(u);
     this.addVertex(v);
     this.addEdge(u, v, w);
@@ -230,11 +230,10 @@ class Graph {
   //   returns the distance from s to each vertex and their parents
   dijkstra(s) {
     const heap = new MinHeap();
-    // objs to map val to distance and val to parents
+    // objs to map key to distance and key to parents
     const distances = {};
     const parents = {};
     let smallest;
-    distances[s] = 0;
     parents[s] = null;
     let deacrease = false;
     for (let vertex in this.list) {
@@ -242,10 +241,11 @@ class Graph {
         distances[vertex] = Infinity;
       }
     }
+    distances[s] = 0;
     heap.enqueue(s, 0);
     // while we have nodes to visite:
     while (heap.values.length) {
-      smallest = heap.dequeue().element.val;
+      smallest = heap.dequeue().element.key;
       if (smallest || distances[smallest] !== Infinity) {
         for (let neighbour in this.list[smallest]) {
           let nextNode = this.list[smallest][neighbour];
@@ -274,7 +274,7 @@ class Graph {
     const mst = new Graph();
     // obj to keep track what element is already in mst
     const mstSet = {};
-    // objs to map val to edge cost and to parent
+    // objs to map key to edge cost and to parent
     const edgeCost = {};
     const parents = {};
     // sum of each MST's edge
@@ -293,7 +293,7 @@ class Graph {
     parents[s] = null;
     mstSet[s] = true;
     while (heap.values.length) {
-      smallest = heap.dequeue().element.val;
+      smallest = heap.dequeue().element.key;
       dequeues++;
       //   we found the min cost to add smallest in our MST
       cost += edgeCost[smallest];
