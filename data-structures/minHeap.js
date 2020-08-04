@@ -41,6 +41,17 @@ class MinHeap {
     return [2 * i + 1, 2 * i + 2];
   }
 
+  bubbleUp(i, j) {
+    //swap i and j
+    [this.values[i], this.values[j]] = [this.values[j], this.values[i]];
+
+    // swap idxs elements in dict key to idx
+    [this.idxs[this.values[i].key], this.idxs[this.values[j].key]] = [
+      this.idxs[this.values[j].key],
+      this.idxs[this.values[i].key],
+    ];
+  }
+
   // insert an element in the next free spot and rearrange
   //   return Heap
   enqueue(key, val) {
@@ -56,20 +67,7 @@ class MinHeap {
     let parentIdx = this.myParentIdx(idx);
     // bubble-up (while this new node is smaller than its parent)
     while (this.lessThan(idx, parentIdx)) {
-      //swap
-      [this.values[idx], this.values[parentIdx]] = [
-        this.values[parentIdx],
-        this.values[idx],
-      ];
-
-      // swap idxs elements in dict key to idx
-      [
-        this.idxs[this.values[idx].key],
-        this.idxs[this.values[parentIdx].key],
-      ] = [
-        this.idxs[this.values[parentIdx].key],
-        this.idxs[this.values[idx].key],
-      ];
+      this.bubbleUp(idx, parentIdx);
       //   recalculate node idx, parent idx position
       idx = parentIdx;
       parentIdx = this.myParentIdx(idx);
@@ -90,20 +88,7 @@ class MinHeap {
     if (parentIdx < 0) return this;
     // bubble-up (while this new node is smaller than its parent)
     while (this.lessThan(idx, parentIdx)) {
-      //swap
-      [this.values[idx], this.values[parentIdx]] = [
-        this.values[parentIdx],
-        this.values[idx],
-      ];
-
-      // swap idxs elements in dict key to idx
-      [
-        this.idxs[this.values[idx].key],
-        this.idxs[this.values[parentIdx].key],
-      ] = [
-        this.idxs[this.values[parentIdx].key],
-        this.idxs[this.values[idx].key],
-      ];
+      this.bubbleUp(idx, parentIdx);
       //   recalculate node idx, parent idx position
       idx = parentIdx;
       parentIdx = this.myParentIdx(idx);
