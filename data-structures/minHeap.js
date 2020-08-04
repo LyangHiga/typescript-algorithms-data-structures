@@ -13,7 +13,12 @@ class MinHeap {
     this.size = 0;
   }
 
-  // returns true if the element from index i is smaller than k idx element
+  //   **********************************************************
+  //                            HELPERS
+  //   **********************************************************
+
+  // Returns true if the element from index i is smaller than k idx element
+  // otherwise returns false
   lessThan(i, k) {
     // out of bounds
     if (i < 0 || k < 0) return false;
@@ -24,17 +29,18 @@ class MinHeap {
     return false;
   }
 
-  //   returns the parent's index of the ith node
+  // Returns the parent's index of the ith node
   myParentIdx(i) {
     return Math.floor((i - 1) / 2);
   }
 
-  //   returns the children's index of the ith node
+  // Returns the children's index of the ith node
   myChildrenIdx(i) {
     // left 2 * i + 1 , right 2 * idx + 2
     return [2 * i + 1, 2 * i + 2];
   }
 
+  // Rearrange values and dict
   bubbleUp(i, j) {
     //swap i and j
     [this.values[i], this.values[j]] = [this.values[j], this.values[i]];
@@ -46,13 +52,16 @@ class MinHeap {
     ];
   }
 
-  //   also returns the smmaller child idx
+  // Returns the smmaller child idx
+  // Rearrange values and dict
   bubbleDown(idx, l, r) {
+    // to keep track of the smallest child
     let smallIdx;
     if (this.lessThan(l, r)) {
       smallIdx = l;
     } else if (this.lessThan(r, l)) {
       smallIdx = r;
+      // if they have the same val we take the left child as the smallest
     } else {
       smallIdx = l;
     }
@@ -71,11 +80,17 @@ class MinHeap {
     return smallIdx;
   }
 
-  //   return true if this heap constains this key
-  //   otherwise returns false
+  // Returns true if this heap constains this key
+  // Otherwise returns false
   contains(key) {
     if (this.values[this.idxs[key]] === undefined) return false;
     return true;
+  }
+
+  // Returns true if this heap is empty
+  // Otherwise returns false
+  isEmpty() {
+    return this.size === 0;
   }
 
   // insert an element in the next free spot and rearrange
@@ -123,12 +138,11 @@ class MinHeap {
     return this;
   }
 
-  // Remove the root (min),
-  //   put the last element in the top and then rearrange
-  // returns the root and the new arrangement
+  // Removes the root (min),
+  // Returns the root and the new arrangement
+  // Returns null if this heap is empty
   dequeue() {
-    // if is empty return undefined
-    if (this.size === 0) return undefined;
+    if (this.isEmpty()) return null;
     if (this.size === 1) {
       this.size--;
       return { element: this.values.pop(), heap: this };
@@ -153,7 +167,7 @@ class MinHeap {
     return { element: min, heap: this };
   }
 
-  // Remove the node from this respect key
+  // Removes the node from this respect key
   //   Return this HEAP
   deleteKey(key) {
     // check whether this key belongs to this heap

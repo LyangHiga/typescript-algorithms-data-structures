@@ -244,7 +244,7 @@ class Graph {
     distances[s] = 0;
     heap.enqueue(s, 0);
     // while we have nodes to visite:
-    while (heap.values.length) {
+    while (!heap.isEmpty()) {
       smallest = heap.dequeue().element.key;
       if (smallest || distances[smallest] !== Infinity) {
         for (let neighbour in this.list[smallest]) {
@@ -292,7 +292,7 @@ class Graph {
     edgeCost[s] = 0;
     parents[s] = null;
     mstSet[s] = true;
-    while (heap.values.length) {
+    while (!heap.isEmpty()) {
       smallest = heap.dequeue().element.key;
       dequeues++;
       //   we found the min cost to add smallest in our MST
