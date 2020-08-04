@@ -52,6 +52,31 @@ class MinHeap {
     ];
   }
 
+  //   also returns the smmaller child idx
+  bubbleDown(idx, l, r) {
+    let smallIdx;
+    if (this.lessThan(l, r)) {
+      smallIdx = l;
+    } else if (this.lessThan(r, l)) {
+      smallIdx = r;
+    } else {
+      smallIdx = l;
+    }
+    // swap element from idx with greater
+    [this.values[idx], this.values[smallIdx]] = [
+      this.values[smallIdx],
+      this.values[idx],
+    ];
+
+    // swap idxs elements in dict key to idx
+    [this.idxs[this.values[idx].key], this.idxs[this.values[smallIdx].key]] = [
+      this.idxs[this.values[smallIdx].key],
+      this.idxs[this.values[idx].key],
+    ];
+
+    return smallIdx;
+  }
+
   // insert an element in the next free spot and rearrange
   //   return Heap
   enqueue(key, val) {
@@ -118,30 +143,8 @@ class MinHeap {
     let smallIdx;
     // bubble-down (while any child is smaller than the parent)
     while (this.lessThan(lChild, idx) || this.lessThan(rChild, idx)) {
-      if (this.lessThan(lChild, rChild)) {
-        smallIdx = lChild;
-      } else if (this.lessThan(rChild, lChild)) {
-        smallIdx = rChild;
-      } else {
-        smallIdx = lChild;
-      }
-      // swap element from idx with greater
-      [this.values[idx], this.values[smallIdx]] = [
-        this.values[smallIdx],
-        this.values[idx],
-      ];
-
-      // swap idxs elements in dict key to idx
-      [
-        this.idxs[this.values[idx].key],
-        this.idxs[this.values[smallIdx].key],
-      ] = [
-        this.idxs[this.values[smallIdx].key],
-        this.idxs[this.values[idx].key],
-      ];
-
       // update idx and its children
-      idx = smallIdx;
+      idx = this.bubbleDown(idx, lChild, rChild);
       [lChild, rChild] = this.myChildrenIdx(idx);
     }
     return { element: min, heap: this };
@@ -173,28 +176,8 @@ class MinHeap {
     let smallIdx;
     // bubble-down (while any child is smaller than the parent)
     while (this.lessThan(lChild, idx) || this.lessThan(rChild, idx)) {
-      if (this.lessThan(lChild, rChild)) {
-        smallIdx = lChild;
-      } else if (this.lessThan(rChild, lChild)) {
-        smallIdx = rChild;
-      } else {
-        smallIdx = lChild;
-      }
-      // swap element from idx with greater
-      [this.values[idx], this.values[smallIdx]] = [
-        this.values[smallIdx],
-        this.values[idx],
-      ];
-
-      // swap idxs elements in dict key to idx
-      [
-        this.idxs[this.values[idx].key],
-        this.idxs[this.values[smallIdx].key],
-      ] = [
-        this.idxs[this.values[smallIdx].key],
-        this.idxs[this.values[idx].key],
-      ];
-
+      // update idx and its children
+      idx = this.bubbleDown(idx, lChild, rChild);
       // update idx and its children
       idx = smallIdx;
       [lChild, rChild] = this.myChildrenIdx(idx);
