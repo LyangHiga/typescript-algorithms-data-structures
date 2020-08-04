@@ -93,6 +93,24 @@ class MinHeap {
     return this.size === 0;
   }
 
+  //   **********************************************************
+  //                            ACCESSING
+  //   **********************************************************
+
+  // Returns the root node
+  // Returns null if this Heap is empty
+  findMin() {
+    if (this.isEmpty()) return null;
+    return this.values[0];
+  }
+
+  // Returns the value of this key
+  // Returns null whether this key is not in this heap
+  valueOf(key) {
+    const idx = this.idxs[key];
+    return this.values[idx];
+  }
+
   // insert an element in the next free spot and rearrange
   // returns Heap
   enqueue(key, val) {
