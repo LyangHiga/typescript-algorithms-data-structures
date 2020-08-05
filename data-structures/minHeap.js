@@ -23,9 +23,7 @@ class MinHeap {
     // out of bounds
     if (i < 0 || k < 0) return false;
     if (i > this.size - 1 || k > this.size - 1) return false;
-    let val = this.values[i].val;
-    let parent = this.values[k].val;
-    if (val < parent) return true;
+    if (this.values[i].val < this.values[k].val) return true;
     return false;
   }
 
@@ -91,6 +89,77 @@ class MinHeap {
   // Otherwise returns false
   isEmpty() {
     return this.size === 0;
+  }
+
+  //   **********************************************************
+  //                            CREATING
+  //   **********************************************************
+
+  // arr: array or object
+  // keys: array or nul
+  // If arr is an array and keys is also an array:
+  //    Each node of this Heap will be the (keys[i], arr[i]) where i is the index,
+  //    arr and keys MUST have the same size
+  // If arr is an array and keys is null:
+  //    Each node of this Heap will be the (i, arr[i]) where i is the index,
+  //    IOW the index of arr became the key of each node
+  // If arr is an object:
+  //    each node of this Heap will be the (key, arr[key]) of each element of arr
+  //    In this case keys is not used
+  // In any case the Heap is build in linear time
+  // Returns: this Heap
+  buildHeap(arr, keys = null) {
+    if (this.size !== 0) return false;
+    // arr is an array
+    if (Array.isArray(arr)) {
+      // arr is array AND keys is also an array
+      if (Array.isArray(keys)) {
+        // if arr and keys dont have the same size returns false
+        if (arr.length !== keys.length) return false;
+        // set size of this heap to the size of arr
+        this.size = arr.length;
+        // inject arr and keys in this.value (keys[i],arr[i])
+        arr.forEach((e, i) => {
+          this.values.push(new Node(keys[i], e));
+          this.idxs[keys[i]] = i;
+        });
+      }
+      //   arr is array and keys is null
+      else {
+        // set size of this heap to the size of arr
+        this.size = arr.length;
+        // inject arr in this.value (i,arr[i))
+        arr.forEach((e, i) => {
+          this.values.push(new Node(i, e));
+          this.idxs[i] = i;
+        });
+      }
+    }
+    // arr is an object
+    else {
+      // to keep track of the idx
+      let i = 0;
+      //   set size of this heap to the size of arr
+      this.size = Object.keys(arr).length;
+      // inject each element of arr (key, val) to this.value
+      for (const key in arr) {
+        this.values.push(new Node(key, arr[key]));
+        this.idxs[key] = i;
+        i++;
+      }
+    }
+    // to heapify all sub heaps with root in index i
+    // all leaves are already heaps
+    for (let idx = Math.floor(this.size / 2); idx >= 0; idx--) {
+      let [lChild, rChild] = this.myChildrenIdx(idx);
+      // bubble-down (while any child is smaller than the parent)
+      while (this.lessThan(lChild, idx) || this.lessThan(rChild, idx)) {
+        // update idx and its children
+        idx = this.bubbleDown(idx, lChild, rChild);
+        [lChild, rChild] = this.myChildrenIdx(idx);
+      }
+    }
+    return this;
   }
 
   //   **********************************************************

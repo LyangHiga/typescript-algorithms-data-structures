@@ -268,8 +268,12 @@ class Graph {
     }
     return { distances, parents };
   }
-  // return the MST and its cost
-  prim(s) {
+
+  // Returns the MST and its cost
+  // isConnect === false means we dont know if it is
+  //    if it is not: Returns the MST of the Connect Component that s belongs and its cost
+  //    if it is: Returns the MST and its cost
+  prim(s, isConnected = true) {
     const heap = new MinHeap();
     const mst = new Graph();
     // obj to keep track what element is already in mst
@@ -288,8 +292,9 @@ class Graph {
         mstSet[vertex] = false;
       }
     }
-    heap.enqueue(s, 0);
     edgeCost[s] = 0;
+    if (isConnected) heap.buildHeap(edgeCost);
+    else heap.enqueue(s, 0);
     parents[s] = null;
     mstSet[s] = true;
     while (!heap.isEmpty()) {
@@ -315,7 +320,7 @@ class Graph {
             //   updating edgeCost and parents
             edgeCost[nextNode.node] = nextNode.weight;
             parents[nextNode.node] = smallest;
-            // try to deacrease key
+            // try to deacrease key, if isConnect always will decrease
             deacrease = heap.decreaseKey(nextNode.node, nextNode.weight);
             if (!deacrease) {
               // enqueue with new priority
