@@ -152,8 +152,10 @@ class MinHeap {
     }
     // to heapify all sub heaps with root in index i
     // all leaves are already heaps
-    for (let idx = Math.floor(this.size / 2); idx >= 0; idx--) {
-      let [lChild, rChild] = this.myChildrenIdx(idx);
+    let lChild, rChild, idx;
+    for (let i = Math.floor(this.size / 2); i >= 0; i--) {
+      [lChild, rChild] = this.myChildrenIdx(i);
+      idx = i;
       // bubble-down (while any child is smaller than the parent)
       while (this.lessThan(lChild, idx) || this.lessThan(rChild, idx)) {
         // update idx and its children
@@ -353,7 +355,7 @@ class MinHeap {
   clear() {
     this.size = 0;
     while (!this.isEmpty()) this.values.pop();
-    for (k in this.idx) delete this.idx[k];
+    for (let k in this.idx) delete this.idx[k];
   }
 }
 
