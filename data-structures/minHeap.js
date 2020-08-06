@@ -100,12 +100,13 @@ class MinHeap {
   // If arr is an array and keys is also an array:
   //    Each node of this Heap will be the (keys[i], arr[i]) where i is the index,
   //    arr and keys MUST have the same size
+  //    Duplicate keys are not allowed. Returns false
   // If arr is an array and keys is null:
   //    Each node of this Heap will be the (i, arr[i]) where i is the index,
   //    IOW the index of arr became the key of each node
   // If arr is an object:
-  //    each node of this Heap will be the (key, arr[key]) of each element of arr
-  //    In this case keys is not used
+  //    each node of this Heap will be the (key, val) of each element of arr
+  //    In this case second param <keys> is not used
   // In any case the Heap is build in linear time
   // Returns: this Heap
   buildHeap(arr, keys = null) {
@@ -119,10 +120,12 @@ class MinHeap {
         // set size of this heap to the size of arr
         this.size = arr.length;
         // inject arr and keys in this.value (keys[i],arr[i])
-        arr.forEach((e, i) => {
-          this.values.push(new Node(keys[i], e));
+        for (let i = 0; i < this.size; i++) {
+          // Avoiding duplicate keys
+          if (this.contains(keys[i])) return false;
+          this.values.push(new Node(keys[i], arr[i]));
           this.idxs[keys[i]] = i;
-        });
+        }
       }
       //   arr is array and keys is null
       else {
@@ -137,13 +140,12 @@ class MinHeap {
     }
     // arr is an object
     else {
-      // to keep track of the idx
       let i = 0;
       //   set size of this heap to the size of arr
       this.size = Object.keys(arr).length;
       // inject each element of arr (key, val) to this.value
-      for (const key in arr) {
-        this.values.push(new Node(key, arr[key]));
+      for (const [key, val] of Object.entries(arr)) {
+        this.values.push(new Node(key, val));
         this.idxs[key] = i;
         i++;
       }
