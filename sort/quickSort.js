@@ -1,4 +1,4 @@
-const { performance } = require("perf_hooks");
+const { performance } = require('perf_hooks');
 // returns start <= random < end
 function random(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
@@ -54,4 +54,4 @@ for (let i = 0; i < 10; i++) {
 }
 
 let t2 = performance.now();
-console.log("Average time: " + (t2 - t1) / 10000 + " seconds");
+console.log('Average time: ' + (t2 - t1) / 10000 + ' seconds');
