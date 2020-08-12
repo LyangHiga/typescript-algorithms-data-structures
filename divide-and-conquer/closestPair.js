@@ -179,7 +179,11 @@ const getPoints = (n, r) => {
     if (Math.floor(Math.random() * 10) > 4) x = -1;
     else x = 1;
     list.push(
-      new Point(i * x, Math.floor(Math.random() * r * x), i.toString())
+      new Point(
+        Math.floor(Math.random() * r * x),
+        Math.floor(Math.random() * r * x),
+        i.toString()
+      )
     );
     i++;
   }
@@ -206,4 +210,4 @@ const test = (nTimes, lSize, random) => {
   console.log(`err = ${err}`);
 };
 
-test(1000, 1000, 1000);
+test(100, 10000, 1000);
