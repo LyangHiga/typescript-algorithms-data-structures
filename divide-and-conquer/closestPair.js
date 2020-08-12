@@ -105,9 +105,10 @@ const closestSplitPair = (px, py, delta) => {
   let pair = [null, null];
   let d;
   // search by the best pair
-  //runs at most 6 times => sy.lenght <7
   for (let i = 0; i < sy.length; i++) {
-    for (let j = i + 1; j < sy.length; j++) {
+    //runs at most 15 times
+    for (let j = i + 1; j < sy.length && j < 15; j++) {
+      if (Math.abs(sy[j] - sy[i]) > delta) break;
       d = dist(sy[i], sy[j]);
       if (d < best) {
         pair = [sy[i], sy[j]];
@@ -210,4 +211,4 @@ const test = (nTimes, lSize, random) => {
   console.log(`err = ${err}`);
 };
 
-test(100, 10000, 1000);
+test(1000000, 50, 10000);
