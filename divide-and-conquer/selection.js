@@ -1,5 +1,12 @@
-// returns the first element as pivot
+// Returns a random number between [min,max)
+const random = (min, max) => {
+  return Math.floor(Math.random() * (max - min)) + min;
+};
+
+// Returns a random pivot and swap it with the element of the first position of arr
 const choosePivot = (arr) => {
+  const idx = random(0, arr.length);
+  [arr[0], arr[idx]] = [arr[idx], arr[0]];
   return arr[0];
 };
 
@@ -20,7 +27,7 @@ const partition = (arr) => {
       i++;
     }
   }
-  // put p in its right position and return this idx
+  // swap p to its right position and returns its idx
   [arr[0], arr[i - 1]] = [arr[i - 1], arr[0]];
   return i - 1;
 };
@@ -43,8 +50,8 @@ const selection = (arr, i) => {
 };
 
 const arr = [];
-for (let i = 99; i > -1; i--) {
+for (let i = 20; i > -1; i--) {
   arr.push(i);
 }
 
-console.log(selection(arr, 10));
+console.log(selection(arr, 12));
