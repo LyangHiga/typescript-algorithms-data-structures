@@ -53,7 +53,7 @@ const choosePivot = (arr, start = 0, end = arr.length, chooseP = 2) => {
     case 3:
       const idx = random(start, end);
       [arr[start], arr[idx]] = [arr[idx], arr[start]];
-      return arr[idx];
+      return arr[start];
     case 4:
       const idx1 = random(start, end);
       const idx2 = random(start, end);
