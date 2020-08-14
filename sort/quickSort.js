@@ -42,11 +42,11 @@ const choosePivot = (arr, start = 0, end = arr.length, chooseP = 2) => {
       l.push(middle);
       const median = medianOf3(l);
       if (median === lastEle) {
-        // swap pivot (last Element) to the first position, and return the pivot
+        // swap pivot (last Element) to the first position
         [arr[start], arr[lastIdx]] = [arr[lastIdx], arr[start]];
       }
       if (median === middle) {
-        // swap pivot (middle Element) to the first position, then return the pivot
+        // swap pivot (middle Element) to the first position
         [arr[start], arr[middleIdx]] = [arr[middleIdx], arr[start]];
       }
       return median;
@@ -62,15 +62,15 @@ const choosePivot = (arr, start = 0, end = arr.length, chooseP = 2) => {
       list.push(arr[idx1], arr[idx2], arr[idx3]);
       const m = medianOf3(list);
       if (m === arr[idx1]) {
-        // swap pivot (last Element) to the first position, and return the pivot
+        // swap pivot to the first position
         [arr[start], arr[idx1]] = [arr[idx1], arr[start]];
       }
       if (m === arr[idx2]) {
-        // swap pivot (last Element) to the first position, and return the pivot
+        // swap pivot to the first position
         [arr[start], arr[idx2]] = [arr[idx2], arr[start]];
       }
       if (m === arr[idx3]) {
-        // swap pivot (last Element) to the first position, and return the pivot
+        // swap pivot to the first position
         [arr[start], arr[idx3]] = [arr[idx3], arr[start]];
       }
       return m;
@@ -80,13 +80,12 @@ const choosePivot = (arr, start = 0, end = arr.length, chooseP = 2) => {
 // Returns: the order statistic of a given pivot (its correct position if the arr was ordered)
 // also make a partition around the pivot
 // puts the pivot in its right position
-// and all elements that are smaller than pivot in its left
-// and all elements that are greater than pivot in its right
+// and all elements that are smaller than pivot in the left side
+// and all elements that are greater than pivot in the right side
 const partition = (arr, start = 0, end = arr.length, chooseP = 2) => {
-  // lets take the first element as pivot
-  //   const p = arr[start];
   const p = choosePivot(arr, start, end, chooseP);
-  // keep track of how many elements are smaller than the pivot, to mark its right position
+  // keep track of how many elements are smaller than the pivot
+  // this will be its 'right' position if arr is sorted
   let i = start + 1;
   // elements with idx < j : partitioned
   // elements with idx > j unpartitioned
