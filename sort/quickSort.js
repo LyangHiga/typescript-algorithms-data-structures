@@ -1,5 +1,3 @@
-const { performance } = require('perf_hooks');
-
 // Returns a random number between [min,max)
 const random = (min, max) => {
   return Math.floor(Math.random() * (max - min)) + min;
@@ -18,9 +16,14 @@ const medianOf3 = (l) => {
 //      0: the First Element
 //      1: the last Element
 //      2: the median of 3 (first, middle, last) elements
-//      3: Random
+//      3: Random Element
 //      4: the median of 3 random elements in range [start,end)
-const choosePivot = (arr, start = 0, end = arr.length, chooseP = 2) => {
+// we also could create a obj with chooseP as keys and each strategy(function) as property
+// eg:
+//      chooseP ={0: firstElement, 2: lastElement, ... , 4: medianOfRandom}
+//      chooseP[0] returns a function that implements first element as pivot
+//      chooseP[3] returns a function that implements Random as pivot
+const choosePivot = (arr, start = 0, end = arr.length, chooseP = 3) => {
   switch (chooseP) {
     case 0:
       return arr[start];
@@ -51,6 +54,7 @@ const choosePivot = (arr, start = 0, end = arr.length, chooseP = 2) => {
       }
       return median;
     case 3:
+    default:
       const idx = random(start, end);
       [arr[start], arr[idx]] = [arr[idx], arr[start]];
       return arr[start];
@@ -82,8 +86,10 @@ const choosePivot = (arr, start = 0, end = arr.length, chooseP = 2) => {
 // puts the pivot in its right position
 // and all elements that are smaller than pivot in the left side
 // and all elements that are greater than pivot in the right side
-const partition = (arr, start = 0, end = arr.length, chooseP = 2) => {
+const partition = (arr, start = 0, end = arr.length, chooseP = 3) => {
   const p = choosePivot(arr, start, end, chooseP);
+  //   const choosePivot = chp[0];
+  //   const p = choosePivot(arr, start);
   // keep track of how many elements are smaller than the pivot
   // this will be its 'right' position if arr is sorted
   let i = start + 1;
@@ -107,7 +113,7 @@ const partition = (arr, start = 0, end = arr.length, chooseP = 2) => {
 //  arr: unsorted array
 //  left: index of first element to sort
 //  right: index of the last element
-const quickSort = (arr, left = 0, right = arr.length, chooseP = 2) => {
+const quickSort = (arr, left = 0, right = arr.length, chooseP = 3) => {
   if (right - left < 1) return [arr, 0];
   // to count the number of comparisons
   const comp = right - left - 1;
@@ -118,21 +124,6 @@ const quickSort = (arr, left = 0, right = arr.length, chooseP = 2) => {
   [arr, cl] = quickSort(arr, left, p, chooseP);
   [arr, cr] = quickSort(arr, p + 1, right, chooseP);
   return [arr, comp + cl + cr];
-};
-
-const test = (arrSize, nTimes) => {
-  const data = Array.apply(null, { length: arrSize }).map(
-    Function.call,
-    Math.random
-  );
-
-  const t1 = performance.now();
-  for (let i = 0; i < nTimes; i++) {
-    quickSort(data);
-  }
-
-  const t2 = performance.now();
-  console.log('Average time: ' + (t2 - t1) / (1000 * nTimes) + ' seconds');
 };
 
 module.exports = quickSort;
