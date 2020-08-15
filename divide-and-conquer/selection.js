@@ -3,17 +3,74 @@ const random = (min, max) => {
   return Math.floor(Math.random() * (max - min)) + min;
 };
 
-// Returns a random pivot and swap it with the element of the first position of arr
-const choosePivot = (arr) => {
-  const idx = random(0, arr.length);
-  [arr[0], arr[idx]] = [arr[idx], arr[0]];
-  return arr[0];
+// Returns a new list if each group of 5 inside of l[i]
+// eg:
+// arr := [0,1,2,3,4,5,6,7,8,9]:
+// l:= [[0,1,2,3,4],[5,6,7,8,9]]
+const groupOf5 = (arr) => {
+  let l = [];
+  let g = [];
+  for (let i = 0; i < arr.length; i++) {
+    if (g.length < 5) g.push(arr[i]);
+    else {
+      l.push(g);
+      g = [];
+      g.push(arr[i]);
+    }
+  }
+  l.push(g);
+  return l;
+};
+
+// Returns the median of a list with 5 values or less
+const medianOf5 = (l) => {
+  if (l.length > 5) return false;
+  l.sort(function (a, b) {
+    return a - b;
+  });
+  const m = Math.floor(l.length / 2);
+  return l[m];
+};
+
+// Returns 'the median of the medians'
+const medianOfMedians = (arr) => {
+  // break arr into arr.length/5 of sie 5 each
+  const l = groupOf5(arr);
+  // array with arr.length/5 medians
+  const c = [];
+  for (let i = 0; i < l.length; i++) {
+    c.push(medianOf5(l[i]));
+  }
+  //middle of c
+  let mc = Math.floor(c.length / 2);
+  //recursively compute median of c
+  const p = selection(c, mc, 1);
+  return p;
+};
+
+// Returns a pivot
+// chooseP:
+//      0: Random Pivot
+//      1: Deterministic Pivot ('median of medians')
+const choosePivot = (arr, chooseP) => {
+  switch (chooseP) {
+    case 0:
+    default:
+      const idx = random(0, arr.length);
+      [arr[0], arr[idx]] = [arr[idx], arr[0]];
+      return arr[0];
+    case 1:
+      return medianOfMedians(arr);
+  }
 };
 
 // Returns: the order statistic of a given pivot (its correct position if the arr was ordered)
 // also make a partition around the pivot
-const partition = (arr) => {
-  const p = choosePivot(arr);
+// chooseP:
+//      0: Randomized Selection
+//      1: Deterministic Selection
+const partition = (arr, chooseP = 0) => {
+  const p = choosePivot(arr, chooseP);
   // keep track of how many elements are smaller than the pivot
   // this will be its 'right' position if arr is sorted
   let i = 1;
@@ -33,12 +90,12 @@ const partition = (arr) => {
 };
 
 // Returns the ith smallest element of arr
-const selection = (arr, i) => {
+const selection = (arr, i, chooseP = 0) => {
   // out of bounds
   if (i > arr.length - 1) return false;
   if (arr.length === 1) return arr[0];
   // j is the index of p
-  const j = partition(arr);
+  const j = partition(arr, chooseP);
   if (j === i) return arr[j];
   if (j > i) {
     const left = arr.slice(0, j);
@@ -49,9 +106,4 @@ const selection = (arr, i) => {
   return selection(right, i - j - 1);
 };
 
-const arr = [];
-for (let i = 20; i > -1; i--) {
-  arr.push(i);
-}
-
-console.log(selection(arr, 12));
+module.exports = selection;
