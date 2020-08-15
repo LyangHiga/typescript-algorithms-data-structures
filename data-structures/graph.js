@@ -89,6 +89,33 @@ class Graph {
     this.addVertexAndEdge(split[0], split[1], parseInt(split[2]));
   }
 
+  // file is the adj list of this Graph
+  // FORMAT: <vertex u>' => neighbours: '<vertex v>' ... '<vertex n>'
+  createListAdj(file) {
+    const data = fs.readFileSync(file, { encoding: 'utf8', flag: 'r' });
+    let line = '';
+    let split = [];
+    for (let char in data) {
+      if (data[char] !== '\n') {
+        line += data[char];
+      } else {
+        split = line.trim().split(' ');
+        const u = split[0];
+        while (split.length > 1) {
+          const v = split.pop();
+          this.addVertexAndEdge(u, v);
+        }
+        line = '';
+      }
+    }
+    split = line.trim().split(' ');
+    const u = split[0];
+    while (split.length > 1) {
+      const v = split.pop();
+      this.addVertexAndEdge(u, v);
+    }
+  }
+
   // print this Graph
   //   FORMAT: <first vertex u> - <second vertex v> - <edge w>
   print() {
