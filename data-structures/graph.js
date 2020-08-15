@@ -14,18 +14,31 @@ class Graph {
 
   // adds an empty array to the new v
   addVertex(v) {
-    if (!this.list[v]) this.list[v] = [];
-    this.size++;
-    return this;
+    if (!this.list[v]) {
+      this.list[v] = [];
+      this.size++;
+      return this;
+    }
+    // if v is already in this list do nothing
+    return;
   }
 
   // adds v to neighbour list of u ( and v to u neighbour list if it's a undirected graph )
   addEdge(u, v, weight = 0) {
     // unweighted graph
     if (weight === 0) {
+      // if v is already in list[u] do nothing
+      for (let neighbour in this.list[u]) {
+        if (neighbour === v) return;
+      }
       this.list[u].push({ node: v });
       if (!this.directed) this.list[v].push({ node: u });
       return this;
+    }
+    // weighted graph
+    // if v is already in list[u] do nothing
+    for (let neighbour in this.list[u]) {
+      if (neighbour.node === v) return;
     }
     this.list[u].push({ node: v, weight });
     if (!this.directed) this.list[v].push({ node: u, weight });
@@ -67,12 +80,12 @@ class Graph {
       if (data[char] !== '\n') {
         line += data[char];
       } else {
-        split = line.split(' ');
+        split = line.trim().split(' ');
         this.addVertexAndEdge(split[0], split[1], parseInt(split[2]));
         line = '';
       }
     }
-    split = line.split(' ');
+    split = line.trim().split(' ');
     this.addVertexAndEdge(split[0], split[1], parseInt(split[2]));
   }
 
@@ -81,9 +94,13 @@ class Graph {
   print() {
     for (let u in this.list) {
       for (let v in this.list[u]) {
-        console.log(
-          `${u} - ${this.list[u][v].node} - ${this.list[u][v].weight}`
-        );
+        if (this.list[u][v].weight) {
+          console.log(
+            `${u} - ${this.list[u][v].node} - ${this.list[u][v].weight}`
+          );
+        } else {
+          console.log(`${u} - ${this.list[u][v].node}`);
+        }
       }
     }
   }
