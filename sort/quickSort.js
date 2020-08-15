@@ -23,16 +23,16 @@ const medianOf3 = (l) => {
 //      chooseP ={0: firstElement, 2: lastElement, ... , 4: medianOfRandom}
 //      chooseP[0] returns a function that implements first element as pivot
 //      chooseP[3] returns a function that implements Random as pivot
+// both are equally fast with 5 cases => similar to switch vs pointer function in c++
 const choosePivot = (arr, start = 0, end = arr.length, chooseP = 3) => {
   switch (chooseP) {
     case 0:
       return arr[start];
     case 1:
       const last = end - 1;
-      const p = arr[last];
       // swap pivot to the first position
       [arr[start], arr[last]] = [arr[last], arr[start]];
-      return p;
+      return arr[start];
     case 2:
       const l = [];
       const first = arr[start];
@@ -88,8 +88,6 @@ const choosePivot = (arr, start = 0, end = arr.length, chooseP = 3) => {
 // and all elements that are greater than pivot in the right side
 const partition = (arr, start = 0, end = arr.length, chooseP = 3) => {
   const p = choosePivot(arr, start, end, chooseP);
-  //   const choosePivot = chp[0];
-  //   const p = choosePivot(arr, start);
   // keep track of how many elements are smaller than the pivot
   // this will be its 'right' position if arr is sorted
   let i = start + 1;
