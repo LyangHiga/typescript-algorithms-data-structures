@@ -3,6 +3,11 @@ const Queue = require('./queue');
 const Stack = require('./stack');
 const MinHeap = require('./minHeap');
 
+// Returns a random number between [min,max)
+const random = (min, max) => {
+  return Math.floor(Math.random() * (max - min)) + min;
+};
+
 class Graph {
   constructor(directed = false) {
     this.list = {};
@@ -60,6 +65,7 @@ class Graph {
     }
     // remove v from list
     this.removeVertex(v);
+    return;
   }
 
   // removes v from neighbour list of u (and v from u neighbour list if undirected)
@@ -80,12 +86,21 @@ class Graph {
     return this;
   }
 
+  // Returns true if this list constains this vertex v
+  // Otherwise returns false
+  contains(v) {
+    if (this.list[v] === undefined) return false;
+    return true;
+  }
+
   // Returns true if v is a neighbour of u
   // otherwise returns false
   isNeighbour(u, v) {
+    // check if u is already in this list
+    if (!this.contains(u)) return false;
     // if v is already in list[u] return true
-    for (let neighbour in this.list[u]) {
-      if (neighbour === v) return true;
+    for (let i = 0; i < this.list[u].length; i++) {
+      if (this.list[u][i].node === v) return true;
     }
     return false;
   }
@@ -137,7 +152,9 @@ class Graph {
     const u = split[0];
     while (split.length > 1) {
       const v = split.pop();
+      // to avoid duplicate edges
       if (!this.isNeighbour(u, v)) {
+        // whether v is not neighbour of u
         this.addVertecesAndEdge(u, v);
       }
     }
@@ -156,6 +173,16 @@ class Graph {
           console.log(`${u} - ${this.list[u][v].node}`);
         }
       }
+    }
+  }
+
+  kargerMinCut() {
+    while (this.size > 2) {
+      // pick a random edge
+      const u = random(1, this.size);
+      const v = random(1, this.list[u].length);
+      this.mergeVerteces(u, v);
+      return this.list;
     }
   }
 
