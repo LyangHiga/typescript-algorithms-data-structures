@@ -40,7 +40,7 @@ class Graph {
     return this;
   }
 
-  //   add both u and v vertex and their edge w
+  // Adds both u and v verteces and their edge w
   addVertecesAndEdge(u, v, w = 0) {
     this.addVertex(u);
     this.addVertex(v);
@@ -52,7 +52,11 @@ class Graph {
     // adds all neighbours of v to u
     // and removes from v
     while (this.list[v].length > 0) {
-      this.list[u].push(this.list[v].pop());
+      const w = this.list[v].pop();
+      // not allow self-loops
+      if (w !== u) {
+        this.list[u].push(w);
+      }
     }
     // remove v from list
     this.removeVertex(v);
