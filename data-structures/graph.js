@@ -23,23 +23,18 @@ class Graph {
     return;
   }
 
-  // adds v to neighbour list of u ( and v to u neighbour list if it's a undirected graph )
+  // adds v to neighbour list of u
+  // ( and v to u neighbour list if it's a undirected graph )
+  // O(1) - but dont check for duplications
+  // DONT PASS DUPLICATES !
   addEdge(u, v, weight = 0) {
     // unweighted graph
     if (weight === 0) {
-      // if v is already in list[u] do nothing
-      for (let neighbour in this.list[u]) {
-        if (neighbour === v) return;
-      }
       this.list[u].push({ node: v });
       if (!this.directed) this.list[v].push({ node: u });
       return this;
     }
     // weighted graph
-    // if v is already in list[u] do nothing
-    for (let neighbour in this.list[u]) {
-      if (neighbour.node === v) return;
-    }
     this.list[u].push({ node: v, weight });
     if (!this.directed) this.list[v].push({ node: u, weight });
     return this;
@@ -70,6 +65,16 @@ class Graph {
     return this;
   }
 
+  // Returns true if v is a neighbour of u
+  // otherwise returns false
+  isNeighbour(u, v) {
+    // if v is already in list[u] return true
+    for (let neighbour in this.list[u]) {
+      if (neighbour === v) return true;
+    }
+    return false;
+  }
+
   //   file is the adj list of this Graph
   // FORMAT: <first vertex u>' '<second vertex v>' ' <edge w>
   create(file) {
@@ -91,6 +96,7 @@ class Graph {
 
   // file is the adj list of this Graph
   // FORMAT: <vertex u>' => neighbours: '<vertex v>' ... '<vertex n>'
+  // this format allow duplicate edges, we need to handle
   createListAdj(file) {
     const data = fs.readFileSync(file, { encoding: 'utf8', flag: 'r' });
     let line = '';
@@ -103,7 +109,11 @@ class Graph {
         const u = split[0];
         while (split.length > 1) {
           const v = split.pop();
-          this.addVertexAndEdge(u, v);
+          // to avoid duplicate edges
+          if (!this.isNeighbour(u, v)) {
+            // whether v is not neighbour of u
+            this.addVertexAndEdge(u, v);
+          }
         }
         line = '';
       }
