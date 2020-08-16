@@ -41,10 +41,21 @@ class Graph {
   }
 
   //   add both u and v vertex and their edge w
-  addVertexAndEdge(u, v, w = 0) {
+  addVertecesAndEdge(u, v, w = 0) {
     this.addVertex(u);
     this.addVertex(v);
     this.addEdge(u, v, w);
+  }
+
+  // merge two verteces into a single one
+  mergeVerteces(u, v) {
+    // adds all neighbours of v to u
+    // and removes from v
+    while (this.list[v].length > 0) {
+      this.list[u].push(this.list[v].pop());
+    }
+    // remove v from list
+    this.removeVertex(v);
   }
 
   // removes v from neighbour list of u (and v from u neighbour list if undirected)
@@ -86,12 +97,12 @@ class Graph {
         line += data[char];
       } else {
         split = line.trim().split(' ');
-        this.addVertexAndEdge(split[0], split[1], parseInt(split[2]));
+        this.addVertecesAndEdge(split[0], split[1], parseInt(split[2]));
         line = '';
       }
     }
     split = line.trim().split(' ');
-    this.addVertexAndEdge(split[0], split[1], parseInt(split[2]));
+    this.addVertecesAndEdge(split[0], split[1], parseInt(split[2]));
   }
 
   // file is the adj list of this Graph
@@ -112,7 +123,7 @@ class Graph {
           // to avoid duplicate edges
           if (!this.isNeighbour(u, v)) {
             // whether v is not neighbour of u
-            this.addVertexAndEdge(u, v);
+            this.addVertecesAndEdge(u, v);
           }
         }
         line = '';
@@ -122,7 +133,7 @@ class Graph {
     const u = split[0];
     while (split.length > 1) {
       const v = split.pop();
-      this.addVertexAndEdge(u, v);
+      this.addVertecesAndEdge(u, v);
     }
   }
 
