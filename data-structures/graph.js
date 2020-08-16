@@ -137,7 +137,9 @@ class Graph {
     const u = split[0];
     while (split.length > 1) {
       const v = split.pop();
-      this.addVertecesAndEdge(u, v);
+      if (!this.isNeighbour(u, v)) {
+        this.addVertecesAndEdge(u, v);
+      }
     }
   }
 
