@@ -17,7 +17,101 @@ class Graph {
     this.labeledOder = {};
   }
 
-  // adds an empty array to the new v
+  //   **********************************************************
+  //                            HELPERS
+  //   **********************************************************
+
+  // print this Graph
+  //   FORMAT: <first vertex u> - <second vertex v> - <edge w>
+  print() {
+    for (let u in this.list) {
+      for (let v in this.list[u]) {
+        if (this.list[u][v].weight) {
+          console.log(
+            `${u} - ${this.list[u][v].node} - ${this.list[u][v].weight}`
+          );
+        } else {
+          console.log(`${u} - ${this.list[u][v].node}`);
+        }
+      }
+    }
+  }
+  // Returns true if this list constains this vertex v
+  // Otherwise returns false
+  contains(v) {
+    if (this.list[v] === undefined) return false;
+    return true;
+  }
+
+  // Returns true if v is a neighbour of u
+  // otherwise returns false
+  isNeighbour(u, v) {
+    // check if u is already in this list
+    if (!this.contains(u)) return false;
+    // if v is already in list[u] return true
+    for (let i = 0; i < this.list[u].length; i++) {
+      if (this.list[u][i].node === v) return true;
+    }
+    return false;
+  }
+
+  // Returns how many edges are between verteces u and v
+  hme(u, v) {
+    let c = 0;
+    for (let i = 0; i < this.list[u].length; i++) {
+      if (this.list[u][i].node === v) c++;
+    }
+    return c;
+  }
+
+  // Returns the number of edges of this graph
+  countEdges() {
+    let c = 0;
+    for (let u in this.list) {
+      for (let v in this.list[u]) {
+        c++;
+      }
+    }
+    return c / 2;
+  }
+
+  // Returns the key of two neighbours [u,v]
+  pickRandomEdge() {
+    const keys = Object.keys(this.list);
+    const uIdx = random(0, keys.length);
+    const u = keys[uIdx];
+    const vIdx = random(0, this.list[u].length);
+    const v = this.list[u][vIdx].node;
+    return [u, v];
+  }
+
+  // Merge two verteces into a single one
+  mergeVerteces(u, v) {
+    // adds all neighbours of v to u
+    // and removes from v
+    while (this.contains(v) && this.size > 2 && this.contains(u)) {
+      const w = this.list[v][0].node;
+      // not allow self-loops
+      if (w !== u) {
+        if (this.contains(w) && this.contains(u)) {
+          // we need to add (u,w) the same number of times that we remove (v,w)
+          const c = this.hme(v, w);
+          for (let i = 0; i < c; i++) {
+            this.addEdge(u, w);
+          }
+        }
+      }
+      this.removeEdge(v, w);
+    }
+  }
+
+  //   **********************************************************
+  //                            INSERT
+  //   **********************************************************
+
+  // Adds an empty array to the new vertice v
+  // Returns this list
+  // If v is already in this list do nothing
   addVertex(v) {
     if (!this.list[v]) {
       this.list[v] = [];
@@ -52,30 +146,29 @@ class Graph {
     this.addEdge(u, v, w);
   }
 
-  // merge two verteces into a single one
-  mergeVerteces(u, v) {
-    // adds all neighbours of v to u
-    // and removes from v
-    while (this.list[v].length > 0) {
-      const w = this.list[v].pop();
-      // not allow self-loops
-      if (w !== u) {
-        this.list[u].push(w);
+  //   **********************************************************
+  //                            DELETE
+  //   **********************************************************
+
+  // Removes v from neighbour list of u (and v from u neighbour list if undirected)
+  // Returns this list
+  removeEdge(u, v) {
+    this.list[u] = this.list[u].filter((w) => w.node !== v);
+    if (this.list[u].length === 0) {
+      this.removeVertex(u);
+    }
+    if (!this.directed) {
+      this.list[v] = this.list[v].filter((w) => w.node !== u);
+      if (this.list[v].length === 0) {
+        this.removeVertex(v);
       }
     }
-    // remove v from list
-    this.removeVertex(v);
-    return;
-  }
 
-  // removes v from neighbour list of u (and v from u neighbour list if undirected)
-  removeEdge(u, v) {
-    this.list[u] = this.list[u].filter((w) => w !== v);
-    if (!this.directed) this.list[v] = this.list[v].filter((w) => w !== u);
     return this;
   }
 
   // Removes all edges of v and v itself
+  //  Returns this list
   removeVertex(v) {
     while (this.list[v].length) {
       const u = this.list[v].pop();
@@ -86,24 +179,9 @@ class Graph {
     return this;
   }
 
-  // Returns true if this list constains this vertex v
-  // Otherwise returns false
-  contains(v) {
-    if (this.list[v] === undefined) return false;
-    return true;
-  }
-
-  // Returns true if v is a neighbour of u
-  // otherwise returns false
-  isNeighbour(u, v) {
-    // check if u is already in this list
-    if (!this.contains(u)) return false;
-    // if v is already in list[u] return true
-    for (let i = 0; i < this.list[u].length; i++) {
-      if (this.list[u][i].node === v) return true;
-    }
-    return false;
-  }
+  //   **********************************************************
+  //                            CREATING
+  //   **********************************************************
 
   //   file is the adj list of this Graph
   // FORMAT: <first vertex u>' '<second vertex v>' ' <edge w>
@@ -160,30 +238,17 @@ class Graph {
     }
   }
 
-  // print this Graph
-  //   FORMAT: <first vertex u> - <second vertex v> - <edge w>
-  print() {
-    for (let u in this.list) {
-      for (let v in this.list[u]) {
-        if (this.list[u][v].weight) {
-          console.log(
-            `${u} - ${this.list[u][v].node} - ${this.list[u][v].weight}`
-          );
-        } else {
-          console.log(`${u} - ${this.list[u][v].node}`);
-        }
-      }
-    }
-  }
+  //   **********************************************************
+  //                            ALGORITHMS
+  //   **********************************************************
 
   kargerMinCut() {
     while (this.size > 2) {
       // pick a random edge
-      const u = random(1, this.size);
-      const v = random(1, this.list[u].length);
+      const [u, v] = this.pickRandomEdge();
       this.mergeVerteces(u, v);
-      return this.list;
     }
+    return this.countEdges();
   }
 
   // Recursive Depth First Search
