@@ -264,6 +264,64 @@ class Graph {
     return this.countEdges();
   }
 
+  // Returns: a list of all verteces found (in the order of dequeue)
+  //    the parent of each visited vertex
+  //    the distance of s to each visited vertex
+  //    all visited verteces
+  bfs(s) {
+    // the order of each vertex is dequeue
+    let result = [];
+    let dist = {};
+    let parents = {};
+    let visited = {};
+    let q = new Queue();
+    // add s to the queue
+    q.enQueue(s);
+    // mark s as visited
+    visited[s] = true;
+    dist[s] = 0;
+    parents[s] = null;
+    let v;
+    while (q.size !== 0) {
+      v = q.deQueue();
+      result.push(v.val);
+      this.list[v.val].forEach((u) => {
+        // if u unvisited
+        if (!visited[u.node]) {
+          // mark u as visited
+          visited[u.node] = true;
+          // add u to the queue
+          q.enQueue(u.node);
+          parents[u.node] = v.val;
+          dist[u.node] = dist[v.val] + 1;
+        }
+      });
+    }
+    return { result, parents, dist, visited };
+  }
+
+  // Returns a list with all connected components of G
+  undirectConnectivity() {
+    let components = [];
+    let visited = {};
+    // a single component after to execute one bfs
+    let component;
+    for (let u in this.list) {
+      // check if node u was already visited before
+      if (!visited[u]) {
+        component = this.bfs(u);
+        // updtade visited nodes after this bfs
+        // all verteces of this component will be marked with visited
+        // but this component won't be aware of any vertex unvisited,
+        // each component add all its verteces marked as visited
+        visited = component.visited;
+        // add this new component
+        components.push(component.result);
+      }
+    }
+    return components;
+  }
+
   // Recursive Depth First Search
   dfsr(s) {
     let result = [];
@@ -352,55 +410,6 @@ class Graph {
       }
     }
     return labeledOrder;
-  }
-
-  bfs(s) {
-    let result = [];
-    let dist = {};
-    let parents = {};
-    let visited = {};
-    let q = new Queue();
-    // add s tothe stack
-    q.enQueue(s);
-    // mark s as visited
-    visited[s] = true;
-    dist[s] = 0;
-    parents[s] = null;
-    let v;
-    while (q.size !== 0) {
-      v = q.deQueue();
-      result.push(v.val);
-      this.list[v.val].forEach((u) => {
-        // if u unvisited
-        if (!visited[u.node]) {
-          // mark u as visited
-          visited[u.node] = true;
-          // add u to the queue
-          q.enQueue(u.node);
-          parents[u.node] = v.val;
-          dist[u.node] = dist[v.val] + 1;
-        }
-      });
-    }
-    return { result, parents, dist, visited };
-  }
-
-  // returns a list with all connected components of G
-  undirectConnectivity() {
-    let components = [];
-    let visited = {};
-    let r, u;
-    for (u in this.list) {
-      // check if u node was already visited
-      if (!visited[u]) {
-        r = this.bfs(u);
-        // updtade visited nodes after this bfs
-        visited = r.visited;
-        // add this new component
-        components.push(r.result);
-      }
-    }
-    return components;
   }
 
   //   returns the distance from s to each vertex and their parents
