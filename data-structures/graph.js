@@ -102,6 +102,9 @@ class Graph {
         }
       }
       this.removeEdge(v, w);
+      // if v or w does not have any other neighbour remove it from this graph
+      this.removeDegreeZero(v);
+      this.removeDegreeZero(w);
     }
   }
 
@@ -154,16 +157,9 @@ class Graph {
   // Returns this list
   removeEdge(u, v) {
     this.list[u] = this.list[u].filter((w) => w.node !== v);
-    if (this.list[u].length === 0) {
-      this.removeVertex(u);
-    }
     if (!this.directed) {
       this.list[v] = this.list[v].filter((w) => w.node !== u);
-      if (this.list[v].length === 0) {
-        this.removeVertex(v);
-      }
     }
-
     return this;
   }
 
@@ -178,6 +174,20 @@ class Graph {
     this.size--;
     return this;
   }
+
+  // If u does not have any neighbour, iow has degree zero
+  // Removes u
+  // Returns this graph
+  // Returns false if u is not in this graph
+  removeDegreeZero = (u) => {
+    if (!this.contains(u)) return false;
+    if (this.list[u].length === 0) {
+      // if v was the only neighbour of v (the adj list of u is now empty)
+      // removes u
+      this.removeVertex(u);
+    }
+    return this;
+  };
 
   //   **********************************************************
   //                            CREATING
@@ -242,10 +252,13 @@ class Graph {
   //                            ALGORITHMS
   //   **********************************************************
 
+  // Returns a min cut
+  // We need to execute a sufficient number of times to have a high prob to find the min cut
   kargerMinCut() {
     while (this.size > 2) {
       // pick a random edge
       const [u, v] = this.pickRandomEdge();
+      // contract randomly edges (u,v) until only two verteces remain
       this.mergeVerteces(u, v);
     }
     return this.countEdges();
