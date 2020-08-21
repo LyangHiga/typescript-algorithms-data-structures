@@ -118,6 +118,23 @@ class Graph {
     }
   }
 
+  // Returns a new directed Graph with all edges of this reversed
+  reverse() {
+    // if this is not a directed graph returns false
+    if (!this.directed) return false;
+    const g = new Graph(true);
+    for (let u in this.list) {
+      for (let v in this.list[u]) {
+        if (this.list[u][v].weight) {
+          g.addVertecesAndEdge(this.list[u][v].node, u, this.list[u][v].weight);
+        } else {
+          g.addVertecesAndEdge(this.list[u][v].node, u);
+        }
+      }
+    }
+    return g;
+  }
+
   //   **********************************************************
   //                            INSERT
   //   **********************************************************
