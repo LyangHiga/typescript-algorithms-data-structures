@@ -2,6 +2,7 @@ const fs = require('fs');
 const Queue = require('./queue');
 const Stack = require('./stack');
 const MinHeap = require('./minHeap');
+const qSort = require('../sort/quickSort');
 
 // Returns a random number between [min,max)
 const random = (min, max) => {
@@ -477,6 +478,34 @@ class Graph {
       }
     }
     return labeledOrder;
+  }
+
+  kojaru() {
+    const gRerv = this.reverse();
+    const topological = gRerv.topologicalSort();
+
+    let finishTime = Object.keys(topological).sort(
+      (a, b) => topological[a] - topological[b]
+    );
+
+    console.log(`finishTime: ${finishTime}`);
+    let visited = {};
+    const leader = {};
+    let u, r;
+
+    for (let i = 0; i < finishTime.length; i++) {
+      u = finishTime[i];
+      if (!visited[u]) {
+        console.log(`u: ${u}`);
+        r = this.dfs(u);
+        // update values
+        visited = r.visited;
+        console.log(`visited: ${Object.keys(visited)}`);
+        // all verteces visited have u as leader
+        leader[u] = r.result.length;
+      }
+    }
+    return leader;
   }
 
   //   returns the distance from s to each vertex and their parents
