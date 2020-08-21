@@ -203,9 +203,12 @@ class Graph {
   //                            CREATING
   //   **********************************************************
 
-  //   file is the adj list of this Graph
+  // Add all verteces and edges to this graph from a file
+  // File is the adj list of this Graph
   // FORMAT: <first vertex u>' '<second vertex v>' ' <edge w>
   create(file) {
+    // check if this is a 'empty graph'
+    if (this.size !== 0) return false;
     const data = fs.readFileSync(file, { encoding: 'utf8', flag: 'r' });
     let line = '';
     let split = [];
@@ -218,14 +221,20 @@ class Graph {
         line = '';
       }
     }
-    split = line.trim().split(' ');
-    this.addVertecesAndEdge(split[0], split[1], parseInt(split[2]));
+    // check if the last line is empty
+    if (line !== '') {
+      split = line.trim().split(' ');
+      this.addVertecesAndEdge(split[0], split[1], parseInt(split[2]));
+    }
   }
 
-  // file is the adj list of this Graph
+  // Add all verteces and edges to this graph from a file
+  // File is the adj list of this Graph
   // FORMAT: <vertex u>' => neighbours: '<vertex v>' ... '<vertex n>'
-  // this format allow duplicate edges, we need to handle
+  // This format allow duplicate edges, we need to handle
   createListAdj(file) {
+    // check if this is a 'empty graph'
+    if (this.size !== 0) return false;
     const data = fs.readFileSync(file, { encoding: 'utf8', flag: 'r' });
     let line = '';
     let split = [];
@@ -246,14 +255,17 @@ class Graph {
         line = '';
       }
     }
-    split = line.trim().split(' ');
-    const u = split[0];
-    while (split.length > 1) {
-      const v = split.pop();
-      // to avoid duplicate edges
-      if (!this.isNeighbour(u, v)) {
-        // whether v is not neighbour of u
-        this.addVertecesAndEdge(u, v);
+    // check if the last line is empty
+    if (line !== '') {
+      split = line.trim().split(' ');
+      const u = split[0];
+      while (split.length > 1) {
+        const v = split.pop();
+        // to avoid duplicate edges
+        if (!this.isNeighbour(u, v)) {
+          // whether v is not neighbour of u
+          this.addVertecesAndEdge(u, v);
+        }
       }
     }
   }
