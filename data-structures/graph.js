@@ -26,12 +26,22 @@ class Graph {
   print() {
     for (let u in this.list) {
       for (let v in this.list[u]) {
-        if (this.list[u][v].weight) {
-          console.log(
-            `${u} - ${this.list[u][v].node} - ${this.list[u][v].weight}`
-          );
+        if (!this.directed) {
+          if (this.list[u][v].weight) {
+            console.log(
+              `${u} - ${this.list[u][v].node} - ${this.list[u][v].weight}`
+            );
+          } else {
+            console.log(`${u} - ${this.list[u][v].node}`);
+          }
         } else {
-          console.log(`${u} - ${this.list[u][v].node}`);
+          if (this.list[u][v].weight) {
+            console.log(
+              `${u} -> ${this.list[u][v].node} - ${this.list[u][v].weight}`
+            );
+          } else {
+            console.log(`${u} -> ${this.list[u][v].node}`);
+          }
         }
       }
     }
@@ -245,6 +255,34 @@ class Graph {
         // whether v is not neighbour of u
         this.addVertecesAndEdge(u, v);
       }
+    }
+  }
+
+  // Add all verteces and edges to this graph from a file
+  // File is the adj list of this Graph
+  // FORMAT: <first vertex u>' '<second vertex v>
+  // it is a drirected graph, the edge goes from u to v, i.e.: u -> v
+  createDirected(file) {
+    // check if this is a 'empty graph'
+    if (this.size !== 0) return false;
+    // set this graph as directed
+    this.directed = true;
+    const data = fs.readFileSync(file, { encoding: 'utf8', flag: 'r' });
+    let line = '';
+    let split = [];
+    for (let char in data) {
+      if (data[char] !== '\n') {
+        line += data[char];
+      } else {
+        split = line.trim().split(' ');
+        this.addVertecesAndEdge(split[0], split[1]);
+        line = '';
+      }
+    }
+    // check if the last line is empty
+    if (line !== '') {
+      split = line.trim().split(' ');
+      this.addVertecesAndEdge(split[0], split[1]);
     }
   }
 
