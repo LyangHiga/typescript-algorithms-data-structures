@@ -10,10 +10,10 @@ All Example Test Cases are from [stanford-algs](https://github.com/beaunus/stanf
 
 #### [Divide and Conquer, Sorting and Searching, and Randomized Algorithms](https://www.coursera.org/learn/algorithms-divide-conquer/home/welcome)
 
-- [Programming Assignment #1](https://github.com/LyangHiga/javaScript-algorithms-data-structures/blob/master/algorithms-specialization-coursera/course1/week1/exe.js)
-- [Programming Assignment #2](https://github.com/LyangHiga/javaScript-algorithms-data-structures/blob/master/algorithms-specialization-coursera/course1/week2/exe.js)
-- [Programming Assignment #3](https://github.com/LyangHiga/javaScript-algorithms-data-structures/blob/master/algorithms-specialization-coursera/course1/week3/exe.js)
-- [Programming Assignment #4](https://github.com/LyangHiga/javaScript-algorithms-data-structures/blob/master/algorithms-specialization-coursera/course1/week4/exe.js)
+- [Programming Assignment #1](https://github.com/LyangHiga/javaScript-algorithms-data-structures/blob/master/algorithms-specialization-coursera/course1/week1/exe.js) - (Karatsuba Multiplication)
+- [Programming Assignment #2](https://github.com/LyangHiga/javaScript-algorithms-data-structures/blob/master/algorithms-specialization-coursera/course1/week2/exe.js) - (Counting Inversions)
+- [Programming Assignment #3](https://github.com/LyangHiga/javaScript-algorithms-data-structures/blob/master/algorithms-specialization-coursera/course1/week3/exe.js) - (QuickSort)
+- [Programming Assignment #4](https://github.com/LyangHiga/javaScript-algorithms-data-structures/blob/master/algorithms-specialization-coursera/course1/week4/exe.js) - (Karger Min Cut)
 
 ### Data Structures
 
@@ -31,7 +31,7 @@ To visualize some Pathfinding Algorithms checks: [Pathfinding Visualizer](https:
 
 ### Divide and Conquer
 
-- [Karatsuba algorithm](https://github.com/LyangHiga/javaScript-algorithms-data-structures/blob/master/divide-and-conquer/karatsuba.js)
+- [Karatsuba Multiplication](https://github.com/LyangHiga/javaScript-algorithms-data-structures/blob/master/divide-and-conquer/karatsuba.js)
 - [Merge Sort](https://github.com/LyangHiga/javaScript-algorithms-data-structures/blob/master/sort/mergeSort.js)
 - [Counting Inversions](https://github.com/LyangHiga/javaScript-algorithms-data-structures/blob/master/divide-and-conquer/counting-inversions.js)
 - [Maximum Sum Subarray Problem](https://github.com/LyangHiga/javaScript-algorithms-data-structures/blob/master/divide-and-conquer/maxSubarr.js)
