@@ -2,7 +2,6 @@ const fs = require('fs');
 const Queue = require('./queue');
 const Stack = require('./stack');
 const MinHeap = require('./minHeap');
-const qSort = require('../sort/quickSort');
 
 // Returns a random number between [min,max)
 const random = (min, max) => {
@@ -13,9 +12,9 @@ class Graph {
   constructor(directed = false) {
     this.list = {};
     this.directed = directed;
+    // to implement topologicalSort
     this.currentLabel = null;
     this.size = 0;
-    this.labeledOder = {};
   }
 
   //   **********************************************************
@@ -379,10 +378,7 @@ class Graph {
       if (!visited[u]) {
         component = this.bfs(u);
         // updtade visited nodes after this bfs
-        // all verteces of this component will be marked with visited
-        // but this component won't be aware of any vertex unvisited,
-        // each component add all its verteces marked as visited
-        visited = component.visited;
+        visited = { ...visited, ...visited };
         // add this new component
         components.push(component.result);
       }
@@ -417,6 +413,9 @@ class Graph {
     let dist = {};
     let parents = {};
     let visited = {};
+    let labeledOrder = {};
+    // finish order
+    let finish = {};
     let stack = new Stack();
     // add s tothe stack
     stack.push(s);
@@ -448,8 +447,9 @@ class Graph {
           dist[u.node] = dist[v.val] + 1;
         }
       });
-      if (!this.labeledOder[v.val]) {
-        this.labeledOder[v.val] = this.currentLabel;
+      if (!labeledOrder[v.val]) {
+        labeledOrder[v.val] = this.currentLabel;
+        finish[this.currentLabel] = v.val;
         this.currentLabel++;
       }
     }
@@ -457,50 +457,51 @@ class Graph {
       result,
       parents,
       dist,
-      labeledOder: this.labeledOder,
+      labeledOrder,
       visited,
+      finish,
     };
   }
 
-  // returns the labeled order of each node this not work for cycled graphs, only DAGs
+  // Returns the labeled order and finish order
+  // Does not work for cycled graphs, only DAGs
   topologicalSort() {
     let labeledOrder = {};
     let visited = {};
+    let finish = {};
     // to keep track of ordering
     this.currentLabel = 0;
-    let u, r;
-    for (u in this.list) {
+    let r;
+    for (let u in this.list) {
       if (!visited[u]) {
         r = this.dfs(u);
         // update values
-        visited = r.visited;
-        labeledOrder = r.labeledOder;
+        visited = { ...visited, ...r.visited };
+        labeledOrder = { ...labeledOrder, ...r.labeledOder };
+        finish = { ...finish, ...r.finish };
       }
     }
-    return labeledOrder;
+    return { labeledOrder, finish };
   }
 
+  // Returns the size of each Strong Component
+  // the id of each SC is its Leader
   kojaru() {
+    // reverse G
     const gRerv = this.reverse();
-    const topological = gRerv.topologicalSort();
-
-    let finishTime = Object.keys(topological).sort(
-      (a, b) => topological[a] - topological[b]
-    );
-
-    console.log(`finishTime: ${finishTime}`);
+    // finish order
+    const { finish } = gRerv.topologicalSort();
+    const finishTime = Object.values(finish);
     let visited = {};
+    // the vertex who calls dfs
     const leader = {};
     let u, r;
-
-    for (let i = 0; i < finishTime.length; i++) {
+    for (let i = finishTime.length - 1; i > 0; i--) {
       u = finishTime[i];
       if (!visited[u]) {
-        console.log(`u: ${u}`);
         r = this.dfs(u);
-        // update values
-        visited = r.visited;
-        console.log(`visited: ${Object.keys(visited)}`);
+        // update visited
+        visited = { ...visited, ...r.visited };
         // all verteces visited have u as leader
         leader[u] = r.result.length;
       }
