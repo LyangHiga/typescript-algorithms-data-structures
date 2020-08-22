@@ -289,6 +289,50 @@ class Graph {
 
   // Add all verteces and edges to this graph from a file
   // File is the adj list of this Graph
+  // FORMAT: <vertex u>' => neighbours: '<vertex v>,weight' ... '<vertex n>,weight'
+  // This format allow duplicate edges, we need to handle
+  createListAdjWeighted(file) {
+    // check if this is a 'empty graph'
+    if (this.size !== 0) return false;
+    const data = fs.readFileSync(file, { encoding: 'utf8', flag: 'r' });
+    let line = '';
+    let split = [];
+    for (let char in data) {
+      if (data[char] !== '\n') {
+        line += data[char];
+      } else {
+        split = line.trim().split('	');
+        const u = split[0];
+        while (split.length > 1) {
+          const t = split.pop();
+          const v = t.split(',');
+          // to avoid duplicate edges
+          if (!this.isNeighbour(u, v[0])) {
+            // whether v is not neighbour of u
+            this.addVertecesAndEdge(u, v[0], parseInt(v[1]));
+          }
+        }
+        line = '';
+      }
+    }
+    // check if the last line is empty
+    if (line !== '') {
+      split = line.trim().split('	');
+      const u = split[0];
+      while (split.length > 1) {
+        const t = split.pop();
+        const v = t.split(',');
+        // to avoid duplicate edges
+        if (!this.isNeighbour(u, v[0])) {
+          // whether v is not neighbour of u
+          this.addVertecesAndEdge(u, v[0], v[1]);
+        }
+      }
+    }
+  }
+
+  // Add all verteces and edges to this graph from a file
+  // File is the adj list of this Graph
   // FORMAT: <first vertex u>' '<second vertex v>
   // it is a drirected graph, the edge goes from u to v, i.e.: u -> v
   createDirected(file) {
