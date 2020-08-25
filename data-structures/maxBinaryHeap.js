@@ -8,6 +8,9 @@ class Node {
 class MaxBinaryHeap {
   constructor() {
     this.values = [];
+    // dict: key to array idx => you say the key it returns the idx
+    this.idxs = {};
+    this.size = 0;
   }
 
   // return if the element from index i is greater than k idx element
@@ -21,11 +24,14 @@ class MaxBinaryHeap {
 
   // Inserts a node (key,val) in the last position and rearrange
   // Returns Heap
-  insert(key, val) {
+  enqueue(key, val) {
     let node = new Node(key, val);
     this.values.push(node);
     // insert in the last position
     let idx = this.values.length - 1;
+    // add the idx of this key on the dict
+    this.idxs[key] = idx;
+    this.size++;
     let parentIdx = Math.floor((idx - 1) / 2);
     // sort
     while (this.greaterThan(idx, parentIdx)) {
@@ -33,6 +39,15 @@ class MaxBinaryHeap {
       [this.values[idx], this.values[parentIdx]] = [
         this.values[parentIdx],
         this.values[idx],
+      ];
+
+      // swap idxs elements in dict key to idx
+      [
+        this.idxs[this.values[idx].key],
+        this.idxs[this.values[parentIdx].key],
+      ] = [
+        this.idxs[this.values[parentIdx].key],
+        this.idxs[this.values[idx].key],
       ];
       idx = parentIdx;
       parentIdx = Math.floor((idx - 1) / 2);
@@ -46,11 +61,14 @@ class MaxBinaryHeap {
   dequeue() {
     // if is empty return undefined
     if (this.values.length === 0) return null;
-    if (this.values.length === 1)
+    if (this.values.length === 1) {
+      this.size--;
       return { element: this.values.pop(), heap: this };
+    }
     const max = this.values[0];
     // replace the root with the last element
     this.values[0] = this.values.pop();
+    this.size--;
     let idx = 0;
     let lChild = 2 * idx + 1;
     let rChild = 2 * idx + 2;
@@ -66,6 +84,16 @@ class MaxBinaryHeap {
         this.values[greatIdx],
         this.values[idx],
       ];
+
+      // swap idxs elements in dict key to idx
+      [
+        this.idxs[this.values[idx].key],
+        this.idxs[this.values[greatIdx].key],
+      ] = [
+        this.idxs[this.values[greatIdx].key],
+        this.idxs[this.values[idx].key],
+      ];
+
       // update idx and its children
       idx = greatIdx;
       lChild = 2 * idx + 1;
