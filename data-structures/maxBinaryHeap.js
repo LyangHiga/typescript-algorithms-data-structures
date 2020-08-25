@@ -167,6 +167,25 @@ class MaxBinaryHeap {
   }
 
   //   **********************************************************
+  //                            ACCESSING
+  //   **********************************************************
+
+  // Returns the root node
+  // Returns null if this Heap is empty
+  findMin() {
+    if (this.isEmpty()) return null;
+    return this.values[0];
+  }
+
+  // Returns the value of this key
+  // Returns null whether this key does not belong to this heap
+  valueOf(key) {
+    if (!this.contains(key)) return null;
+    const idx = this.idxs[key];
+    return this.values[idx];
+  }
+
+  //   **********************************************************
   //                            INSERT
   //   **********************************************************
 
