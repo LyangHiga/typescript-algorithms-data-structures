@@ -119,6 +119,35 @@ class MaxBinaryHeap {
   }
 
   //   **********************************************************
+  //                            UPDATE
+  //   **********************************************************
+
+  // Update the val of this key
+  // Returns this heap
+  // Returns false if there is not any node with this key in this heap
+  // Returns false if newVal is not smaller than the actual val of key
+  decreaseKey(key, newVal) {
+    // check whether this key belongs to this heap
+    if (!this.contains(key)) return false;
+    // get idx of this key
+    let idx = this.idxs[key];
+    // to ensure newVal < val
+    if (newVal > this.values[idx].val) return false;
+    // if they are the same return this
+    if (newVal === this.values[idx].val) return this;
+    // update node with new val
+    this.values[idx].val = newVal;
+    let [lChild, rChild] = this.myChildrenIdx(idx);
+    // bubble-down (while any child is greater than the parent)
+    while (this.greaterThan(lChild, idx) || this.greaterThan(rChild, idx)) {
+      // update idx and its children
+      idx = this.bubbleDown(idx, lChild, rChild);
+      [lChild, rChild] = this.myChildrenIdx(idx);
+    }
+    return this;
+  }
+
+  //   **********************************************************
   //                            DELETE
   //   **********************************************************
 
@@ -151,3 +180,5 @@ class MaxBinaryHeap {
     return { element: max, heap: this };
   }
 }
+
+module.exports = MaxBinaryHeap;
