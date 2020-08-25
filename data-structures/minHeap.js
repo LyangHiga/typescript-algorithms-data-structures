@@ -110,7 +110,8 @@ class MinHeap {
   // In any case the Heap is build in linear time
   // Returns: this Heap
   buildHeap(arr, keys = null) {
-    if (this.size !== 0) return false;
+    // Returns false if this heap is not empty
+    if (!this.isEmpty()) return false;
     // arr is an array
     if (Array.isArray(arr)) {
       // arr is array AND keys is also an array
@@ -178,8 +179,9 @@ class MinHeap {
   }
 
   // Returns the value of this key
-  // Returns null whether this key is not in this heap
+  // Returns null whether this key does not belong to this heap
   valueOf(key) {
+    if (!this.contains(key)) return null;
     const idx = this.idxs[key];
     return this.values[idx];
   }
