@@ -49,6 +49,34 @@ class MaxBinaryHeap {
     ];
   }
 
+  // Returns the greater child idx
+  // Rearrange values and dict
+  bubbleDown(idx, l, r) {
+    // to keep track of the greater child
+    let greatIdx;
+    if (this.greaterThan(l, r)) {
+      greatIdx = l;
+    } else if (this.greaterThan(r, l)) {
+      greatIdx = r;
+      // if they have the same val we take the left child as the greater one
+    } else {
+      greatIdx = l;
+    }
+    // swap element from idx with greater
+    [this.values[idx], this.values[greatIdx]] = [
+      this.values[greatIdx],
+      this.values[idx],
+    ];
+
+    // swap idxs elements in dict key to idx
+    [this.idxs[this.values[idx].key], this.idxs[this.values[greatIdx].key]] = [
+      this.idxs[this.values[greatIdx].key],
+      this.idxs[this.values[idx].key],
+    ];
+
+    return greatIdx;
+  }
+
   // Returns true if this heap constains this key
   // Otherwise returns false
   contains(key) {
@@ -90,11 +118,14 @@ class MaxBinaryHeap {
     return this;
   }
 
+  //   **********************************************************
+  //                            DELETE
+  //   **********************************************************
+
   // Removes the root (max),
   // Returns the root and the new arrangement
   // Returns null if this heap is empty
   dequeue() {
-    // if is empty return undefined
     if (this.isEmpty()) return null;
     if (this.values.length === 1) {
       this.size--;
@@ -104,32 +135,17 @@ class MaxBinaryHeap {
     // replace the root with the last element
     this.values[0] = this.values.pop();
     this.size--;
+    // delete the last root node from dict
+    delete this.idxs[max.key];
+    // update idx of the 'new root' in the dict
+    this.idxs[this.values[0].key] = 0;
+    // index of this node we have to rearrange and the idx of its children
     let idx = 0;
     let [lChild, rChild] = this.myChildrenIdx(idx);
-    let greatIdx;
+    // bubble-down (while any child is greater than the parent)
     while (this.greaterThan(lChild, idx) || this.greaterThan(rChild, idx)) {
-      if (this.greaterThan(lChild, rChild)) {
-        greatIdx = lChild;
-      } else {
-        greatIdx = rChild;
-      }
-      // swap element from idx with greater
-      [this.values[idx], this.values[greatIdx]] = [
-        this.values[greatIdx],
-        this.values[idx],
-      ];
-
-      // swap idxs elements in dict key to idx
-      [
-        this.idxs[this.values[idx].key],
-        this.idxs[this.values[greatIdx].key],
-      ] = [
-        this.idxs[this.values[greatIdx].key],
-        this.idxs[this.values[idx].key],
-      ];
-
       // update idx and its children
-      idx = greatIdx;
+      idx = this.bubbleDown(idx, lChild, rChild);
       [lChild, rChild] = this.myChildrenIdx(idx);
     }
     return { element: max, heap: this };
