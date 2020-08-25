@@ -173,6 +173,20 @@ class MaxBinaryHeap {
     return this;
   }
 
+  // Returns false if there is not any node with this key in this heap
+  // Returns this heap if newVal equals to the actual val
+  // if newVal is greater than the actual val calls increaseKey
+  // if newVal is smaller than the actual val calls decreaseKey
+  updateKey(key, newVal) {
+    // check whether this key belongs to this heap
+    if (!this.contains(key)) return false;
+    //   get idx of this key
+    let idx = this.idxs[key];
+    if (newVal === this.values[idx].val) return this;
+    if (newVal > this.values[idx].val) return this.increaseKey(key, newVal);
+    if (newVal < this.values[idx].val) return this.decreaseKey(key, newVal);
+  }
+
   //   **********************************************************
   //                            DELETE
   //   **********************************************************
