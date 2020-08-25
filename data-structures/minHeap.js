@@ -320,7 +320,7 @@ class MinHeap {
   // Returns this HEAP
   // Returns false whether this key is not in this heap
   deleteKey(key) {
-    if (this.values[this.idxs[key]] === undefined) return false;
+    if (!this.contains(key)) return false;
     // if it is the last element of values: we dont need to rearrange
     if (this.idxs[key] === this.size - 1) {
       this.values.pop();
@@ -340,14 +340,10 @@ class MinHeap {
     this.idxs[this.values[idx].key] = idx;
     // get the children of idx
     let [lChild, rChild] = this.myChildrenIdx(idx);
-    // to keep the smaller
-    let smallIdx;
     // bubble-down (while any child is smaller than the parent)
     while (this.lessThan(lChild, idx) || this.lessThan(rChild, idx)) {
       // update idx and its children
       idx = this.bubbleDown(idx, lChild, rChild);
-      // update idx and its children
-      idx = smallIdx;
       [lChild, rChild] = this.myChildrenIdx(idx);
     }
     return this;
