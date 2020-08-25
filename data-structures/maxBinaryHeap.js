@@ -91,6 +91,82 @@ class MaxBinaryHeap {
   }
 
   //   **********************************************************
+  //                            CREATING
+  //   **********************************************************
+
+  // arr: array or object
+  // keys: array or nul
+  // If arr is an array and keys is also an array:
+  //    Each node of this Heap will be the (keys[i], arr[i]) where i is the index,
+  //    arr and keys MUST have the same size
+  //    Duplicate keys are not allowed. Returns false
+  // If arr is an array and keys is null:
+  //    Each node of this Heap will be the (i, arr[i]) where i is the index,
+  //    IOW the index of arr became the key of each node
+  // If arr is an object:
+  //    each node of this Heap will be the (key, val) of each element of arr
+  //    In this case second param <keys> is not used
+  // In any case the Heap is build in linear time
+  // Returns: this Heap
+  buildHeap(arr, keys = null) {
+    // Returns false if this heap is not empty
+    if (!this.isEmpty()) return false;
+    // arr is an array
+    if (Array.isArray(arr)) {
+      // arr is array AND keys is also an array
+      if (Array.isArray(keys)) {
+        // if arr and keys dont have the same size returns false
+        if (arr.length !== keys.length) return false;
+        // set size of this heap to the size of arr
+        this.size = arr.length;
+        // inject arr and keys in this.value (keys[i],arr[i])
+        for (let i = 0; i < this.size; i++) {
+          // Avoiding duplicate keys
+          if (this.contains(keys[i])) return false;
+          this.values.push(new Node(keys[i], arr[i]));
+          this.idxs[keys[i]] = i;
+        }
+      }
+      //   arr is array and keys is null
+      else {
+        // set size of this heap to the size of arr
+        this.size = arr.length;
+        // inject arr in this.value (i,arr[i))
+        arr.forEach((e, i) => {
+          this.values.push(new Node(i, e));
+          this.idxs[i] = i;
+        });
+      }
+    }
+    // arr is an object
+    else {
+      let i = 0;
+      //   set size of this heap to the size of arr
+      this.size = Object.keys(arr).length;
+      // inject each element of arr (key, val) to this.value
+      for (const [key, val] of Object.entries(arr)) {
+        this.values.push(new Node(key, val));
+        this.idxs[key] = i;
+        i++;
+      }
+    }
+    // to heapify all sub heaps with root in index i
+    // all leaves are already heaps
+    let lChild, rChild, idx;
+    for (let i = Math.floor(this.size / 2); i >= 0; i--) {
+      [lChild, rChild] = this.myChildrenIdx(i);
+      idx = i;
+      // bubble-down (while any child is greater than the parent)
+      while (this.greaterThan(lChild, idx) || this.greaterThan(rChild, idx)) {
+        // update idx and its children
+        idx = this.bubbleDown(idx, lChild, rChild);
+        [lChild, rChild] = this.myChildrenIdx(idx);
+      }
+    }
+    return this;
+  }
+
+  //   **********************************************************
   //                            INSERT
   //   **********************************************************
 
