@@ -295,6 +295,39 @@ class MaxBinaryHeap {
     }
     return { element: max, heap: this };
   }
+
+  // Removes the node from this respect key
+  // Returns this HEAP
+  // Returns false whether this key does not belong to this heap
+  deleteKey(key) {
+    if (!this.contains(key)) return false;
+    // if it is the last element of values: we dont need to rearrange
+    if (this.idxs[key] === this.size - 1) {
+      this.values.pop();
+      delete this.idxs[key];
+      this.size--;
+      return this;
+    }
+    //   get idx of this key
+    let idx = this.idxs[key];
+    // replace this node with the last one
+    this.values[idx] = this.values.pop();
+    this.size--;
+    // delete from dict
+    delete this.idxs[key];
+    // update idx of the 'new node in idx position' in the dict
+    // we need to rearrange from idx to bellow
+    this.idxs[this.values[idx].key] = idx;
+    // get the children of idx
+    let [lChild, rChild] = this.myChildrenIdx(idx);
+    // bubble-down (while any child is greater than the parent)
+    while (this.greaterThan(lChild, idx) || this.greaterThan(rChild, idx)) {
+      // update idx and its children
+      idx = this.bubbleDown(idx, lChild, rChild);
+      [lChild, rChild] = this.myChildrenIdx(idx);
+    }
+    return this;
+  }
 }
 
 module.exports = MaxBinaryHeap;
