@@ -328,6 +328,13 @@ class MaxBinaryHeap {
     }
     return this;
   }
+
+  // to clear the heap instance and frees memory
+  clear() {
+    this.size = 0;
+    while (!this.isEmpty()) this.values.pop();
+    for (let k in this.idx) delete this.idx[k];
+  }
 }
 
 module.exports = MaxBinaryHeap;
