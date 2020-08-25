@@ -37,6 +37,18 @@ class MaxBinaryHeap {
     return [2 * i + 1, 2 * i + 2];
   }
 
+  // Rearrange values and dict
+  bubbleUp(i, j) {
+    //swap i and j
+    [this.values[i], this.values[j]] = [this.values[j], this.values[i]];
+
+    // swap idxs elements in dict key to idx
+    [this.idxs[this.values[i].key], this.idxs[this.values[j].key]] = [
+      this.idxs[this.values[j].key],
+      this.idxs[this.values[i].key],
+    ];
+  }
+
   // Returns true if this heap constains this key
   // Otherwise returns false
   contains(key) {
@@ -50,9 +62,16 @@ class MaxBinaryHeap {
     return this.size === 0;
   }
 
+  //   **********************************************************
+  //                            INSERT
+  //   **********************************************************
+
   // Inserts a node (key,val) in the last position and rearrange
   // Returns Heap
+  // Returns false whether this key is already in this heap
   enqueue(key, val) {
+    // to avoid duplicate keys
+    if (this.contains(key)) return false;
     let node = new Node(key, val);
     this.values.push(node);
     // insert in the last position
@@ -61,22 +80,10 @@ class MaxBinaryHeap {
     this.idxs[key] = idx;
     this.size++;
     let parentIdx = this.myParentIdx(idx);
-    // sort
+    // bubble-up (while this new node is greater than its parent)
     while (this.greaterThan(idx, parentIdx)) {
-      //swap
-      [this.values[idx], this.values[parentIdx]] = [
-        this.values[parentIdx],
-        this.values[idx],
-      ];
-
-      // swap idxs elements in dict key to idx
-      [
-        this.idxs[this.values[idx].key],
-        this.idxs[this.values[parentIdx].key],
-      ] = [
-        this.idxs[this.values[parentIdx].key],
-        this.idxs[this.values[idx].key],
-      ];
+      this.bubbleUp(idx, parentIdx);
+      // recalculate node idx, parent idx position
       idx = parentIdx;
       parentIdx = this.myParentIdx(idx);
     }
