@@ -13,13 +13,41 @@ class MaxBinaryHeap {
     this.size = 0;
   }
 
+  //   **********************************************************
+  //                            HELPERS
+  //   **********************************************************
+
   // return if the element from index i is greater than k idx element
   greaterThan(i, k) {
     // out of bounds
     if (i < 0 || k < 0) return false;
-    if (i > this.values.length - 1 || k > this.values.length - 1) return false;
+    if (i > this.size - 1 || k > this.size - 1) return false;
     if (this.values[i].val > this.values[k].val) return true;
     return false;
+  }
+
+  // Returns the parent's index of the ith node
+  myParentIdx(i) {
+    return Math.floor((i - 1) / 2);
+  }
+
+  // Returns the children's index of the ith node
+  myChildrenIdx(i) {
+    // left 2 * i + 1 , right 2 * idx + 2
+    return [2 * i + 1, 2 * i + 2];
+  }
+
+  // Returns true if this heap constains this key
+  // Otherwise returns false
+  contains(key) {
+    if (this.values[this.idxs[key]] === undefined) return false;
+    return true;
+  }
+
+  // Returns true if this heap is empty
+  // Otherwise returns false
+  isEmpty() {
+    return this.size === 0;
   }
 
   // Inserts a node (key,val) in the last position and rearrange
@@ -32,7 +60,7 @@ class MaxBinaryHeap {
     // add the idx of this key on the dict
     this.idxs[key] = idx;
     this.size++;
-    let parentIdx = Math.floor((idx - 1) / 2);
+    let parentIdx = this.myParentIdx(idx);
     // sort
     while (this.greaterThan(idx, parentIdx)) {
       //swap
@@ -50,7 +78,7 @@ class MaxBinaryHeap {
         this.idxs[this.values[idx].key],
       ];
       idx = parentIdx;
-      parentIdx = Math.floor((idx - 1) / 2);
+      parentIdx = this.myParentIdx(idx);
     }
     return this;
   }
@@ -60,7 +88,7 @@ class MaxBinaryHeap {
   // Returns null if this heap is empty
   dequeue() {
     // if is empty return undefined
-    if (this.values.length === 0) return null;
+    if (this.isEmpty()) return null;
     if (this.values.length === 1) {
       this.size--;
       return { element: this.values.pop(), heap: this };
@@ -70,8 +98,7 @@ class MaxBinaryHeap {
     this.values[0] = this.values.pop();
     this.size--;
     let idx = 0;
-    let lChild = 2 * idx + 1;
-    let rChild = 2 * idx + 2;
+    let [lChild, rChild] = this.myChildrenIdx(idx);
     let greatIdx;
     while (this.greaterThan(lChild, idx) || this.greaterThan(rChild, idx)) {
       if (this.greaterThan(lChild, rChild)) {
@@ -96,8 +123,7 @@ class MaxBinaryHeap {
 
       // update idx and its children
       idx = greatIdx;
-      lChild = 2 * idx + 1;
-      rChild = 2 * idx + 2;
+      [lChild, rChild] = this.myChildrenIdx(idx);
     }
     return { element: max, heap: this };
   }
