@@ -49,8 +49,20 @@ class FibonacciHeap {
   }
 
   //   **********************************************************
+  //                            ACCESSING
+  //   **********************************************************
+
+  // Returns the min node
+  // Returns null if this Heap is empty
+  findMin() {
+    if (this.isEmpty()) return null;
+    return this.min;
+  }
+
+  //   **********************************************************
   //                            INSERT
   //   **********************************************************
+
   enqueue(key, val) {
     const node = new Node(key, val);
     this.addToRootList(node);
