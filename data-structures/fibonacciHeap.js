@@ -80,6 +80,32 @@ class FibonacciHeap {
     // pointing to the new siblings, no one points to node any more
     t.right = t2;
     t2.left = t;
+    // node points to null
+    node.left = null;
+    node.right = null;
+  }
+
+  // Makes y node child of x node
+  makeYchildOfX(x, y) {
+    y.parent = x;
+    // check if y is the first child
+    if (x.degree === 0) {
+      x.child = y;
+      // y has no siblings, only child points to itself!
+      y.left = y;
+      y.right = y;
+    } else {
+      // y is not the first, connect y to its siblings!
+      // child <-> t <-> [...], y
+      // child <-> y <-> t <-> [...]
+      const child = x.child;
+      const t = child.right;
+      // changing pointers
+      child.right = y;
+      y.left = child;
+      y.right = t;
+      t.left = y;
+    }
   }
 
   //   **********************************************************
