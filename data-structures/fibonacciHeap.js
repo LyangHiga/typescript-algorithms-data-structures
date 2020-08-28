@@ -108,6 +108,18 @@ class FibonacciHeap {
     }
   }
 
+  // Links two roots, which have same degree, into a single one
+  // x will be the parent, so x MUST to be smaller than y
+  // Returns false if x is greater than y
+  link(x, y) {
+    // check if x.val < y.val
+    if (y.val < x.val) return false;
+    this.removeFromRootList(y);
+    this.makeYchildOfX(x, y);
+    x.degree += 1;
+    y.mark = false;
+  }
+
   //   **********************************************************
   //                            ACCESSING
   //   **********************************************************
