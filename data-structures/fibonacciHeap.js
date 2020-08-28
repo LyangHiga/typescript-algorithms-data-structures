@@ -54,7 +54,7 @@ class FibonacciHeap {
     }
   }
 
-  // concatenate this min root list with root list of a given node( min of h2 = min2)
+  // Concatenates this min root list with root list of a given node( min of h2 = min2)
   // [...] <-> min1 <-> t1 <-> [...], [...] <-> t2 <-> min2 <-> [...]
   // [...] t2 <-> t1 <->[...] <-> min1 <-> min2 <-> [...]
   concatenate(node) {
@@ -64,6 +64,22 @@ class FibonacciHeap {
     node.left = this.min;
     t1.left = t2;
     t2.right = t1;
+  }
+
+  // Removes node from this FH
+  // [...] <-> t <-> node <-> t2 <-> [...]
+  // [...] <-> t <-> t2 <-> [...]
+  // Returns false if node is not in Root List
+  removeFromRootList(node) {
+    // check if node is in Root list
+    if (node.parent !== null || node.left === null || node.right === null) {
+      return false;
+    }
+    const t = node.left;
+    const t2 = node.right;
+    // pointing to the new siblings, no one points to node any more
+    t.right = t2;
+    t2.left = t;
   }
 
   //   **********************************************************
