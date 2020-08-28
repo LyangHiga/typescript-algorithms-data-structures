@@ -7,6 +7,7 @@ class Node {
     this.right = null;
     // number of children
     this.degree = 0;
+    // to control child lost
     this.mark = false;
     this.key = key;
     this.val = val;
@@ -29,10 +30,12 @@ class FibonacciHeap {
     return this.size === 0;
   }
 
-  // Adds a new node to the root list
+  // Adds a node to the root list
+  //    Can be a new one or any node which is already in FH but not in the root list
   // [...] <-> t <-> min <-> [...]   adds  node
   // [...] <-> t <- node -> <- min <-> [...]
-  // If this FH is empty node become min and points to itself
+  // If this FH is empty: Create the root list containing just node
+  //    node becomes min and points to itself
   //    An only child points to itself in left and right
   addToRootList(node) {
     if (this.isEmpty()) {
@@ -40,6 +43,9 @@ class FibonacciHeap {
       this.min.left = node;
       this.min.right = node;
     } else {
+      // node does not have a parent any more
+      node.parent = null;
+      // pointing to siblings in root list
       const t = this.min.left;
       this.min.left = node;
       node.left = t;
@@ -89,7 +95,7 @@ class FibonacciHeap {
   //                            UNION
   //   **********************************************************
 
-  // Returns a new FH h, wich is the union between this FH and h2
+  // Returns a new FH h, which is the union between this FH and h2
   // Returns false if any FH is empty
   union(h2) {
     if (this.isEmpty() || h2.isEmpty()) return false;
