@@ -203,6 +203,52 @@ class FibonacciHeap {
   }
 
   //   **********************************************************
+  //                            DELETE
+  //   **********************************************************
+
+  // Removes the root (min),
+  // Returns the root and the new arrangement
+  //    It's where the delayed work of consolidating trees
+  //    in root list finally occurs
+  // Returns null if this heap is empty
+  dequeue() {
+    if (this.isEmpty()) return null;
+    // saving pointer to min and its right sibling
+    const z = this.min;
+    const r = this.min.right;
+    // for each child x of z
+    if (z.child !== null) {
+      let x = z.child;
+      // removing pointer from left sibling of x to x
+      // left <-> x <-> [...]
+      // left <- x <-> [...]
+      x.left.right = null;
+      while (x !== null) {
+        const next = x.right;
+        // in each step we remove the pointer to the right sibling
+        x.right = null;
+        this.addToRootList(x);
+        // z is no longer parent of x
+        x.parent = null;
+        // update x
+        x = next;
+      }
+    }
+    this.removeFromRootList(z);
+    // check if z was the last element in this FH
+    if (this.size === 1) {
+      this.min = null;
+    } else {
+      // set a new(any) min and consolidate
+      this.min = r;
+      this.consolidate();
+    }
+    // decrease size
+    this.size -= 1;
+    return { element: z, heap: this };
+  }
+
+  //   **********************************************************
   //                            UNION
   //   **********************************************************
 
