@@ -38,7 +38,7 @@ class FibonacciHeap {
   //    node becomes min and points to itself
   //    An only child points to itself in left and right
   addToRootList(node) {
-    if (this.isEmpty()) {
+    if (this.isEmpty() || this.min === null) {
       this.min = node;
       this.min.left = node;
       this.min.right = node;
@@ -126,25 +126,25 @@ class FibonacciHeap {
   // O(maxDegree) = O(log n)
   consolidate() {
     //   max degree := log(n)
-    const maxDegree = Math.log2(this.size);
+    const maxDegree = Math.floor(Math.log2(this.size)) + 1;
     // to keep track the root's degree
     const a = new Array(maxDegree).fill(null);
     // for each node w in the root list
-    const w = this.min;
+    let w = this.min;
     // removing pointer from left sibling of min to min
     // left <-> min <-> [...]
     // left <- min <-> [...]
     this.min.left.right = null;
     while (w !== null) {
-      const x = w;
-      const d = x.degree;
+      let x = w;
+      let d = x.degree;
       const next = x.right;
       // in each step we remove the pointer to the right sibling
       w.right = null;
       // check if there is any other root with the same degree d
       while (a[d] !== null) {
         // another root (besides x) with the same degree d
-        const y = a[d];
+        let y = a[d];
         if (y.val < x.val) {
           // exhange pointers, x MUST be the smaller
           [x, y] = [y, x];
