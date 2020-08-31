@@ -106,6 +106,36 @@ class FibonacciHeap {
     }
   }
 
+  // Removes x from the child list of y, and decremente y degree
+  // Make x.parent null
+  removeXFromParentY(x, y) {
+    // check if x was only child
+    if (y.degree === 1) {
+      y.child = null;
+    } else {
+      // check if y.child points to x
+      if (y.child === x) {
+        // point to any other child
+        y.child = x.right;
+      } else {
+        // we need to find x in this child list and remove pointers
+        const t = y.child;
+        while (t !== x) {
+          // we find x
+          if (t.right === x) {
+            // [...] <-> t <-> x <-> x.right <-> [...]
+            t.right = x.right;
+            x.right.left = t;
+          }
+          // moving to the next sibling
+          t = t.right;
+        }
+      }
+    }
+    x.parent = null;
+    y.degree--;
+  }
+
   // Links two roots, which have same degree, into a single one
   // x will be the parent, so x MUST to be smaller than y
   // Returns false if x is greater than y
