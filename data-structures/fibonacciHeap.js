@@ -332,6 +332,40 @@ class FibonacciHeap {
     h.size = this.size + h2.size;
     return h;
   }
+
+  //   **********************************************************
+  //                            UPDATE
+  //   **********************************************************
+
+  // Update the val of node x
+  // Returns false if x is not an instance of Node
+  // Returns false if newVal is not smaller than the actual val
+  // if new val and the actual val of x are the same return this
+  decreaseKey(x, newVal) {
+    // if x is not an instance of Node returns false
+    if (!(x instanceof Node)) return false;
+    // to ensure newVal < val
+    if (newVal > x.val) return false;
+    // if they are the same return this
+    if (newVal === x.val) return this;
+    // update x
+    x.val = newVal;
+    const y = x.parent;
+    // if x does not have a parent or if its new val is
+    // still greater than the val of its parent
+    // any changes in this FH structure are needed
+    // (check if min-heap invariant still valid)
+    if (y !== null && x.val < y.val) {
+      // x is smaller than its parent
+      // cut link between x and y and decrease y.degree
+      // and rearrange FH structure
+      this.cut(x, y);
+      this.cascadingCut(y);
+    }
+    if (x.val < this.min) {
+      this.min = x.val;
+    }
+  }
 }
 
 module.exports = FibonacciHeap;
