@@ -31,6 +31,7 @@ class FibonacciHeap {
   }
 
   // Adds a node to the root list
+  // Also update the parent of node to null
   //    Can be a new one or any node which is already in FH but not in the root list
   // [...] <-> t <-> min <-> [...]   adds  node
   // [...] <-> t <- node -> <- min <-> [...]
@@ -43,8 +44,6 @@ class FibonacciHeap {
       this.min.left = node;
       this.min.right = node;
     } else {
-      // node does not have a parent any more
-      node.parent = null;
       // pointing to siblings in root list
       const t = this.min.left;
       this.min.left = node;
@@ -52,6 +51,8 @@ class FibonacciHeap {
       t.right = node;
       node.right = this.min;
     }
+    // node does not have a parent any more
+    node.parent = null;
   }
 
   // Concatenates this min root list with root list of a given node( min of h2 = min2)
@@ -107,7 +108,7 @@ class FibonacciHeap {
   }
 
   // Removes x from the child list of y, and decremente y degree
-  // Make x.parent null
+  // Removing x from child list of y does not change any attribute in x
   removeXFromParentY(x, y) {
     // check if x was only child
     if (y.degree === 1) {
@@ -132,8 +133,16 @@ class FibonacciHeap {
         }
       }
     }
-    x.parent = null;
     y.degree--;
+  }
+
+  cut(x, y) {
+    // Remove x from child list of y and decrease degree of y
+    this.removeXFromParentY(x, y);
+    // add to root and update x.parent to null
+    this.addToRootList(x);
+    // clear x mark
+    x.mark = false;
   }
 
   // Links two roots, which have same degree, into a single one
