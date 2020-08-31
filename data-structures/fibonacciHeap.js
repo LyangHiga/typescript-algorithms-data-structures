@@ -70,8 +70,8 @@ class FibonacciHeap {
   // [...] <-> t <-> node <-> t2 <-> [...]
   // [...] <-> t <-> t2 <-> [...]
   // Returns false if node is not in Root List
-  // set siblings = true to keep node's siblings after removing node from FH
-  removeFromRootList(node, siblings = false) {
+  // Removing node from root list does not change any attribute in node
+  removeFromRootList(node) {
     // check if node is in Root list
     if (node.parent !== null || node.left === null || node.right === null) {
       return false;
@@ -81,11 +81,6 @@ class FibonacciHeap {
     // pointing to the new siblings, no one points to node any more
     t.right = t2;
     t2.left = t;
-    if (!siblings) {
-      // node points to null
-      node.left = null;
-      node.right = null;
-    }
   }
 
   // Makes y node child of x node
@@ -117,7 +112,6 @@ class FibonacciHeap {
   link(x, y) {
     // check if x.val < y.val
     if (y.val < x.val) return false;
-    // we want to remove y from the root and forget its siblings
     this.removeFromRootList(y);
     this.makeYchildOfX(x, y);
     x.degree += 1;
@@ -244,8 +238,7 @@ class FibonacciHeap {
         x = next;
       }
     }
-    // remove z from this FH, but maintain pointers to its siblings
-    this.removeFromRootList(z, true);
+    this.removeFromRootList(z);
     // check if z was the last element in this FH
     if (this.size === 1) {
       this.min = null;
