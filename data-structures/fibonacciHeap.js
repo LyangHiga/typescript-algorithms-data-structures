@@ -136,6 +136,9 @@ class FibonacciHeap {
     y.degree--;
   }
 
+  // Removes x from child list of y
+  // Add x to child list (update parent of x to null)
+  // clear x.mark
   cut(x, y) {
     // Remove x from child list of y and decrease degree of y
     this.removeXFromParentY(x, y);
@@ -143,6 +146,27 @@ class FibonacciHeap {
     this.addToRootList(x);
     // clear x mark
     x.mark = false;
+  }
+
+  // if y already lost a child (y.mark === true)
+  // cut link between y and y.parent and call cascading cut to y.parent
+  // if is the first child that y lost, mark y
+  // if y is already a root it doesn't matter
+  cascadingCut(y) {
+    const z = y.parent;
+    // check if y is not a root
+    if (z !== null) {
+      // first lost
+      if (y.mark === false) {
+        y.mark = true;
+      } else {
+        // second lost
+        // cut link between y and z
+        this.cut(y, z);
+        // z lost a child so call cascadingCut for it
+        this.cascadingCut(z);
+      }
+    }
   }
 
   // Links two roots, which have same degree, into a single one
