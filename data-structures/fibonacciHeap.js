@@ -70,7 +70,8 @@ class FibonacciHeap {
   // [...] <-> t <-> node <-> t2 <-> [...]
   // [...] <-> t <-> t2 <-> [...]
   // Returns false if node is not in Root List
-  removeFromRootList(node) {
+  // set siblings = true to keep node's siblings after removing node from FH
+  removeFromRootList(node, siblings = false) {
     // check if node is in Root list
     if (node.parent !== null || node.left === null || node.right === null) {
       return false;
@@ -80,9 +81,11 @@ class FibonacciHeap {
     // pointing to the new siblings, no one points to node any more
     t.right = t2;
     t2.left = t;
-    // node points to null
-    node.left = null;
-    node.right = null;
+    if (!siblings) {
+      // node points to null
+      node.left = null;
+      node.right = null;
+    }
   }
 
   // Makes y node child of x node
@@ -114,6 +117,7 @@ class FibonacciHeap {
   link(x, y) {
     // check if x.val < y.val
     if (y.val < x.val) return false;
+    // we want to remove y from the root and forget its siblings
     this.removeFromRootList(y);
     this.makeYchildOfX(x, y);
     x.degree += 1;
@@ -126,7 +130,14 @@ class FibonacciHeap {
   // O(maxDegree) = O(log n)
   consolidate() {
     //   max degree := log(n)
-    const maxDegree = Math.floor(Math.log2(this.size)) + 1;
+    let maxDegree = Math.log2(this.size);
+    if (Number.isInteger(maxDegree)) {
+      // increase 1 because maxDegree is inclusive [0,maxDregree]
+      maxDegree++;
+    } else {
+      // increase 2 because of floor and maxDegree is inclusive
+      maxDegree = Math.floor(maxDegree) + 2;
+    }
     // to keep track the root's degree
     const a = new Array(maxDegree).fill(null);
     // for each node w in the root list
@@ -215,7 +226,6 @@ class FibonacciHeap {
     if (this.isEmpty()) return null;
     // saving pointer to min and its right sibling
     const z = this.min;
-    const r = this.min.right;
     // for each child x of z
     if (z.child !== null) {
       let x = z.child;
@@ -234,13 +244,14 @@ class FibonacciHeap {
         x = next;
       }
     }
-    this.removeFromRootList(z);
+    // remove z from this FH, but maintain pointers to its siblings
+    this.removeFromRootList(z, true);
     // check if z was the last element in this FH
     if (this.size === 1) {
       this.min = null;
     } else {
       // set a new(any) min and consolidate
-      this.min = r;
+      this.min = z.right;
       this.consolidate();
     }
     // decrease size
@@ -266,3 +277,5 @@ class FibonacciHeap {
     return h;
   }
 }
+
+module.exports = FibonacciHeap;
