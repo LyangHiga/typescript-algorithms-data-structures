@@ -2,6 +2,7 @@ const fs = require('fs');
 const Queue = require('./queue');
 const Stack = require('./stack');
 const MinHeap = require('./minHeap');
+const FibonacciHeap = require('./fibonacciHeap');
 
 // Returns a random number between [min,max)
 const random = (min, max) => {
@@ -553,9 +554,24 @@ class Graph {
     return leader;
   }
 
-  //   returns the distance from s to each vertex and their parents
-  dijkstra(s) {
-    const heap = new MinHeap();
+  // Returns the distance from s to each vertex and their parents
+  // Inputs:
+  //    s: source vertex
+  //    h: to choose between binary and fibonacci heap
+  //   'f' (default) for FibonacciHeap
+  //   'b' for binaryHeap
+  dijkstra(s, h = 'f') {
+    if (h === 'b') {
+      // we should use 'var' declaration get a function scope
+      var heap = new MinHeap();
+    } else if (h === 'f') {
+      var heap = new FibonacciHeap();
+      // to keep track of node to make decrease key when distances get smaller
+      var pointers = {};
+    } else {
+      // return false if an invalid heap was choosen
+      return false;
+    }
     // objs to map key to distance and key to parents
     const distances = {};
     const parents = {};
@@ -583,7 +599,14 @@ class Graph {
             distances[nextNode.node] = d;
             parents[nextNode.node] = smallest;
             // try to deacrease key
-            deacrease = heap.decreaseKey(nextNode.node, d);
+            if (h === 'b') {
+              // binary heap we just need the key of the node to be decreased
+              deacrease = heap.decreaseKey(nextNode.node, d);
+            } else {
+              //FH we need a pointer to the node to be decreased
+              deacrease = heap.decreaseKey(pointers[nextNode.node], d);
+            }
+
             if (!deacrease) {
               // enqueue with new priority
               heap.enqueue(nextNode.node, d);
