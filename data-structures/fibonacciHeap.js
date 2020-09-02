@@ -315,6 +315,16 @@ class FibonacciHeap {
     return { element: z, heap: this };
   }
 
+  // Removes the node from this respect key
+  // Returns this HEAP
+  deleteKey(x) {
+    // if x is not an instance of Node returns false
+    if (!(x instanceof Node)) return false;
+    this.decreaseKey(x, Number.NEGATIVE_INFINITY);
+    this.dequeue();
+    return this;
+  }
+
   //   **********************************************************
   //                            UNION
   //   **********************************************************
