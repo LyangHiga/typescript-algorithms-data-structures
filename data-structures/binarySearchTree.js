@@ -76,6 +76,28 @@ class BST {
     return false;
   }
 
+  // Returns the min node
+  min() {
+    // returns false if this BST is empty
+    if (!this.root) return false;
+    let current = this.root;
+    while (current.left !== null) {
+      current = current.left;
+    }
+    return current;
+  }
+
+  // Returns the max node
+  max() {
+    // returns false if this BST is empty
+    if (!this.root) return false;
+    let current = this.root;
+    while (current.right !== null) {
+      current = current.right;
+    }
+    return current;
+  }
+
   //   **********************************************************
   //                        TRANSVERSING
   //   **********************************************************
