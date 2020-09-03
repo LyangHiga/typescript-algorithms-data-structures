@@ -6,6 +6,7 @@ class Node {
     this.val = val;
     this.left = null;
     this.right = null;
+    this.parent = null;
   }
 }
 
@@ -35,6 +36,7 @@ class BST {
       // check left
       if (current.val > node.val) {
         if (!current.left) {
+          node.parent = current;
           current.left = node;
           return this;
         }
@@ -43,6 +45,7 @@ class BST {
         // check right
       } else {
         if (!current.right) {
+          node.parent = current;
           current.right = node;
           return this;
         }
@@ -76,26 +79,58 @@ class BST {
     return false;
   }
 
-  // Returns the min node
-  min() {
+  // Returns the min node from the subtree who has x as root
+  min(x = this.root) {
     // returns false if this BST is empty
     if (!this.root) return false;
-    let current = this.root;
-    while (current.left !== null) {
-      current = current.left;
+    while (x.left !== null) {
+      x = x.left;
     }
-    return current;
+    return x;
   }
 
-  // Returns the max node
-  max() {
+  // Returns the max node from the subtree who has x as root
+  max(x = this.root) {
     // returns false if this BST is empty
     if (!this.root) return false;
-    let current = this.root;
-    while (current.right !== null) {
-      current = current.right;
+    while (x.right !== null) {
+      x = x.right;
     }
-    return current;
+    return x;
+  }
+
+  sucessor(x) {
+    // check if there is a right subtree
+    if (x.right !== null) {
+      // sucessor is the leftmost node in this subtree
+      return this.min(x.right);
+    }
+    // go up until we find a node who is the left child
+    // its parent is the sucessor
+    let y = x.parent;
+    // while x is the right child (its parent y is smaller than x) we update
+    while (y !== null && x === y.right) {
+      x = y;
+      y = y.parent;
+    }
+    return y;
+  }
+
+  predecessor(x) {
+    // check if there is a left subtree
+    if (x.left !== null) {
+      // predecessor is the rightmost node in this subtree
+      return this.max(x.left);
+    }
+    // go up until we find a node who is the right child
+    // its parent is the predecessor
+    let y = x.parent;
+    // while x is the left child (its parent y is greater than x) we update
+    while (y !== null && x === y.left) {
+      x = y;
+      y = y.parent;
+    }
+    return y;
   }
 
   //   **********************************************************
