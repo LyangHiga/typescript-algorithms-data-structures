@@ -14,6 +14,29 @@ class BST {
   constructor() {
     this.root = null;
   }
+  //   **********************************************************
+  //                            HELPERS
+  //   **********************************************************
+
+  // Replaces one subtree as a child of its parent with another subtree
+  //    replaces the subtree rooted at node u with
+  //    the subtree rooted at node v
+  //    make the parent of u change its pointer to v
+  //    v takes u position and parent
+  transplant(u, v) {
+    // check if u is the root of this BST
+    if (u.parent === null) {
+      this.root = v;
+    }
+    // check if u is a left child
+    if (u === u.parent.left) {
+      u.parent.left = v;
+    } else {
+      // right child
+      u.parent.right = v;
+    }
+    v.parent = u.parent;
+  }
 
   //   **********************************************************
   //                            INSERT
