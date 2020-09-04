@@ -29,13 +29,14 @@ class BST {
       this.root = v;
     }
     // check if u is a left child
-    if (u === u.parent.left) {
+    else if (u === u.parent.left) {
       u.parent.left = v;
     } else {
       // right child
       u.parent.right = v;
     }
-    v.parent = u.parent;
+    // if v is null DON'T update
+    if (v !== null) v.parent = u.parent;
   }
 
   //   **********************************************************
@@ -154,6 +155,52 @@ class BST {
       y = y.parent;
     }
     return y;
+  }
+
+  //   **********************************************************
+  //                            DELETE
+  //   **********************************************************
+
+  // Deletes node z from this BST
+  // 4 cases:
+  //    no child: just change the pointer of z's parent to null
+  //    one child: child takes z place
+  //    two children: sucessor of z takes it place
+  delete(z) {
+    // Returns false if z is not a valid node
+    if (!(z instanceof Node)) return false;
+    // Returns false if this BST is empty
+    if (this.root === null) return false;
+    // no left child
+    if (z.left === null) {
+      // if z is also null just update the pointer of z's parent (to null)
+      this.transplant(z, z.right);
+    } else if (z.right === null) {
+      // z has left child but not a right child
+      this.transplant(z, z.left);
+    } else {
+      // two childrens
+      // sucessor is the node with smallest val in the right subtree
+      const sucessor = this.min(z.right);
+      if (z !== sucessor.parent) {
+        // If sucessor is not the right child of z
+        // Remember: sucessor has no left child
+        //      otherwise sucessor.left would be the sucessor
+        // change the sucessor place with sucessor child
+        //      (we will change sucessor with z in the next step)
+        this.transplant(sucessor, sucessor.right);
+        sucessor.right = z.right;
+        sucessor.right.parent = sucessor;
+      }
+      // OR the sucessor is the right child of z
+      // OR the sucessor was prepared in the last if
+      //    Anyway we just transplant and update pointers to left subtree
+      this.transplant(z, sucessor);
+      // uodate sucessor left (from null) to left subtree
+      sucessor.left = z.left;
+      // update left subtree parent (from z) to sucessor
+      sucessor.left.parent = sucessor;
+    }
   }
 
   //   **********************************************************
