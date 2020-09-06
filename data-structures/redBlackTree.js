@@ -24,6 +24,78 @@ class RedBlackTree {
     return this.size === 0;
   }
 
+  // Operate a left rotation:
+  //    y is the right child of x (NOT NULL)
+  //    y's left subtree becomes x's right subtree
+  //    x becomes left child of y
+  leftRotate(x) {
+    // Returns false if x is not a valid node
+    if (!(x instanceof Node)) return false;
+    if (this.isEmpty()) return false;
+    // y can't be null
+    if (x.right === null) return false;
+    const y = x.right;
+    // left subtree of y is now the right subtree of x (can be null)
+    x.right = y.left;
+    if (y.left !== null) {
+      // if left child of y is not null update its parent to x
+      y.left.parent = x;
+    }
+    // update the parent of y
+    y.parent = x.parent;
+    if (x.parent === null) {
+      // if x is the root, update y to be the root
+      this.root = y;
+    } else if (x === x.parent.left) {
+      // x is a left child
+      // update the parent of x to point to y
+      x.parent.left = y;
+    } else {
+      // x is a right child
+      // update the parent of x to point to y
+      x.parent.right = y;
+    }
+    // update y as parent of x
+    y.left = x;
+    x.parent = y;
+  }
+
+  // Operate a right rotation:
+  //    y is the left child of x (NOT NULL)
+  //    y's right subtree becomes x's left subtree
+  //    x becomes right child of y
+  rightRotate(x) {
+    // Returns false if x is not a valid node
+    if (!(x instanceof Node)) return false;
+    if (this.isEmpty()) return false;
+    // y can't be null
+    if (x.left === null) return false;
+    const y = x.left;
+    // right subtree of y is now the right subtree of x (can be null)
+    x.left = y.right;
+    if (y.right !== null) {
+      // if right child of y is not null update its parent to x
+      y.right.parent = x;
+    }
+    // update the parent of y
+    y.parent = x.parent;
+    if (x.parent === null) {
+      // if x is the root, update y to be the root
+      this.root = y;
+    } else if (x === x.parent.left) {
+      // x is a left child
+      // update the parent of x to point to y
+      x.parent.left = y;
+    } else {
+      // x is a right child
+      // update the parent of x to point to y
+      x.parent.right = y;
+    }
+    // update y as parent of x
+    y.right = x;
+    x.parent = y;
+  }
+
   //   **********************************************************
   //                    DYNAMIC-SET OPERATIONS
   //   **********************************************************
