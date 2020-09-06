@@ -13,10 +13,17 @@ class Node {
 class BST {
   constructor() {
     this.root = null;
+    this.size = 0;
   }
   //   **********************************************************
   //                            HELPERS
   //   **********************************************************
+
+  // Returns true if this BST is empty
+  // Otherwise returns false
+  isEmpty() {
+    return this.size === 0;
+  }
 
   // Replaces one subtree as a child of its parent with another subtree
   //    replaces the subtree rooted at node u with
@@ -48,8 +55,8 @@ class BST {
   // Returns false whether this val is already in this BST
   insert(val) {
     let node = new Node(val);
-    // check if this BST is empty
-    if (!this.root) {
+    if (this.isEmpty()) {
+      this.size++;
       this.root = node;
       return this;
     }
@@ -62,6 +69,7 @@ class BST {
         if (!current.left) {
           node.parent = current;
           current.left = node;
+          this.size++;
           return this;
         }
         // update current to left
@@ -71,6 +79,7 @@ class BST {
         if (!current.right) {
           node.parent = current;
           current.right = node;
+          this.size++;
           return this;
         }
         // update current
@@ -86,7 +95,7 @@ class BST {
   // Returns true if this BST contains this val,
   // Otherwise returns false
   contains(val) {
-    if (!this.root) return false;
+    if (this.isEmpty()) return false;
     let current = this.root;
     while (current !== null) {
       // if we find return true
@@ -105,8 +114,9 @@ class BST {
 
   // Returns the min node from the subtree who has x as root
   min(x = this.root) {
-    // returns false if this BST is empty
-    if (!this.root) return false;
+    // Returns false if x is not a valid node
+    if (!(x instanceof Node)) return false;
+    if (this.isEmpty()) return false;
     while (x.left !== null) {
       x = x.left;
     }
@@ -115,15 +125,21 @@ class BST {
 
   // Returns the max node from the subtree who has x as root
   max(x = this.root) {
-    // returns false if this BST is empty
-    if (!this.root) return false;
+    // Returns false if x is not a valid node
+    if (!(x instanceof Node)) return false;
+    if (this.isEmpty()) return false;
     while (x.right !== null) {
       x = x.right;
     }
     return x;
   }
 
+  // Returns the successor node y (node who has the next val in crescent order)
+  //    of a given node x
   sucessor(x) {
+    // Returns false if x is not a valid node
+    if (!(x instanceof Node)) return false;
+    if (this.isEmpty()) return false;
     // check if there is a right subtree
     if (x.right !== null) {
       // sucessor is the leftmost node in this subtree
@@ -140,7 +156,12 @@ class BST {
     return y;
   }
 
+  // Returns the predecessor node y (node who has the previous val in crescent order)
+  //    of a given node x
   predecessor(x) {
+    // Returns false if x is not a valid node
+    if (!(x instanceof Node)) return false;
+    if (this.isEmpty()) return false;
     // check if there is a left subtree
     if (x.left !== null) {
       // predecessor is the rightmost node in this subtree
@@ -169,6 +190,7 @@ class BST {
   delete(z) {
     // Returns false if z is not a valid node
     if (!(z instanceof Node)) return false;
+    if (this.isEmpty()) return false;
     // Returns false if this BST is empty
     if (this.root === null) return false;
     // no left child
@@ -201,6 +223,7 @@ class BST {
       // update left subtree parent (from z) to sucessor
       sucessor.left.parent = sucessor;
     }
+    this.size--;
   }
 
   //   **********************************************************
