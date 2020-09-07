@@ -185,4 +185,115 @@ class RedBlackTree {
     }
     return y;
   }
+
+  //   **********************************************************
+  //                            INSERT
+  //   **********************************************************
+
+  // Inserts a node in the right (correct) position and rearrange
+  // Returns this RBT
+  // Returns false whether this val is already in this RBT
+  insert(val) {
+    // new node has color red
+    let node = new Node(val, 'red');
+    if (this.isEmpty()) {
+      this.size++;
+      this.root = node;
+      this.insertFixup();
+      return this;
+    }
+    let current = this.root;
+    while (current !== null) {
+      // duplicate val
+      if (current.val === node.val) return false;
+      // check left
+      if (current.val > node.val) {
+        if (!current.left) {
+          node.parent = current;
+          current.left = node;
+          this.size++;
+          this.insertFixup();
+          return this;
+        }
+        // update current to left
+        current = current.left;
+        // check right
+      } else {
+        if (!current.right) {
+          node.parent = current;
+          current.right = node;
+          this.size++;
+          this.insertFixup();
+          return this;
+        }
+        // update current
+        current = current.right;
+      }
+    }
+  }
+
+  // To fix the RBT if any property is violated
+  //      Two reds in a row
+  //      Root is not black
+  // CASE 1: the uncle of z (new node) y is also red (z's grandpa MUST be black)
+  //      Color both z's parent and uncle black
+  //      And z's grandpa red
+  // CASE 2/3 : z's uncle y is black and z is right/ left child
+  //      Left rotation in case 2 and changing z pointer -> CASE 3
+  //      Right rotation and color changing between z's parent and grandpa
+  insertFixup(z) {
+    // two reds in a row
+    while (z.parent.color === 'red') {
+      // the parent of z is a left child
+      if (z.parent === z.parent.parent.left) {
+        // y (z's uncle) is a right child
+        const y = z.parent.parent.right;
+        // CASE 1
+        if (y.color === red) {
+          z.parent.color = 'black';
+          y.color = 'black';
+          z.parent.parent.color = 'red';
+          // to update (propagate) z
+          z = z.parent.parent;
+        } else {
+          // CASE 2
+          if (z === z.parent.right) {
+            // to update (propagate) z
+            z = z.parent;
+            this.leftRotate(z);
+          }
+          // CASE 3
+          z.parent.color = 'black';
+          z.parent.parent.color = 'red';
+          this.rightRotate(z.parent.parent);
+        }
+      }
+      // the parent of z is a right child
+      else {
+        // y (z's uncle) is a left child
+        const y = z.parent.parent.left;
+        // CASE 1
+        if (y.color === red) {
+          z.parent.color = 'black';
+          y.color = 'black';
+          z.parent.parent.color = 'red';
+          // to update (propagate) z
+          z = z.parent.parent;
+        } else {
+          // CASE 2
+          if (z === z.parent.left) {
+            // to update (propagate) z
+            z = z.parent;
+            this.rightRotate(z);
+          }
+          // CASE 3
+          z.parent.color = 'black';
+          z.parent.parent.color = 'red';
+          this.left(z.parent.parent);
+        }
+      }
+    }
+    // Root must be black
+    this.root.color = 'black';
+  }
 }
