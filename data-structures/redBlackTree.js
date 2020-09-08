@@ -96,6 +96,27 @@ class RedBlackTree {
     x.parent = y;
   }
 
+  // Replaces one subtree as a child of its parent with another subtree
+  //    replaces the subtree rooted at node u with
+  //    the subtree rooted at node v
+  //    make the parent of u change its pointer to v
+  //    v takes u position and parent
+  transplant(u, v) {
+    // check if u is the root of this RBT
+    if (u.parent === null) {
+      this.root = v;
+    }
+    // check if u is a left child
+    else if (u === u.parent.left) {
+      u.parent.left = v;
+    } else {
+      // right child
+      u.parent.right = v;
+    }
+    // if v is null DON'T update
+    if (v !== null) v.parent = u.parent;
+  }
+
   //   **********************************************************
   //                    DYNAMIC-SET OPERATIONS
   //   **********************************************************
