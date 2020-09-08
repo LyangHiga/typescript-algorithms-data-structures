@@ -191,8 +191,6 @@ class BST {
     // Returns false if z is not a valid node
     if (!(z instanceof Node)) return false;
     if (this.isEmpty()) return false;
-    // Returns false if this BST is empty
-    if (this.root === null) return false;
     // no left child
     if (z.left === null) {
       // if z is also null just update the pointer of z's parent (to null)
