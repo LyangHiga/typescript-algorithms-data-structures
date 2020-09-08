@@ -220,7 +220,7 @@ class RedBlackTree {
     if (this.isEmpty()) {
       this.size++;
       this.root = node;
-      this.insertFixup();
+      this.insertFixup(node);
       return this;
     }
     let current = this.root;
@@ -233,7 +233,7 @@ class RedBlackTree {
           node.parent = current;
           current.left = node;
           this.size++;
-          this.insertFixup();
+          this.insertFixup(node);
           return this;
         }
         // update current to left
@@ -244,7 +244,7 @@ class RedBlackTree {
           node.parent = current;
           current.right = node;
           this.size++;
-          this.insertFixup();
+          this.insertFixup(node);
           return this;
         }
         // update current
@@ -264,13 +264,18 @@ class RedBlackTree {
   //      Right rotation and color changing between z's parent and grandpa
   insertFixup(z) {
     // two reds in a row
-    while (z.parent.color === 'red') {
+    while (
+      z !== null &&
+      z.parent !== null &&
+      z.parent.parent !== null &&
+      z.parent.color === 'red'
+    ) {
       // the parent of z is a left child
       if (z.parent === z.parent.parent.left) {
         // y (z's uncle) is a right child
         const y = z.parent.parent.right;
         // CASE 1
-        if (y.color === red) {
+        if (y !== null && y.color === 'red') {
           z.parent.color = 'black';
           y.color = 'black';
           z.parent.parent.color = 'red';
@@ -294,7 +299,7 @@ class RedBlackTree {
         // y (z's uncle) is a left child
         const y = z.parent.parent.left;
         // CASE 1
-        if (y.color === red) {
+        if (y !== null && y.color === 'red') {
           z.parent.color = 'black';
           y.color = 'black';
           z.parent.parent.color = 'red';
@@ -310,11 +315,184 @@ class RedBlackTree {
           // CASE 3
           z.parent.color = 'black';
           z.parent.parent.color = 'red';
-          this.left(z.parent.parent);
+          this.leftRotate(z.parent.parent);
         }
       }
     }
     // Root must be black
     this.root.color = 'black';
   }
+
+  //   **********************************************************
+  //                            DELETE
+  //   **********************************************************
+
+  // Deletes node z from this RBT
+  // 4 cases:
+  //    no child: just change the pointer of z's parent to null
+  //    one child: child takes z place
+  //    two children: sucessor of z takes it place
+  delete(z) {
+    // Returns false if z is not a valid node
+    if (!(z instanceof Node)) return false;
+    if (this.isEmpty()) return false;
+    if (this.size === 1) {
+      this.size = 0;
+      this.root = null;
+      return;
+    }
+    // we need to keep track of x and y, they might cause violantions
+    // fewer than 2 children: we want y to be z
+    let y = z;
+    // z's color
+    let yOriginalColor = y.color;
+    // moves into y's original position
+    let x;
+    // no left child
+    if (z.left === null) {
+      x = z.right;
+      // if z is also null just update the pointer of z's parent (to null)
+      this.transplant(z, z.right);
+    } else if (z.right === null) {
+      x = z.left;
+      // z has left child but not a right child
+      this.transplant(z, z.left);
+    } else {
+      // two childrens
+      // y is z's sucessor, and y moves to z's position
+      // sucessor is the node with smallest val in the right subtree
+      y = this.min(z.right);
+      // y has the color of the z's sucessor too
+      yOriginalColor = y.color;
+      x = y.right;
+      if (z === y.parent) {
+        // If sucessor is the right child of z
+        // x parent points to the original position of y’s parent
+        if (x !== null) x.parent = y;
+      } else {
+        // If sucessor is not the right child of z
+        // Remember: sucessor has no left child
+        //      otherwise sucessor.left would be the sucessor
+        // change the sucessor place with sucessor child
+        //      (we will change sucessor with z in the next step)
+        this.transplant(y, y.right);
+        y.right = z.right;
+        y.right.parent = y;
+      }
+      // OR the sucessor is the right child of z
+      // OR the sucessor was prepared in the last if
+      //    Anyway we just transplant and update pointers to left subtree
+      this.transplant(z, y);
+      // uodate sucessor left (from null) to left subtree
+      y.left = z.left;
+      // update left subtree parent (from z) to sucessor
+      y.left.parent = y;
+      // update y color
+      y.color = z.color;
+    }
+    if (x !== null && yOriginalColor === 'black') {
+      // y red color dont violate any property
+      this.deleteFixup(x);
+    }
+    this.size--;
+  }
+
+  deleteFixup(x) {
+    // move the extra black up
+    while (x !== this.root && x.color === 'black') {
+      // x is a left child
+      if (x === x.parent.left) {
+        // w is the sibling of x
+        let w = x.parent.right;
+        // CASE 1: w (x's sibling) is red
+        if (w.color === 'red') {
+          // the children of w MUST be black
+          // switch the colors of w and its parent
+          w.color = 'black';
+          x.parent = 'red';
+          // left-rotation on x.parent
+          this.leftRotate(x.parent);
+          // update w (x's sibling)
+          w = x.parent.right;
+        }
+        // CASE 2: w (x's sibling) is black and both children are black too
+        if (w.left.color === 'black' && w.right.color === 'black') {
+          // make w red
+          w.color = 'red';
+          // To compensate for removing one black
+          // repeate the while loop with x.parent as the new node x
+          x = x.parent;
+          continue;
+        }
+        // CASE 3: w (x's sibling) is black, left child of w is red,
+        //      right child of w is black
+        else if (w.right.color === 'black') {
+          // switch the colors of w and its left child
+          w.color = 'red';
+          w.left.color = 'black';
+          // right roration on w
+          this.rightRotate(w);
+          // update w
+          w = x.parent.right;
+        }
+        // CASE 4: w (x's sibling) is black, the right child of w is red
+        if (w.right.color === 'red') {
+          // Remove the extra black and finish
+          w.color = x.parent.color;
+          x.parent.color = 'black';
+          w.right.color = 'black';
+          this.leftRotate(x.parent);
+          x = this.root;
+        }
+      }
+      // x is a right child
+      else {
+        // w is the sibling of x
+        let w = x.parent.left;
+        // CASE 1: w (x's sibling) is red
+        if (w.color === 'red') {
+          // the children of w MUST be black
+          // switch the colors of w and its parent
+          w.color = 'black';
+          x.parent = 'red';
+          // left-rotation on x.parent
+          this.rightRotate(x.parent);
+          // update w (x's sibling)
+          w = x.parent.left;
+        }
+        // CASE 2: w (x's sibling) is black and both children are black too
+        if (w.left.color === 'black' && w.right.color === 'black') {
+          // make w red
+          w.color = 'red';
+          // To compensate for removing one black
+          // repeate the while loop with x.parent as the new node x
+          x = x.parent;
+          continue;
+        }
+        // CASE 3: w (x's sibling) is black, right child of w is red,
+        //      left child of w is black
+        else if (w.left.color === 'black') {
+          // switch the colors of w and its right child
+          w.color = 'red';
+          w.right.color = 'black';
+          // right roration on w
+          this.leftRotate(w);
+          // update w
+          w = x.parent.left;
+        }
+        // CASE 4: w (x's sibling) is black, the left child of w is red
+        if (w.left.color === 'red') {
+          // Remove the extra black and finish
+          w.color = x.parent.color;
+          x.parent.color = 'black';
+          w.left.color = 'black';
+          this.rightRotate(x.parent);
+          x = this.root;
+        }
+      }
+    }
+    x.color = 'black';
+  }
 }
+
+module.exports = RedBlackTree;
