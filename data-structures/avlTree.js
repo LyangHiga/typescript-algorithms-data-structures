@@ -215,6 +215,103 @@ class AVLTree {
     }
     return y;
   }
+
+  //   **********************************************************
+  //                            INSERT
+  //   **********************************************************
+
+  // Inserts a node in the right (correct) position and rearrange
+  // Returns this AVL Tree
+  // Returns false whether this val is already in this AVL Tree
+  insert(val) {
+    let node = new Node(val);
+    if (this.isEmpty()) {
+      this.size++;
+      this.root = node;
+      return this;
+    }
+    let current = this.root;
+    while (current !== null) {
+      // duplicate val
+      if (current.val === node.val) return false;
+      // check left
+      if (current.val > node.val) {
+        if (!current.left) {
+          node.parent = current;
+          current.left = node;
+          this.size++;
+          this.insertFixup(node);
+          return this;
+        }
+        // update current to left
+        current = current.left;
+        // check right
+      } else {
+        if (!current.right) {
+          node.parent = current;
+          current.right = node;
+          this.size++;
+          this.insertFixup(node);
+          return this;
+        }
+        // update current
+        current = current.right;
+      }
+    }
+  }
+
+  // Fix the AVL Tree: Performing rotations
+  // If any node (from new node x up to root) has a balance factor
+  // equals -2 or 2 after inserting the new node.
+  // Four Cases:
+  // left-left, left-right
+  // right-right, right-left
+  insertFixup(x) {
+    // Returns false if x is not a valid node
+    if (!(x instanceof Node)) return false;
+    if (this.isEmpty()) return false;
+    let balanceFactor;
+    while (
+      x !== null &&
+      x.parent !== null &&
+      balanceFactor !== 2 &&
+      balanceFactor !== -2
+    ) {
+      // update the height of the x's parent
+      this.updateHeight(x.parent);
+      balanceFactor = this.getBalanceFactor(x.parent);
+      x = x.parent;
+    }
+    if (balanceFactor === 2) {
+      // too left balanced
+      // get balance factor of x.left
+      // to check if it is a left-left or left-right case
+      balanceFactor = this.getBalanceFactor(x.left);
+      if (balanceFactor >= 0) {
+        // left-left case
+        this.rightRotate(x);
+      } else {
+        // left - right case
+        this.leftRotate(x.left);
+        this.rightRotate(x);
+      }
+    } else {
+      if (balanceFactor === -2) {
+        // too right balanced
+        // get balance factor of x.right
+        // to check if it is a right-right or right-left case
+        balanceFactor = this.getBalanceFactor(x.left);
+        if (balanceFactor <= 0) {
+          // right-right case
+          this.leftRotate(x);
+        } else {
+          // right-left case
+          this.rightRotate(x.right);
+          this.leftRotate(x);
+        }
+      }
+    }
+  }
 }
 
 module.exports = AVLTree;
