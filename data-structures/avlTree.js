@@ -46,6 +46,80 @@ class AVLTree {
     return leftHeight - rightHeight;
   }
 
+  // Fix the AVL Tree: Performing rotations
+  // If any node (from new node x up to root) has a balance factor
+  // equals -2 or 2 after inserting the new node.
+  // Four Cases:
+  // left-left, left-right
+  // right-right, right-left
+  rebalancing(x) {
+    // Returns false if x is not a valid node
+    if (!(x instanceof Node)) return false;
+    if (this.isEmpty()) return false;
+    let balanceFactor;
+    while (
+      x !== null &&
+      x.parent !== null &&
+      balanceFactor !== 2 &&
+      balanceFactor !== -2
+    ) {
+      // update the height of the x's parent
+      this.updateHeight(x.parent);
+      balanceFactor = this.getBalanceFactor(x.parent);
+      x = x.parent;
+    }
+    if (balanceFactor === 2) {
+      // too left balanced
+      // get balance factor of x.left
+      // to check if it is a left-left or left-right case
+      balanceFactor = this.getBalanceFactor(x.left);
+      if (balanceFactor >= 0) {
+        // left-left case
+        this.rightRotate(x);
+      } else {
+        // left - right case
+        this.leftRotate(x.left);
+        this.rightRotate(x);
+      }
+    } else {
+      if (balanceFactor === -2) {
+        // too right balanced
+        // get balance factor of x.right
+        // to check if it is a right-right or right-left case
+        balanceFactor = this.getBalanceFactor(x.left);
+        if (balanceFactor <= 0) {
+          // right-right case
+          this.leftRotate(x);
+        } else {
+          // right-left case
+          this.rightRotate(x.right);
+          this.leftRotate(x);
+        }
+      }
+    }
+  }
+
+  // Replaces one subtree as a child of its parent with another subtree
+  //    replaces the subtree rooted at node u with
+  //    the subtree rooted at node v
+  //    make the parent of u change its pointer to v
+  //    v takes u position and parent
+  transplant(u, v) {
+    // check if u is the root of this RBT
+    if (u.parent === null) {
+      this.root = v;
+    }
+    // check if u is a left child
+    else if (u === u.parent.left) {
+      u.parent.left = v;
+    } else {
+      // right child
+      u.parent.right = v;
+    }
+    // if v is null DON'T update
+    if (v !== null) v.parent = u.parent;
+  }
+
   // Operate a left rotation:
   //    y is the right child of x (NOT NULL)
   //    y's left subtree becomes x's right subtree
@@ -240,7 +314,7 @@ class AVLTree {
           node.parent = current;
           current.left = node;
           this.size++;
-          this.insertFixup(node);
+          this.rebalancing(node);
           return this;
         }
         // update current to left
@@ -251,7 +325,7 @@ class AVLTree {
           node.parent = current;
           current.right = node;
           this.size++;
-          this.insertFixup(node);
+          this.rebalancing(node);
           return this;
         }
         // update current
@@ -260,57 +334,54 @@ class AVLTree {
     }
   }
 
-  // Fix the AVL Tree: Performing rotations
-  // If any node (from new node x up to root) has a balance factor
-  // equals -2 or 2 after inserting the new node.
-  // Four Cases:
-  // left-left, left-right
-  // right-right, right-left
-  insertFixup(x) {
+  //   **********************************************************
+  //                            DELETE
+  //   **********************************************************
+
+  // Deletes node x from this BST
+  // 4 cases:
+  //    no child: just change the pointer of x's parent to null
+  //    one child: child takes x place
+  //    two children: sucessor of x takes it place
+  delete(x) {
     // Returns false if x is not a valid node
     if (!(x instanceof Node)) return false;
     if (this.isEmpty()) return false;
-    let balanceFactor;
-    while (
-      x !== null &&
-      x.parent !== null &&
-      balanceFactor !== 2 &&
-      balanceFactor !== -2
-    ) {
-      // update the height of the x's parent
-      this.updateHeight(x.parent);
-      balanceFactor = this.getBalanceFactor(x.parent);
-      x = x.parent;
-    }
-    if (balanceFactor === 2) {
-      // too left balanced
-      // get balance factor of x.left
-      // to check if it is a left-left or left-right case
-      balanceFactor = this.getBalanceFactor(x.left);
-      if (balanceFactor >= 0) {
-        // left-left case
-        this.rightRotate(x);
-      } else {
-        // left - right case
-        this.leftRotate(x.left);
-        this.rightRotate(x);
-      }
+    // no left child
+    if (x.left === null) {
+      // if x.right is also null just update the pointer of x's parent (to null)
+      this.transplant(x, x.right);
+    } else if (x.right === null) {
+      // x has left child but not a right child
+      this.transplant(x, x.left);
     } else {
-      if (balanceFactor === -2) {
-        // too right balanced
-        // get balance factor of x.right
-        // to check if it is a right-right or right-left case
-        balanceFactor = this.getBalanceFactor(x.left);
-        if (balanceFactor <= 0) {
-          // right-right case
-          this.leftRotate(x);
-        } else {
-          // right-left case
-          this.rightRotate(x.right);
-          this.leftRotate(x);
-        }
+      // two childrens
+      // sucessor is the node with smallest val in the right subtree
+      const sucessor = this.min(x.right);
+      if (x !== sucessor.parent) {
+        // If sucessor is not the right child of x
+        // Remember: sucessor has no left child
+        //      otherwise sucessor.left would be the sucessor
+        // change the sucessor place with sucessor child
+        //      (we will change sucessor with x in the next step)
+        this.transplant(sucessor, sucessor.right);
+        sucessor.right = x.right;
+        sucessor.right.parent = sucessor;
+        this.updateHeight(sucessor.right);
       }
+      // OR the sucessor is the right child of x
+      // OR the sucessor was prepared in the last if
+      //    Anyway we just transplant and update pointers to left subtree
+      this.transplant(x, sucessor);
+      // uodate sucessor left (from null) to left subtree
+      sucessor.left = x.left;
+      // update left subtree parent (from x) to sucessor
+      sucessor.left.parent = sucessor;
+      this.updateHeight(sucessor);
     }
+    this.updateHeight(x);
+    this.rebalancing(x);
+    this.size--;
   }
 }
 
