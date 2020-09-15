@@ -172,7 +172,7 @@ class MaxBinaryHeap {
 
   // Returns the root node
   // Returns null if this Heap is empty
-  findMin() {
+  findMax() {
     if (this.isEmpty()) return null;
     return this.values[0];
   }
