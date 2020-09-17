@@ -1,92 +1,116 @@
-class HashTable {
-    constructor(size=53){
-      this.keyMap = new Array(size);
-    }
-  
-    _hash(key) {
-      let total = 0;
-      let WEIRD_PRIME = 31;
-      for (let i = 0; i < Math.min(key.length, 100); i++) {
-        let char = key[i];
-        let value = char.charCodeAt(0) - 96
-        total = (total * WEIRD_PRIME + value) % this.keyMap.length;
-      }
-      return total;
-    }
+const DoublyLinkedList = require('./doublyList');
 
-    // add a new key, val
-    set(key,val){
-        // hash the index
-        let i = this._hash(key);
-        // separate chaining
-        if(!this.keyMap[i]){
-            this.keyMap[i] = [];
-        }
-        this.keyMap[i].push([key,val]);
-    }
-    // return val
-    get(key){
-        let i = this._hash(key);
-        let j = 0;
-        if(!this.keyMap[i]) return undefined;
-        while(this.keyMap[i][j][0] !== key){
-            j++;
-        }
-        return this.keyMap[i][j][1];
-        
-    }
-    // return all unique values
-    values(){
-        let valArr = [];
-        for(let i=0;i<this.keyMap.length;i++){
-            if(this.keyMap[i]){
-                for(let j =0; j< this.keyMap[i].length;j++){
-                    if(!valArr.includes(this.keyMap[i][j][0])){
-                        valArr.push(this.keyMap[i][j][1]);
-                    }
-                }
-            }
-        }
-        return valArr;
-    }
-
-    // return all unique keys
-    keys(){
-        let keyArr = [];
-        for(let i=0;i<this.keyMap.length;i++){
-            if(this.keyMap[i]){
-                for(let j =0; j< this.keyMap[i].length;j++){
-                    if(!keyArr.includes(this.keyMap[i][j][0])){
-                        keyArr.push(this.keyMap[i][j][0]);
-                    }
-                }
-            }
-        }
-        return keyArr;
-    }
+class Node {
+  constructor(key, val, hash) {
+    this.key = key;
+    this.val = val;
+    this.hash = hash;
+  }
 }
 
-let ht = new HashTable(17);
-ht.set("maroon","#800000");
-ht.set("yellow","#FFFF00");
-ht.set("olive","#808000");
-ht.set("salmon","#FA8072");
-ht.set("lightcoral","#F08080");
-ht.set("mediumvioletred","#C71585");
-ht.set("plum","#DDA0DD");
-console.log(ht.get("maroon"));
-console.log(ht.get("yellow"));
-console.log(ht.get("olive"));
-console.log(ht.get("salmon"));
-console.log(ht.get("lightcoral"));
-console.log(ht.get("plum"));
-console.log(ht.get("mediumvioletred"));
+class HashTable {
+  constructor(m) {
+    // number of slots available: the capacity of this HT
+    // must be a Prime number not too close an exact power of 2
+    this.m = m;
+    this.keyMap = new Array(m);
+    // number of elements already in this HT
+    this.n = 0;
+    // @TODO add alpha= n/m
+  }
 
-console.log(ht.keys());
-console.log(ht.values());
+  //   **********************************************************
+  //                            HELPERS
+  //   **********************************************************
 
+  _hash = (key) => {
+    return key % this.m;
+  };
 
+  _normalize = (hash) => {
+    return (hash & 0x7fffffff) % this.m;
+  };
 
+  bucketSearch = (i, key) => {
+    if (!this.keyMap[i]) return null;
+    let x = this.keyMap[i].head;
+    while (x !== null) {
+      if (x.val.key === key) return x.val;
+      x = x.next;
+    }
+    return null;
+  };
 
+  //   **********************************************************
+  //                          HT OPERATIONS
+  //   **********************************************************
 
+  // add a new key, val
+  set(key, val) {
+    // hash the index
+    const hash = this._hash(key);
+    const node = new Node(key, val, hash);
+    const i = this._normalize(hash);
+    // separate chaining
+    if (!this.keyMap[i]) {
+      this.keyMap[i] = new DoublyLinkedList();
+    }
+    if (this.bucketSearch(i, key)) return null;
+    this.keyMap[i].push(node);
+    this.size++;
+    // @TODO Resize()
+    // @TODO Calculate new m and ALPHA
+    return node;
+  }
 
+  // return val
+  get(key) {
+    const hash = this._hash(key);
+    const i = this._normalize(hash);
+    return this.bucketSearch(i, key);
+  }
+
+  // Returns true if this HT contains this k
+  // otherwise Retuns false
+  has(key) {
+    const hash = this._hash(key);
+    const i = this._normalize(hash);
+    const node = this.bucketSearch(i, key);
+    if (node) return true;
+    return false;
+  }
+
+  // return all unique values
+  values() {
+    let arr = [];
+    let x;
+    for (let i = 0; i < this.keyMap.length; i++) {
+      if (this.keyMap[i]) {
+        x = this.keyMap[i].head;
+        while (x !== null) {
+          arr.push(x.val.val);
+          x = x.next;
+        }
+      }
+    }
+    return arr;
+  }
+
+  // return all unique keys
+  keys() {
+    let arr = [];
+    let x;
+    for (let i = 0; i < this.keyMap.length; i++) {
+      if (this.keyMap[i]) {
+        x = this.keyMap[i].head;
+        while (x !== null) {
+          arr.push(x.val.key);
+          x = x.next;
+        }
+      }
+    }
+    return arr;
+  }
+}
+
+module.exports = HashTable;
