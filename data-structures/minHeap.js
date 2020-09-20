@@ -19,27 +19,27 @@ class MinHeap {
 
   // Returns true if the element from index i is smaller than k idx element
   // otherwise returns false
-  lessThan(i, k) {
+  lessThan = (i, k) => {
     // out of bounds
     if (i < 0 || k < 0) return false;
     if (i > this.size - 1 || k > this.size - 1) return false;
     if (this.values[i].val < this.values[k].val) return true;
     return false;
-  }
+  };
 
   // Returns the parent's index of the ith node
-  myParentIdx(i) {
+  myParentIdx = (i) => {
     return Math.floor((i - 1) / 2);
-  }
+  };
 
   // Returns the children's index of the ith node
-  myChildrenIdx(i) {
+  myChildrenIdx = (i) => {
     // left 2 * i + 1 , right 2 * idx + 2
     return [2 * i + 1, 2 * i + 2];
-  }
+  };
 
   // Rearrange values and dict
-  bubbleUp(i, j) {
+  bubbleUp = (i, j) => {
     //swap i and j
     [this.values[i], this.values[j]] = [this.values[j], this.values[i]];
 
@@ -48,11 +48,11 @@ class MinHeap {
       this.idxs[this.values[j].key],
       this.idxs[this.values[i].key],
     ];
-  }
+  };
 
   // Returns the smmaller child idx
   // Rearrange values and dict
-  bubbleDown(idx, l, r) {
+  bubbleDown = (idx, l, r) => {
     // to keep track of the smallest child
     let smallIdx;
     if (this.lessThan(l, r)) {
@@ -76,20 +76,20 @@ class MinHeap {
     ];
 
     return smallIdx;
-  }
+  };
 
   // Returns true if this heap constains this key
   // Otherwise returns false
-  contains(key) {
+  contains = (key) => {
     if (this.values[this.idxs[key]] === undefined) return false;
     return true;
-  }
+  };
 
   // Returns true if this heap is empty
   // Otherwise returns false
-  isEmpty() {
+  isEmpty = () => {
     return this.size === 0;
-  }
+  };
 
   //   **********************************************************
   //                            CREATING
@@ -109,7 +109,7 @@ class MinHeap {
   //    In this case second param <keys> is not used
   // In any case the Heap is build in linear time
   // Returns: this Heap
-  buildHeap(arr, keys = null) {
+  buildHeap = (arr, keys = null) => {
     // Returns false if this heap is not empty
     if (!this.isEmpty()) return false;
     // arr is an array
@@ -165,7 +165,7 @@ class MinHeap {
       }
     }
     return this;
-  }
+  };
 
   //   **********************************************************
   //                            ACCESSING
@@ -173,27 +173,27 @@ class MinHeap {
 
   // Returns the root node
   // Returns null if this Heap is empty
-  findMin() {
+  findMin = () => {
     if (this.isEmpty()) return null;
     return this.values[0];
-  }
+  };
 
   // Returns the value of this key
   // Returns null whether this key does not belong to this heap
-  valueOf(key) {
+  valueOf = (key) => {
     if (!this.contains(key)) return null;
     const idx = this.idxs[key];
     return this.values[idx];
-  }
+  };
 
   //   **********************************************************
   //                            INSERT
   //   **********************************************************
 
   // Inserts a node (key,val) in the last position and rearrange
-  // Returns Heap
+  // Returns the node inserted
   // Returns false whether this key is already in this heap
-  enqueue(key, val) {
+  enqueue = (key, val) => {
     // to avoid duplicate keys
     if (this.contains(key)) return false;
     let node = new Node(key, val);
@@ -211,18 +211,18 @@ class MinHeap {
       idx = parentIdx;
       parentIdx = this.myParentIdx(idx);
     }
-    return this;
-  }
+    return node;
+  };
 
   //   **********************************************************
   //                            UPDATE
   //   **********************************************************
 
   // Update the val of this key
-  // Returns this heap
+  // Returns true
   // Returns false if there is not any node with this key in this heap
   // Returns false if newVal is not smaller than the actual val of key
-  decreaseKey(key, newVal) {
+  decreaseKey = (key, newVal) => {
     // check whether this key belongs to this heap
     if (!this.contains(key)) return false;
     //   get idx of this key
@@ -241,14 +241,14 @@ class MinHeap {
       idx = parentIdx;
       parentIdx = this.myParentIdx(idx);
     }
-    return this;
-  }
+    return true;
+  };
 
   // Update the val of this key
-  // Returns this heap
+  // Returns true
   // Returns false if there is not any node with this key in this heap
   // Returns false if newVal is greater than the actual val
-  increaseKey(key, newVal) {
+  increaseKey = (key, newVal) => {
     // check whether this key belongs to this heap
     if (!this.contains(key)) return false;
     //   get idx of this key
@@ -266,35 +266,35 @@ class MinHeap {
       idx = this.bubbleDown(idx, lChild, rChild);
       [lChild, rChild] = this.myChildrenIdx(idx);
     }
-    return this;
-  }
+    return true;
+  };
 
   // Returns false if there is not any node with this key in this heap
-  // Returns this heap if newVal equals to the actual val
+  // Returns false if newVal equals to the actual val
   // if newVal is greater than the actual val calls increaseKey
   // if newVal is smaller than the actual val calls decreaseKey
-  updateKey(key, newVal) {
+  updateKey = (key, newVal) => {
     // check whether this key belongs to this heap
     if (!this.contains(key)) return false;
     //   get idx of this key
     let idx = this.idxs[key];
-    if (newVal === this.values[idx].val) return this;
+    if (newVal === this.values[idx].val) return false;
     if (newVal > this.values[idx].val) return this.increaseKey(key, newVal);
     if (newVal < this.values[idx].val) return this.decreaseKey(key, newVal);
-  }
+  };
 
   //   **********************************************************
   //                            DELETE
   //   **********************************************************
 
   // Removes the root (min),
-  // Returns the root and the new arrangement
+  // Returns the root
   // Returns null if this heap is empty
-  dequeue() {
+  dequeue = () => {
     if (this.isEmpty()) return null;
     if (this.size === 1) {
       this.size--;
-      return { element: this.values.pop(), heap: this };
+      return this.values.pop();
     }
     const min = this.values[0];
     // replace the root with the last element
@@ -313,20 +313,20 @@ class MinHeap {
       idx = this.bubbleDown(idx, lChild, rChild);
       [lChild, rChild] = this.myChildrenIdx(idx);
     }
-    return { element: min, heap: this };
-  }
+    return min;
+  };
 
   // Removes the node from this respect key
-  // Returns this HEAP
+  // Returns true
   // Returns false whether this key is not in this heap
-  deleteKey(key) {
+  deleteKey = (key) => {
     if (!this.contains(key)) return false;
     // if it is the last element of values: we dont need to rearrange
     if (this.idxs[key] === this.size - 1) {
       this.values.pop();
       delete this.idxs[key];
       this.size--;
-      return this;
+      return true;
     }
     //   get idx of this key
     let idx = this.idxs[key];
@@ -346,15 +346,15 @@ class MinHeap {
       idx = this.bubbleDown(idx, lChild, rChild);
       [lChild, rChild] = this.myChildrenIdx(idx);
     }
-    return this;
-  }
+    return true;
+  };
 
-  // to clear the heap instance and frees memory
-  clear() {
+  // To clear the heap instance and frees memory
+  clear = () => {
     this.size = 0;
     while (!this.isEmpty()) this.values.pop();
     for (let k in this.idx) delete this.idx[k];
-  }
+  };
 }
 
 module.exports = MinHeap;

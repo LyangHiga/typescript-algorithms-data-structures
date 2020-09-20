@@ -26,9 +26,9 @@ class FibonacciHeap {
 
   // Returns true if this heap is empty
   // Otherwise returns false
-  isEmpty() {
+  isEmpty = () => {
     return this.size === 0;
-  }
+  };
 
   // Adds a node to the root list
   // Also update the parent of node to null
@@ -38,7 +38,7 @@ class FibonacciHeap {
   // If this FH is empty: Create the root list containing just node
   //    node becomes min and points to itself
   //    An only child points to itself in left and right
-  addToRootList(node) {
+  addToRootList = (node) => {
     if (this.isEmpty() || this.min === null) {
       this.min = node;
       this.min.left = node;
@@ -53,26 +53,26 @@ class FibonacciHeap {
     }
     // node does not have a parent any more
     node.parent = null;
-  }
+  };
 
   // Concatenates this min root list with root list of a given node( min of h2 = min2)
   // [...] <-> min1 <-> t1 <-> [...], [...] <-> t2 <-> min2 <-> [...]
   // [...] t2 <-> t1 <->[...] <-> min1 <-> min2 <-> [...]
-  concatenate(node) {
+  concatenate = (node) => {
     const t1 = this.min.right;
     const t2 = node.left;
     this.min.right = node;
     node.left = this.min;
     t1.left = t2;
     t2.right = t1;
-  }
+  };
 
   // Removes node from this FH
   // [...] <-> t <-> node <-> t2 <-> [...]
   // [...] <-> t <-> t2 <-> [...]
   // Returns false if node is not in Root List
   // Removing node from root list does not change any attribute in node
-  removeFromRootList(node) {
+  removeFromRootList = (node) => {
     // check if node is in Root list
     if (node.parent !== null || node.left === null || node.right === null) {
       return false;
@@ -82,10 +82,10 @@ class FibonacciHeap {
     // pointing to the new siblings, no one points to node any more
     t.right = t2;
     t2.left = t;
-  }
+  };
 
   // Makes y node child of x node
-  makeYchildOfX(x, y) {
+  makeYchildOfX = (x, y) => {
     y.parent = x;
     // check if y is the first child
     if (x.degree === 0) {
@@ -103,13 +103,13 @@ class FibonacciHeap {
       child.right = y;
       y.left = child;
       y.right = t;
-      t.left = y;
+      if (t !== null) t.left = y;
     }
-  }
+  };
 
   // Removes x from the child list of y, and decremente y degree
   // Removing x from child list of y does not change any attribute in x
-  removeXFromParentY(x, y) {
+  removeXFromParentY = (x, y) => {
     // check if x was only child
     if (y.degree === 1) {
       y.child = null;
@@ -120,13 +120,14 @@ class FibonacciHeap {
         y.child = x.right;
       } else {
         // we need to find x in this child list and remove pointers
-        const t = y.child;
+        let t = y.child;
         while (t !== x) {
           // we find x
           if (t.right === x) {
             // [...] <-> t <-> x <-> x.right <-> [...]
             t.right = x.right;
             x.right.left = t;
+            break;
           }
           // moving to the next sibling
           t = t.right;
@@ -134,25 +135,25 @@ class FibonacciHeap {
       }
     }
     y.degree--;
-  }
+  };
 
   // Removes x from child list of y
   // Add x to child list (update parent of x to null)
   // clear x.mark
-  cut(x, y) {
+  cut = (x, y) => {
     // Remove x from child list of y and decrease degree of y
     this.removeXFromParentY(x, y);
     // add to root and update x.parent to null
     this.addToRootList(x);
     // clear x mark
     x.mark = false;
-  }
+  };
 
   // if y already lost a child (y.mark === true)
   // cut link between y and y.parent and call cascading cut to y.parent
   // if is the first child that y lost, mark y
   // if y is already a root it doesn't matter
-  cascadingCut(y) {
+  cascadingCut = (y) => {
     const z = y.parent;
     // check if y is not a root
     if (z !== null) {
@@ -167,42 +168,50 @@ class FibonacciHeap {
         this.cascadingCut(z);
       }
     }
-  }
+  };
 
   // Links two roots, which have same degree, into a single one
   // x will be the parent, so x MUST to be smaller than y
   // Returns false if x is greater than y
-  link(x, y) {
+  link = (x, y) => {
     // check if x.val < y.val
     if (y.val < x.val) return false;
     this.removeFromRootList(y);
     this.makeYchildOfX(x, y);
     x.degree += 1;
     y.mark = false;
-  }
+  };
+
+  sortForest = () => {
+    let w = this.min;
+    this.min.left.right = null;
+    let sortRoot = [];
+    while (w !== null) {
+      sortRoot.push(w);
+      const next = w.right;
+      w.right = null;
+      w = next;
+    }
+    sortRoot.sort((a, b) => a.degree - b.degree);
+    return sortRoot;
+  };
 
   // Ensures that every root has distinct degree
   //    Search roots with same degree and link
   //    until there is at most one root with each degree
   // O(maxDegree) = O(log n)
-  consolidate() {
-    //   max degree := log(n)
-    let maxDegree = Math.log2(this.size);
-    if (Number.isInteger(maxDegree)) {
-      // increase 1 because maxDegree is inclusive [0,maxDregree]
-      maxDegree++;
-    } else {
-      // increase 2 because of floor and maxDegree is inclusive
-      maxDegree = Math.floor(maxDegree) + 2;
-    }
+  consolidate = () => {
+    // max degree := log(n)
+    // increase 1 because maxDegree is inclusive [0,maxDregree]
+    let maxDegree = Math.ceil(Math.log2(this.size));
     // to keep track the root's degree
     const a = new Array(maxDegree).fill(null);
-    // for each node w in the root list
     let w = this.min;
     // removing pointer from left sibling of min to min
     // left <-> min <-> [...]
     // left <- min <-> [...]
     this.min.left.right = null;
+    // for each node w in the root list
     while (w !== null) {
       let x = w;
       let d = x.degree;
@@ -232,18 +241,14 @@ class FibonacciHeap {
     for (let i = 0; i < maxDegree; i++) {
       if (a[i] !== null) {
         // add node a[i] to the root list
+        // if min is null or heap is empty add a[i] as the min
         this.addToRootList(a[i]);
-        // update min
-        if (this.min === null) {
+        if (a[i].val < this.min.val) {
           this.min = a[i];
-        } else {
-          if (a[i].val < this.min.val) {
-            this.min = a[i];
-          }
         }
       }
     }
-  }
+  };
 
   //   **********************************************************
   //                            ACCESSING
@@ -251,55 +256,65 @@ class FibonacciHeap {
 
   // Returns the min node
   // Returns null if this Heap is empty
-  findMin() {
+  findMin = () => {
     if (this.isEmpty()) return null;
     return this.min;
-  }
+  };
 
   //   **********************************************************
   //                            INSERT
   //   **********************************************************
 
-  enqueue(key, val) {
+  // Inserts a node (key,val) in the root List
+  // Returns the node inserted
+  enqueue = (key, val) => {
     const node = new Node(key, val);
+    // if heap is empty or min is null, set node as min
     this.addToRootList(node);
     if (node.val < this.min.val) {
       this.min = node;
     }
     this.size++;
-    return this;
-  }
+    return node;
+  };
 
   //   **********************************************************
   //                            DELETE
   //   **********************************************************
 
   // Removes the root (min),
-  // Returns the root and the new arrangement
+  // Returns the root
   //    It's where the delayed work of consolidating trees
   //    in root list finally occurs
   // Returns null if this heap is empty
-  dequeue() {
+  dequeue = () => {
     if (this.isEmpty()) return null;
-    // saving pointer to min and its right sibling
+    // saving pointer to min
     const z = this.min;
-    // for each child x of z
+    // console.log(`z: ${z.key}, z.c: ${z.child}`);
     if (z.child !== null) {
       let x = z.child;
+      // to keep each child
+      const chidrenOfz = [];
       // removing pointer from left sibling of x to x
       // left <-> x <-> [...]
       // left <- x <-> [...]
       x.left.right = null;
+      // for each child x of z: we want to remove z as parent of each x
       while (x !== null) {
         const next = x.right;
         // in each step we remove the pointer to the right sibling
         x.right = null;
-        this.addToRootList(x);
+        chidrenOfz.push(x);
         // z is no longer parent of x
         x.parent = null;
         // update x
+
         x = next;
       }
+      chidrenOfz.forEach((x) => {
+        this.addToRootList(x);
+      });
     }
     this.removeFromRootList(z);
     // check if z was the last element in this FH
@@ -312,18 +327,19 @@ class FibonacciHeap {
     }
     // decrease size
     this.size -= 1;
-    return { element: z, heap: this };
-  }
+    // return { element: z, heap: this };
+    return z;
+  };
 
   // Removes the node from this respect key
   // Returns this HEAP
-  deleteKey(x) {
+  deleteKey = (x) => {
     // if x is not an instance of Node returns false
     if (!(x instanceof Node)) return false;
     this.decreaseKey(x, Number.NEGATIVE_INFINITY);
     this.dequeue();
     return this;
-  }
+  };
 
   //   **********************************************************
   //                            UNION
@@ -331,7 +347,7 @@ class FibonacciHeap {
 
   // Returns a new FH h, which is the union between this FH and h2
   // Returns false if any FH is empty
-  union(h2) {
+  union = (h2) => {
     if (this.isEmpty() || h2.isEmpty()) return false;
     const h = new FibonacciHeap();
     h.min = this.min;
@@ -341,7 +357,7 @@ class FibonacciHeap {
     }
     h.size = this.size + h2.size;
     return h;
-  }
+  };
 
   //   **********************************************************
   //                            UPDATE
@@ -351,13 +367,14 @@ class FibonacciHeap {
   // Returns false if x is not an instance of Node
   // Returns false if newVal is not smaller than the actual val
   // if new val and the actual val of x are the same return this
-  decreaseKey(x, newVal) {
+  decreaseKey = (x, newVal) => {
     // if x is not an instance of Node returns false
     if (!(x instanceof Node)) return false;
     // to ensure newVal < val
     if (newVal > x.val) return false;
     // if they are the same return this
-    if (newVal === x.val) return this;
+    if (newVal === x.val) return false;
+
     // update x
     x.val = newVal;
     const y = x.parent;
@@ -372,10 +389,12 @@ class FibonacciHeap {
       this.cut(x, y);
       this.cascadingCut(y);
     }
+
     if (x.val < this.min) {
       this.min = x.val;
     }
-  }
+    return true;
+  };
 }
 
 module.exports = FibonacciHeap;

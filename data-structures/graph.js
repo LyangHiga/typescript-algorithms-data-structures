@@ -558,9 +558,9 @@ class Graph {
   // Inputs:
   //    s: source vertex
   //    h: to choose between binary and fibonacci heap
-  //   'f' (default) for FibonacciHeap
-  //   'b' for binaryHeap
-  dijkstra(s, h = 'f') {
+  //   'b' (default) for binaryHeap
+  //   'f' for FibonacciHeap
+  dijkstra = (s, h = 'b') => {
     if (h === 'b') {
       // we should use 'var' declaration get a function scope
       var heap = new MinHeap();
@@ -572,6 +572,7 @@ class Graph {
       // return false if an invalid heap was choosen
       return false;
     }
+    let dequeues = 0;
     // objs to map key to distance and key to parents
     const distances = {};
     const parents = {};
@@ -587,7 +588,8 @@ class Graph {
     heap.enqueue(s, 0);
     // while we have nodes to visite:
     while (!heap.isEmpty()) {
-      smallest = heap.dequeue().element.key;
+      smallest = heap.dequeue().key;
+      dequeues++;
       if (smallest || distances[smallest] !== Infinity) {
         for (let neighbour in this.list[smallest]) {
           let nextNode = this.list[smallest][neighbour];
@@ -606,26 +608,46 @@ class Graph {
               //FH we need a pointer to the node to be decreased
               deacrease = heap.decreaseKey(pointers[nextNode.node], d);
             }
-
             if (!deacrease) {
-              // enqueue with new priority
-              heap.enqueue(nextNode.node, d);
+              // if this node is not in heap(wasn't decrease) add to the Heap
+              if (h === 'f') {
+                pointers[nextNode.node] = heap.enqueue(nextNode.node, d);
+              } else {
+                heap.enqueue(nextNode.node, d);
+              }
             }
           }
         }
       }
     }
+    console.log(
+      `dequeues: ${dequeues}, size: ${this.size}, h.size: ${heap.size}`
+    );
     return { distances, parents };
-  }
+  };
 
   // Returns the MST and its cost
   // isConnect === false means we dont know if it is
   //    if it is not: Returns the MST of the Connect Component that s belongs and its cost
   //    if it is: Returns the MST and its cost
-  prim(s, isConnected = true) {
-    const heap = new MinHeap();
+  //    h: 'b'(default) for binaryHeap
+  //    h: 'f' for FibonacciHeap
+  prim = (s, isConnected = true, h = 'b') => {
+    if (h === 'b') {
+      // we should use 'var' declaration get a function scope
+      var heap = new MinHeap();
+    } else if (h === 'f') {
+      var heap = new FibonacciHeap();
+      // to keep track of node to make decrease key when distances get smaller
+      var pointers = {};
+    } else {
+      // return false if an invalid heap was choosen
+      return false;
+    }
+    // const heap = h === 'f' ? new FibonacciHeap() : new MinHeap();
     const mst = new Graph();
-    // obj to keep track what element is already in mst
+    // map to keep track what element is already in mst
+    // we dont need this in Dijkstra because dist always encrease
     const mstSet = {};
     // objs to map key to edge cost and to parent
     const edgeCost = {};
@@ -642,19 +664,18 @@ class Graph {
       }
     }
     edgeCost[s] = 0;
-    if (isConnected) heap.buildHeap(edgeCost);
-    else heap.enqueue(s, 0);
+    heap.enqueue(s, 0);
     parents[s] = null;
     mstSet[s] = true;
     while (!heap.isEmpty()) {
-      smallest = heap.dequeue().element.key;
+      smallest = heap.dequeue().key;
       dequeues++;
       //   we found the min cost to add smallest in our MST
       cost += edgeCost[smallest];
       mst.addVertex(smallest);
       mstSet[smallest] = true;
       if (parents[smallest]) {
-        //   if smallest has a parent (is not s node) add the edge to mst
+        //   if smallest has a parent (is not the start node) add the edge to mst
         mst.addEdge(smallest, parents[smallest], edgeCost[smallest]);
       }
       if (smallest || edgeCost[smallest] !== Infinity) {
@@ -670,17 +691,36 @@ class Graph {
             edgeCost[nextNode.node] = nextNode.weight;
             parents[nextNode.node] = smallest;
             // try to deacrease key, if isConnect always will decrease
-            deacrease = heap.decreaseKey(nextNode.node, nextNode.weight);
+            if (h === 'b') {
+              // binary heap we just need the key of the node to be decreased
+              deacrease = heap.decreaseKey(nextNode.node, nextNode.weight);
+            } else {
+              //FH we need a pointer to the node to be decreased
+              deacrease = heap.decreaseKey(
+                pointers[nextNode.node],
+                nextNode.weight
+              );
+            }
             if (!deacrease) {
-              // enqueue with new priority
-              heap.enqueue(nextNode.node, nextNode.weight);
+              // if this node is not in heap(wasn't decrease) add to the Heap
+              if (h === 'f') {
+                pointers[nextNode.node] = heap.enqueue(
+                  nextNode.node,
+                  nextNode.weight
+                );
+              } else {
+                heap.enqueue(nextNode.node, nextNode.weight);
+              }
             }
           }
         }
       }
     }
+    console.log(
+      `dequeues: ${dequeues}, size: ${this.size}, h.size: ${heap.size}`
+    );
     return { cost, mst };
-  }
+  };
 }
 
 module.exports = Graph;
