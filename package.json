@@ -1,0 +1,22 @@
+{
+  "name": "algorithms-and-data-structures-js",
+  "version": "1.0.0",
+  "description": "This Repo, at first, was only for [JavaScript Algorithms and Data Structures Masterclass](https://www.udemy.com/course/js-algorithms-and-data-structures-masterclass/).",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LyangHiga/JavaScript-Algorithms-and-Data-Structures-Masterclass.git"
+  },
+  "author": "Lyang Higa Cano",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LyangHiga/JavaScript-Algorithms-and-Data-Structures-Masterclass/issues"
+  },
+  "homepage": "https://github.com/LyangHiga/JavaScript-Algorithms-and-Data-Structures-Masterclass#readme",
+  "devDependencies": {
+    "@types/node": "^14.11.2"
+  }
+}
