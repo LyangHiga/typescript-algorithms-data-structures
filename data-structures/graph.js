@@ -47,6 +47,7 @@ class Graph {
       }
     }
   }
+
   // Returns true if this list constains this vertex v
   // Otherwise returns false
   contains(v) {
@@ -585,10 +586,13 @@ class Graph {
       }
     }
     distances[s] = 0;
-    heap.enqueue(s, 0);
+    if (h === `f`) pointers = heap.buildHeap(distances);
+    else heap.buildHeap(distances);
+    // heap.enqueue(s, 0);
     // while we have nodes to visite:
     while (!heap.isEmpty()) {
       smallest = heap.dequeue().key;
+      //   console.log(`smallest: ${smallest}, dist: ${distances[smallest]}`);
       dequeues++;
       if (smallest || distances[smallest] !== Infinity) {
         for (let neighbour in this.list[smallest]) {
@@ -605,45 +609,38 @@ class Graph {
               // binary heap we just need the key of the node to be decreased
               deacrease = heap.decreaseKey(nextNode.node, d);
             } else {
+              // @TODO Refactoring FH Decrease key
+              //   console.log(`key pointer: ${pointers[nextNode.node].key}`);
               //FH we need a pointer to the node to be decreased
-              deacrease = heap.decreaseKey(pointers[nextNode.node], d);
+              //   deacrease = heap.decreaseKey(pointers[nextNode.node], d);
+              heap.enqueue(nextNode.node, d);
             }
-            if (!deacrease) {
-              // if this node is not in heap(wasn't decrease) add to the Heap
-              if (h === 'f') {
-                pointers[nextNode.node] = heap.enqueue(nextNode.node, d);
-              } else {
-                heap.enqueue(nextNode.node, d);
-              }
-            }
+            // if (!deacrease) {
+            //   // if this node is not in heap(wasn't decrease) add to the Heap
+            //   if (h === 'f') {
+            //     pointers[nextNode.node] = heap.enqueue(nextNode.node, d);
+            //   } else {
+            //     heap.enqueue(nextNode.node, d);
+            //   }
+            // } else {
+            //   if (h === 'f') {
+            //     // console.log(deacrease);
+            //     pointers[nextNode.node] = deacrease;
+            //   }
+            // }
           }
         }
       }
     }
     console.log(
-      `dequeues: ${dequeues}, size: ${this.size}, h.size: ${heap.size}`
+      `dequeues: ${dequeues},size: ${this.size}, h.size: ${heap.size}`
     );
     return { distances, parents };
   };
 
   // Returns the MST and its cost
-  // isConnect === false means we dont know if it is
-  //    if it is not: Returns the MST of the Connect Component that s belongs and its cost
-  //    if it is: Returns the MST and its cost
-  //    h: 'b'(default) for binaryHeap
-  //    h: 'f' for FibonacciHeap
-  prim = (s, isConnected = true, h = 'b') => {
-    if (h === 'b') {
-      // we should use 'var' declaration get a function scope
-      var heap = new MinHeap();
-    } else if (h === 'f') {
-      var heap = new FibonacciHeap();
-      // to keep track of node to make decrease key when distances get smaller
-      var pointers = {};
-    } else {
-      // return false if an invalid heap was choosen
-      return false;
-    }
+  prim = (s) => {
+    let heap = new MinHeap();
     // const heap = h === 'f' ? new FibonacciHeap() : new MinHeap();
     const mst = new Graph();
     // map to keep track what element is already in mst
@@ -664,7 +661,7 @@ class Graph {
       }
     }
     edgeCost[s] = 0;
-    heap.enqueue(s, 0);
+    heap.buildHeap(edgeCost);
     parents[s] = null;
     mstSet[s] = true;
     while (!heap.isEmpty()) {
@@ -691,27 +688,7 @@ class Graph {
             edgeCost[nextNode.node] = nextNode.weight;
             parents[nextNode.node] = smallest;
             // try to deacrease key, if isConnect always will decrease
-            if (h === 'b') {
-              // binary heap we just need the key of the node to be decreased
-              deacrease = heap.decreaseKey(nextNode.node, nextNode.weight);
-            } else {
-              //FH we need a pointer to the node to be decreased
-              deacrease = heap.decreaseKey(
-                pointers[nextNode.node],
-                nextNode.weight
-              );
-            }
-            if (!deacrease) {
-              // if this node is not in heap(wasn't decrease) add to the Heap
-              if (h === 'f') {
-                pointers[nextNode.node] = heap.enqueue(
-                  nextNode.node,
-                  nextNode.weight
-                );
-              } else {
-                heap.enqueue(nextNode.node, nextNode.weight);
-              }
-            }
+            deacrease = heap.decreaseKey(nextNode.node, nextNode.weight);
           }
         }
       }

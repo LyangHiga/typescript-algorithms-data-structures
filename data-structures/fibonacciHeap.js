@@ -1,5 +1,6 @@
 class Node {
   constructor(key, val) {
+    // LCRS representation
     this.parent = null;
     this.child = null;
     // siblings
@@ -182,20 +183,6 @@ class FibonacciHeap {
     y.mark = false;
   };
 
-  sortForest = () => {
-    let w = this.min;
-    this.min.left.right = null;
-    let sortRoot = [];
-    while (w !== null) {
-      sortRoot.push(w);
-      const next = w.right;
-      w.right = null;
-      w = next;
-    }
-    sortRoot.sort((a, b) => a.degree - b.degree);
-    return sortRoot;
-  };
-
   // Ensures that every root has distinct degree
   //    Search roots with same degree and link
   //    until there is at most one root with each degree
@@ -203,7 +190,7 @@ class FibonacciHeap {
   consolidate = () => {
     // max degree := log(n)
     // increase 1 because maxDegree is inclusive [0,maxDregree]
-    let maxDegree = Math.ceil(Math.log2(this.size));
+    let maxDegree = Math.ceil(Math.log2(this.size)) + 1;
     // to keep track the root's degree
     const a = new Array(maxDegree).fill(null);
     let w = this.min;
@@ -220,8 +207,9 @@ class FibonacciHeap {
       w.right = null;
       // check if there is any other root with the same degree d
       while (a[d] !== null) {
-        // another root (besides x) with the same degree d
+        // y is another root (besides x) with the same degree d
         let y = a[d];
+        // if (x.key === y.key) break;
         if (y.val < x.val) {
           // exhange pointers, x MUST be the smaller
           [x, y] = [y, x];
@@ -262,6 +250,21 @@ class FibonacciHeap {
   };
 
   //   **********************************************************
+  //                            CREATE
+  //   **********************************************************
+
+  buildHeap = (obj) => {
+    // Returns false if this heap is not empty
+    if (!this.isEmpty()) return false;
+    const pointers = {};
+    // inject each element of arr (key, val) to this.value
+    for (const [key, val] of Object.entries(obj)) {
+      pointers[key] = this.enqueue(key, val);
+    }
+    return pointers;
+  };
+
+  //   **********************************************************
   //                            INSERT
   //   **********************************************************
 
@@ -291,7 +294,6 @@ class FibonacciHeap {
     if (this.isEmpty()) return null;
     // saving pointer to min
     const z = this.min;
-    // console.log(`z: ${z.key}, z.c: ${z.child}`);
     if (z.child !== null) {
       let x = z.child;
       // to keep each child
@@ -309,7 +311,6 @@ class FibonacciHeap {
         // z is no longer parent of x
         x.parent = null;
         // update x
-
         x = next;
       }
       chidrenOfz.forEach((x) => {
@@ -366,7 +367,7 @@ class FibonacciHeap {
   // Update the val of node x
   // Returns false if x is not an instance of Node
   // Returns false if newVal is not smaller than the actual val
-  // if new val and the actual val of x are the same return this
+  // if new val and the actual val of x are the same returns node x
   decreaseKey = (x, newVal) => {
     // if x is not an instance of Node returns false
     if (!(x instanceof Node)) return false;
@@ -393,7 +394,7 @@ class FibonacciHeap {
     if (x.val < this.min) {
       this.min = x.val;
     }
-    return true;
+    return x;
   };
 }
 
