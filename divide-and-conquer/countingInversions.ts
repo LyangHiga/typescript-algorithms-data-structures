@@ -1,4 +1,4 @@
-const sortAndCount = (arr) => {
+const sortAndCount = (arr: number[]): [number[], number] => {
   // base case : one element is already sort
   if (arr.length < 2) {
     return [arr, 0];
@@ -18,7 +18,7 @@ const sortAndCount = (arr) => {
 };
 
 // Merge the two arrays: left and right
-const merge = (left, right) => {
+const merge = (left: number[], right: number[]): [number[], number] => {
   let arr = [],
     leftIndex = 0,
     rightIndex = 0,
@@ -40,6 +40,7 @@ const merge = (left, right) => {
   }
 
   // one of them still has elemenst, already sorted, so we just need concat it with the result array
+  // But any of them results in inversions
   while (leftIndex < left.length) {
     arr.push(left[leftIndex]);
     leftIndex++;
@@ -51,4 +52,4 @@ const merge = (left, right) => {
   return [arr, counter];
 };
 
-module.exports = sortAndCount;
+export = sortAndCount;
