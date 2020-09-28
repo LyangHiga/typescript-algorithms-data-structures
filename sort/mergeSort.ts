@@ -1,5 +1,4 @@
-"use strict";
-const mergeShift = (left, right) => {
+const mergeShift = (left: number[], right: number[]) => {
   let result = [];
   // while booth arrays have elements we compare, the smallest of each one,
   // take the smaller , push it to result and shift from the original arr
@@ -23,7 +22,8 @@ const mergeShift = (left, right) => {
   }
   return result;
 };
-const mergeIdx = (left, right) => {
+
+const mergeIdx = (left: number[], right: number[]) => {
   let result = [],
     leftIndex = 0,
     rightIndex = 0;
@@ -51,21 +51,27 @@ const mergeIdx = (left, right) => {
   // result = [...result, ...left,...right];
   return result;
 };
-const mergeSort = (arr) => {
+
+const mergeSort = (arr: number[]): number[] => {
   if (arr.length < 2) {
     return arr;
   }
   const mid = Math.floor(arr.length / 2);
   const left = arr.slice(0, mid);
   const right = arr.slice(mid);
+
   //   return mergeShift(mergeSort(left), mergeSort(right));
   return mergeIdx(mergeSort(left), mergeSort(right));
 };
-// let data = Array.from({ length: 10000 }, () => Math.floor(Math.random() * 40));
-// let t1 = performance.now();
-// for (let i = 0; i < 10; i++) {
-//     mergeSort(data);
-// }
-// let t2 = performance.now();
-// console.log("Average time: " + (t2 - t1) / 10000 + " seconds");
-module.exports = mergeSort;
+
+let data = Array.from({ length: 10000 }, () => Math.floor(Math.random() * 40));
+
+let t1 = performance.now();
+for (let i = 0; i < 10; i++) {
+  mergeSort(data);
+}
+
+let t2 = performance.now();
+console.log("Average time: " + (t2 - t1) / 10000 + " seconds");
+
+export = mergeSort;
