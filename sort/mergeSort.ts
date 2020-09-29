@@ -64,14 +64,4 @@ const mergeSort = (arr: number[]): number[] => {
   return mergeIdx(mergeSort(left), mergeSort(right));
 };
 
-let data = Array.from({ length: 10000 }, () => Math.floor(Math.random() * 40));
-
-let t1 = performance.now();
-for (let i = 0; i < 10; i++) {
-  mergeSort(data);
-}
-
-let t2 = performance.now();
-console.log("Average time: " + (t2 - t1) / 10000 + " seconds");
-
 export = mergeSort;
