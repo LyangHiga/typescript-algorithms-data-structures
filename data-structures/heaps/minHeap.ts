@@ -98,7 +98,7 @@ class MinHeap {
   //                            CREATING
   //   **********************************************************
 
-  // arr: array or object
+  // arr: array, object or Map
   // keys: array or nul
   // If arr is an array and keys is also an array:
   //    Each node of this Heap will be the (keys[i], arr[i]) where i is the index,
@@ -113,7 +113,7 @@ class MinHeap {
   // In any case the Heap is build in linear time
   // Returns: this Heap
   buildHeap = (
-    arr: number[] | { [key: string]: number },
+    arr: number[] | { [key: string]: number } | Map<string | number, number>,
     keys: null | number[] = null
   ) => {
     // Returns false if this heap is not empty
@@ -144,7 +144,16 @@ class MinHeap {
           this.idxs[i] = i;
         });
       }
+    } else if (arr instanceof Map) {
+      let i = 0;
+      arr.forEach((value, key) => {
+        this.values.push(new Node(key, value));
+        this.idxs[key] = i;
+        i++;
+        this.size++;
+      });
     }
+
     // arr is an object
     else {
       let i = 0;
@@ -233,10 +242,11 @@ class MinHeap {
     if (!this.contains(key)) return false;
     //   get idx of this key
     let idx = this.idxs[key];
+    // TODO: Dont return the same if not contains or if new val cant be decreased
     // to ensure newVal < val
     if (newVal > this.values[idx].val) return false;
     // if they are the same return this
-    if (newVal === this.values[idx].val) return this;
+    if (newVal === this.values[idx].val) return false;
     //   update node with new val
     this.values[idx].val = newVal;
     let parentIdx = this.myParentIdx(idx);

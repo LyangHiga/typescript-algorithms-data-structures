@@ -1,11 +1,8 @@
 "use strict";
-class Node {
-    constructor(key) {
-        this.key = key;
-        this.key = key;
-        this.next = null;
-    }
-}
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+const node_1 = __importDefault(require("./node"));
 // simple implementation using SLL, shift and unshift, here called as push and pop
 // First in Last Out
 class Stack {
@@ -16,7 +13,7 @@ class Stack {
     }
     // add a node at the beginning and return the size of this stack
     push(key) {
-        let node = new Node(key);
+        let node = new node_1.default(key);
         if (this.size === 0) {
             this.first = node;
             this.last = node;

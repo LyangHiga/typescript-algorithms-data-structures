@@ -1,10 +1,8 @@
 "use strict";
-class Node {
-    constructor(key) {
-        this.key = key;
-        this.next = null;
-    }
-}
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+const node_1 = __importDefault(require("./node"));
 // Queue implementation, FIFO, through linked list
 class Queue {
     constructor() {
@@ -14,7 +12,7 @@ class Queue {
     }
     // add to the end and return the size of this queue
     enQueue(key) {
-        let node = new Node(key);
+        let node = new node_1.default(key);
         if (this.size === 0) {
             this.first = node;
             this.last = node;

@@ -245,15 +245,16 @@ class FibonacciHeap {
         //   **********************************************************
         //                            CREATE
         //   **********************************************************
-        this.buildHeap = (obj) => {
+        this.buildHeap = (map) => {
             // Returns false if this heap is not empty
             if (!this.isEmpty())
                 return false;
-            const pointers = {};
+            const pointers = new Map();
             // inject each element of arr (key, val) to this.value
-            for (const [key, val] of Object.entries(obj)) {
-                pointers[key] = this.enqueue(key, val);
-            }
+            map.forEach((value, key) => {
+                const node = this.enqueue(key, value);
+                pointers.set(key, node);
+            });
             return pointers;
         };
         //   **********************************************************

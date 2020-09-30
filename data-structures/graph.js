@@ -1,9 +1,12 @@
 "use strict";
-const fs = require("fs");
-const Queue = require("./queue");
-const Stack = require("./stack");
-const MinHeap = require("./minHeap");
-const FibonacciHeap = require("./fibonacciHeap");
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+const queue_1 = __importDefault(require("./basics/queue"));
+const stack_1 = __importDefault(require("./basics/stack"));
+const minHeap_1 = __importDefault(require("./heaps/minHeap"));
+const fibonacciHeap_1 = __importDefault(require("./heaps/fibonacciHeap"));
+const fs_1 = __importDefault(require("fs"));
 // Returns a random number between [min,max)
 const random = (min, max) => {
     return Math.floor(Math.random() * (max - min)) + min;
@@ -38,7 +41,7 @@ class Graph {
                 }
             }
         };
-        // Returns true if this list constains this vertex v
+        // Returns true if this list constains this vertex (key v)
         // Otherwise returns false
         this.contains = (v) => {
             if (this.list[v] === undefined)
@@ -212,12 +215,12 @@ class Graph {
             // check if this is a 'empty graph'
             if (this.size !== 0)
                 return false;
-            const data = fs.readFileSync(file, { encoding: "utf8", flag: "r" });
+            const data = fs_1.default.readFileSync(file, { encoding: "utf8", flag: "r" });
             let line = "";
             let split = [];
-            for (let char in data) {
-                if (data[char] !== "\n") {
-                    line += data[char];
+            for (let i = 0; i < data.length; i++) {
+                if (data[i] !== "\n") {
+                    line += data[i];
                 }
                 else {
                     split = line.trim().split(" ");
@@ -239,12 +242,12 @@ class Graph {
             // check if this is a 'empty graph'
             if (this.size !== 0)
                 return false;
-            const data = fs.readFileSync(file, { encoding: "utf8", flag: "r" });
+            const data = fs_1.default.readFileSync(file, { encoding: "utf8", flag: "r" });
             let line = "";
             let split = [];
-            for (let char in data) {
-                if (data[char] !== "\n") {
-                    line += data[char];
+            for (let i = 0; i < data.length; i++) {
+                if (data[i] !== "\n") {
+                    line += data[i];
                 }
                 else {
                     split = line.trim().split(" ");
@@ -282,12 +285,12 @@ class Graph {
             // check if this is a 'empty graph'
             if (this.size !== 0)
                 return false;
-            const data = fs.readFileSync(file, { encoding: "utf8", flag: "r" });
+            const data = fs_1.default.readFileSync(file, { encoding: "utf8", flag: "r" });
             let line = "";
             let split = [];
-            for (let char in data) {
-                if (data[char] !== "\n") {
-                    line += data[char];
+            for (let i = 0; i < data.length; i++) {
+                if (data[i] !== "\n") {
+                    line += data[i];
                 }
                 else {
                     split = line.trim().split("	");
@@ -329,12 +332,12 @@ class Graph {
                 return false;
             // set this graph as directed
             this.directed = true;
-            const data = fs.readFileSync(file, { encoding: "utf8", flag: "r" });
+            const data = fs_1.default.readFileSync(file, { encoding: "utf8", flag: "r" });
             let line = "";
             let split = [];
-            for (let char in data) {
-                if (data[char] !== "\n") {
-                    line += data[char];
+            for (let i = 0; i < data.length; i++) {
+                if (data[i] !== "\n") {
+                    line += data[i];
                 }
                 else {
                     split = line.trim().split(" ");
@@ -367,19 +370,20 @@ class Graph {
         //    the distance of s to each visited vertex
         //    all visited verteces
         this.bfs = (s) => {
-            // the order of each vertex is dequeue
-            const result = [];
+            // the order of each vertex is dequeue (Array of Keys)
+            const result = new Array();
+            // Maps the key of each vertex to its distance from vertex s
             const dist = new Map();
+            // Maps the key of each vertex to its parents key
             const parents = new Map();
             const visited = new Map();
-            const q = new Queue();
+            const q = new queue_1.default();
             // add s to the queue
             q.enQueue(s);
             // mark s as visited
             visited.set(s, true);
             dist.set(s, 0);
             parents.set(s, null);
-            // FIXME: Node Queue type
             let v;
             while (q.size !== 0) {
                 v = q.deQueue();
@@ -408,9 +412,9 @@ class Graph {
                 if (!isVisited.get(u)) {
                     const { result, visited } = this.bfs(u);
                     // updtade visited nodes after this bfs
-                    for (const [key, value] of visited) {
+                    visited.forEach((value, key) => {
                         isVisited.set(key, value);
-                    }
+                    });
                     // add this new result
                     components.push(result);
                 }
@@ -423,16 +427,16 @@ class Graph {
             const dist = new Map();
             const parents = new Map();
             const visited = new Map();
+            // key to label order
             const labeledOrder = new Map();
             // finish order
-            const finish = new Map();
-            const stack = new Stack();
+            const finish = new Array();
+            const stack = new stack_1.default();
             // add s tothe stack
             stack.push(s);
             // mark s as visited
             visited.set(s, true);
             dist.set(s, 0);
-            // FIXME: Stack Node type
             let v;
             let i = 0;
             while (stack.size !== 0) {
@@ -461,8 +465,8 @@ class Graph {
                 });
                 if (!labeledOrder.get(v.key)) {
                     labeledOrder.set(v.key, this.currentLabel);
-                    finish.set(this.currentLabel, v.key);
                     this.currentLabel++;
+                    finish.push(v.key);
                 }
             }
             return {
@@ -474,74 +478,99 @@ class Graph {
                 finish,
             };
         };
+        // Returns the size of each Strong Component
+        // the id of each SC is its Leader
+        this.kojaru = () => {
+            // reverse G
+            const gRerv = this.reverse();
+            // finish order
+            if (gRerv === false)
+                return false;
+            const { finish } = gRerv.topologicalSort();
+            const visited = new Map();
+            // the vertex who calls dfs (maps leader's vertex key to the size of the Strong Component)
+            const leader = new Map();
+            let u, r;
+            for (let i = finish.length - 1; i > 0; i--) {
+                u = finish[i];
+                if (!visited.get(u)) {
+                    r = this.dfs(u);
+                    // update visited
+                    r.visited.forEach((value, key) => {
+                        visited.set(key, value);
+                    });
+                    // all verteces visited have u as leader
+                    leader.set(u, r.result.length);
+                }
+            }
+            return leader;
+        };
         // Returns the distance from s to each vertex and their parents
         // Inputs:
         //    s: source vertex
         //    h: to choose between binary and fibonacci heap
-        //   'b' (default) for binaryHeap
-        //   'f' for FibonacciHeap
+        //     'b' (default) for binaryHeap
+        //     'f' for FibonacciHeap
         this.dijkstra = (s, h = "b") => {
-            if (h === "b") {
-                // we should use 'var' declaration get a function scope
-                var heap = new MinHeap();
-            }
-            else if (h === "f") {
-                var heap = new FibonacciHeap();
-                // to keep track of node to make decrease key when distances get smaller
-                var pointers = {};
-            }
-            else {
-                // return false if an invalid heap was choosen
-                return false;
+            let heap;
+            switch (h) {
+                case "b":
+                // any value of h different than "b" and "h"
+                default:
+                    // we should use 'var' declaration get a function scope
+                    heap = new minHeap_1.default();
+                case "f":
+                    heap = new fibonacciHeap_1.default();
+                    // to keep track of node to make decrease key when distances get smaller
+                    // FIXME: map node key to Node itself
+                    var pointers = new Map();
             }
             let dequeues = 0;
             // objs to map key to distance and key to parents
-            const distances = {};
-            const parents = {};
+            const distances = new Map();
+            const parents = new Map();
+            // FIXME: type Node
             let smallest;
-            parents[s] = null;
-            let deacrease = false;
             for (let vertex in this.list) {
                 if (vertex !== s) {
-                    distances[vertex] = Infinity;
+                    distances.set(vertex, Infinity);
                 }
             }
-            distances[s] = 0;
-            if (h === `f`)
-                pointers = heap.buildHeap(distances);
-            // else heap.buildHeap(distances);
+            distances.set(s, 0);
             heap.enqueue(s, 0);
+            parents.set(s, null);
+            // FIXME: boolean or heap Node
+            let deacrease = false;
             // while we have nodes to visite:
             while (!heap.isEmpty()) {
                 smallest = heap.dequeue().key;
                 //   console.log(`smallest: ${smallest}, dist: ${distances[smallest]}`);
                 dequeues++;
-                if (smallest || distances[smallest] !== Infinity) {
+                if (smallest || distances.get(smallest) !== Infinity) {
                     for (let neighbour in this.list[smallest]) {
                         let nextNode = this.list[smallest][neighbour];
                         // calculate Dijkstra's  Greedy Criterium
-                        let d = distances[smallest] + nextNode.weight;
+                        let d = distances.get(smallest) + nextNode.weight;
                         //   compare distance calculated with last distance storaged
-                        if (d < distances[nextNode.node]) {
+                        if (d < distances.get(nextNode.node)) {
                             //   updating distances and parents
-                            distances[nextNode.node] = d;
-                            parents[nextNode.node] = smallest;
+                            distances.set(nextNode.node, d);
+                            parents.set(nextNode.node, smallest);
                             // try to deacrease key
                             if (h === "b") {
                                 // binary heap we just need the key of the node to be decreased
                                 deacrease = heap.decreaseKey(nextNode.node, d);
                             }
                             else {
-                                // @TODO Refactoring FH Decrease key
-                                //   console.log(`key pointer: ${pointers[nextNode.node].key}`);
                                 //FH we need a pointer to the node to be decreased
-                                deacrease = heap.decreaseKey(pointers[nextNode.node], d);
+                                deacrease = heap.decreaseKey(pointers.get(nextNode.node), d);
                                 // heap.enqueue(nextNode.node, d);
                             }
                             if (!deacrease) {
                                 // if this node is not in heap(wasn't decrease) add to the Heap
                                 if (h === "f") {
-                                    pointers[nextNode.node] = heap.enqueue(nextNode.node, d);
+                                    const node = heap.enqueue(nextNode.node, d);
+                                    pointers.set(nextNode.node, node);
                                 }
                                 else {
                                     heap.enqueue(nextNode.node, d);
@@ -549,8 +578,7 @@ class Graph {
                             }
                             else {
                                 if (h === "f") {
-                                    // console.log(deacrease);
-                                    pointers[nextNode.node] = deacrease;
+                                    pointers.set(nextNode.node, deacrease);
                                 }
                             }
                         }
@@ -562,15 +590,13 @@ class Graph {
         };
         // Returns the MST and its cost
         this.prim = (s) => {
-            let heap = new MinHeap();
-            // const heap = h === 'f' ? new FibonacciHeap() : new MinHeap();
+            let heap = new minHeap_1.default();
             const mst = new Graph();
             // map to keep track what element is already in mst
             // we dont need this in Dijkstra because dist always encrease
-            const mstSet = {};
-            // objs to map key to edge cost and to parent
-            const edgeCost = {};
-            const parents = {};
+            const mstSet = new Map();
+            const edgeCost = new Map();
+            const parents = new Map();
             // sum of each MST's edge
             let cost = 0;
             let dequeues = 0;
@@ -578,35 +604,35 @@ class Graph {
             let deacrease = false;
             for (let vertex in this.list) {
                 if (vertex !== s) {
-                    edgeCost[vertex] = Infinity;
-                    mstSet[vertex] = false;
+                    edgeCost.set(vertex, Infinity);
+                    mstSet.set(vertex, false);
                 }
             }
-            edgeCost[s] = 0;
+            edgeCost.set(s, 0);
             heap.buildHeap(edgeCost);
-            parents[s] = null;
-            mstSet[s] = true;
+            parents.set(s, null);
+            mstSet.set(s, true);
             while (!heap.isEmpty()) {
                 smallest = heap.dequeue().key;
                 dequeues++;
                 //   we found the min cost to add smallest in our MST
-                cost += edgeCost[smallest];
+                cost += edgeCost.get(smallest);
                 mst.addVertex(smallest);
-                mstSet[smallest] = true;
-                if (parents[smallest]) {
+                mstSet.set(smallest, true);
+                if (parents.get(smallest)) {
                     //   if smallest has a parent (is not the start node) add the edge to mst
-                    mst.addEdge(smallest, parents[smallest], edgeCost[smallest]);
+                    mst.addEdge(smallest, parents.get(smallest), edgeCost.get(smallest));
                 }
-                if (smallest || edgeCost[smallest] !== Infinity) {
+                if (smallest || edgeCost.get(smallest) !== Infinity) {
                     for (let neighbour in this.list[smallest]) {
                         let nextNode = this.list[smallest][neighbour];
                         // compare the cost of this edge with the last one storaged
                         //   and check if this node is already in mstSet
-                        if (nextNode.weight < edgeCost[nextNode.node] &&
-                            !mstSet[nextNode.node]) {
+                        if (nextNode.weight < edgeCost.get(nextNode.node) &&
+                            !mstSet.get(nextNode.node)) {
                             //   updating edgeCost and parents
-                            edgeCost[nextNode.node] = nextNode.weight;
-                            parents[nextNode.node] = smallest;
+                            edgeCost.set(nextNode.node, nextNode.weight);
+                            parents.set(nextNode.node, smallest);
                             // try to deacrease key, if isConnect always will decrease
                             deacrease = heap.decreaseKey(nextNode.node, nextNode.weight);
                         }
@@ -627,7 +653,7 @@ class Graph {
     topologicalSort() {
         const labeledOrder = new Map();
         const visited = new Map();
-        const finish = new Map();
+        const finish = new Array();
         // to keep track of ordering
         this.currentLabel = 0;
         let r;
@@ -635,43 +661,16 @@ class Graph {
             if (!visited.get(u)) {
                 const r = this.dfs(u);
                 // update values
-                for (const [key, value] of r.visited) {
+                r.visited.forEach((value, key) => {
                     visited.set(key, value);
-                }
-                for (const [key, value] of r.labeledOrder) {
+                });
+                r.labeledOrder.forEach((value, key) => {
                     labeledOrder.set(key, value);
-                }
-                for (const [key, value] of r.finish) {
-                    finish.set(key, value);
-                }
+                });
+                finish.push(...r.finish);
             }
         }
         return { labeledOrder, finish };
-    }
-    // TODO: Finish Refactoring
-    // Returns the size of each Strong Component
-    // the id of each SC is its Leader
-    kojaru() {
-        // reverse G
-        const gRerv = this.reverse();
-        // finish order
-        const { finish } = gRerv.topologicalSort();
-        const finishTime = Object.values(finish);
-        let visited = {};
-        // the vertex who calls dfs
-        const leader = {};
-        let u, r;
-        for (let i = finishTime.length - 1; i > 0; i--) {
-            u = finishTime[i];
-            if (!visited[u]) {
-                r = this.dfs(u);
-                // update visited
-                visited = Object.assign(Object.assign({}, visited), r.visited);
-                // all verteces visited have u as leader
-                leader[u] = r.result.length;
-            }
-        }
-        return leader;
     }
 }
 module.exports = Graph;

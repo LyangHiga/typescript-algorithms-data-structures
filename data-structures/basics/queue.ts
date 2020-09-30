@@ -1,14 +1,7 @@
-class Node {
-  next: null | Node;
-  constructor(public key: string | number) {
-    this.key = key;
-    this.next = null;
-  }
-}
+import Node from "./node";
 
-// simple implementation using SLL, shift and unshift, here called as push and pop
-// First in Last Out
-class Stack {
+// Queue implementation, FIFO, through linked list
+class Queue {
   first: null | Node;
   last: null | Node;
   size: number;
@@ -18,23 +11,22 @@ class Stack {
     this.size = 0;
   }
 
-  // add a node at the beginning and return the size of this stack
-  push(key: string | number) {
-    let node = new Node(key);
+  // add to the end and return the size of this queue
+  enQueue(key: string | number) {
+    let node: Node = new Node(key);
     if (this.size === 0) {
       this.first = node;
       this.last = node;
     } else {
-      node.next = this.first;
-      this.first = node;
+      this.last!.next = node;
+      this.last = node;
     }
     this.size++;
     return this.size;
   }
 
   // remove the first node and return it
-  pop() {
-    // empty stack
+  deQueue() {
     if (this.size === 0) return null;
     let removed = this.first;
     if (this.size === 1) {
@@ -49,4 +41,4 @@ class Stack {
   }
 }
 
-export = Stack;
+export = Queue;
