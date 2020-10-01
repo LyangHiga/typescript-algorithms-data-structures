@@ -11,6 +11,11 @@ const fs_1 = __importDefault(require("fs"));
 const random = (min, max) => {
     return Math.floor(Math.random() * (max - min)) + min;
 };
+const isWeighted = (v) => {
+    if (v.weight)
+        return true;
+    return false;
+};
 class Graph {
     constructor(directed = false) {
         this.directed = directed;
@@ -23,7 +28,7 @@ class Graph {
             for (let u in this.list) {
                 for (let v in this.list[u]) {
                     if (!this.directed) {
-                        if (this.list[u][v].weight) {
+                        if (isWeighted(this.list[u][v])) {
                             console.log(`${u} - ${this.list[u][v].node} - ${this.list[u][v].weight}`);
                         }
                         else {
@@ -31,7 +36,7 @@ class Graph {
                         }
                     }
                     else {
-                        if (this.list[u][v].weight) {
+                        if (isWeighted(this.list[u][v])) {
                             console.log(`${u} -> ${this.list[u][v].node} - ${this.list[u][v].weight}`);
                         }
                         else {
@@ -119,7 +124,7 @@ class Graph {
             const g = new Graph(true);
             for (let u in this.list) {
                 for (let v in this.list[u]) {
-                    if (this.list[u][v].weight) {
+                    if (isWeighted(this.list[u][v])) {
                         g.addVertecesAndEdge(this.list[u][v].node, u, this.list[u][v].weight);
                     }
                     else {
@@ -185,7 +190,7 @@ class Graph {
         this.removeVertex = (v) => {
             while (this.list[v].length) {
                 const u = this.list[v].pop();
-                this.removeEdge(u, v);
+                this.removeEdge(u.node, v);
             }
             delete this.list[v];
             this.size--;
@@ -557,7 +562,7 @@ class Graph {
                             distances.set(nextNode.node, d);
                             parents.set(nextNode.node, smallest);
                             // try to deacrease key
-                            if (h === "b") {
+                            if (heap instanceof minHeap_1.default) {
                                 // binary heap we just need the key of the node to be decreased
                                 deacrease = heap.decreaseKey(nextNode.node, d);
                             }
@@ -643,8 +648,6 @@ class Graph {
             return { cost, mst };
         };
         this.list = {};
-        // this.list = new Map();
-        // to implement topologicalSort
         this.currentLabel = null;
         this.size = 0;
     }

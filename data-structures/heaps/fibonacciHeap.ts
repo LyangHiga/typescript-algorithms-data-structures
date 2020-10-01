@@ -6,7 +6,7 @@ class Node {
   degree: number;
   mark: boolean;
 
-  constructor(public key: string | number, public val: number) {
+  constructor(public key: string, public val: number) {
     // LCRS representation
     this.parent = null;
     this.child = null;
@@ -261,10 +261,10 @@ class FibonacciHeap {
   //                            CREATE
   //   **********************************************************
 
-  buildHeap = (map: Map<string | number, number>) => {
+  buildHeap = (map: Map<string, number>) => {
     // Returns false if this heap is not empty
     if (!this.isEmpty()) return false;
-    const pointers: Map<string | number, Node> = new Map();
+    const pointers: Map<string, Node> = new Map();
     // inject each element of arr (key, val) to this.value
     map.forEach((value, key) => {
       const node = this.enqueue(key, value);
@@ -279,7 +279,7 @@ class FibonacciHeap {
 
   // Inserts a node (key,val) in the root List
   // Returns the node inserted
-  enqueue = (key: string | number, val: number) => {
+  enqueue = (key: string, val: number) => {
     const node = new Node(key, val);
     // if heap is empty or min is null, set node as min
     this.addToRootList(node);

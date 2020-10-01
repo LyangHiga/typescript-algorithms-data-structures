@@ -1,5 +1,5 @@
 class Node {
-  constructor(public key: string | number, public val: number) {
+  constructor(public key: string, public val: number) {
     this.key = key;
     this.val = val;
   }
@@ -113,8 +113,8 @@ class MinHeap {
   // In any case the Heap is build in linear time
   // Returns: this Heap
   buildHeap = (
-    arr: number[] | { [key: string]: number } | Map<string | number, number>,
-    keys: null | number[] = null
+    arr: number[] | { [key: string]: number } | Map<string, number>,
+    keys: null | string[] = null
   ) => {
     // Returns false if this heap is not empty
     if (!this.isEmpty()) return false;
@@ -140,7 +140,7 @@ class MinHeap {
         this.size = arr.length;
         // inject arr in this.value (i,arr[i))
         arr.forEach((e, i) => {
-          this.values.push(new Node(i, e));
+          this.values.push(new Node(i.toString(), e));
           this.idxs[i] = i;
         });
       }
@@ -195,7 +195,7 @@ class MinHeap {
 
   // Returns the value of this key
   // Returns null whether this key does not belong to this heap
-  valueOf = (key: string | number) => {
+  valueOf = (key: string) => {
     if (!this.contains(key)) return null;
     const idx = this.idxs[key];
     return this.values[idx];
@@ -208,7 +208,7 @@ class MinHeap {
   // Inserts a node (key,val) in the last position and rearrange
   // Returns the node inserted
   // Returns false whether this key is already in this heap
-  enqueue = (key: string | number, val: number) => {
+  enqueue = (key: string, val: number) => {
     // to avoid duplicate keys
     if (this.contains(key)) return false;
     let node = new Node(key, val);

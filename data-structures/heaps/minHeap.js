@@ -127,7 +127,7 @@ class MinHeap {
                     this.size = arr.length;
                     // inject arr in this.value (i,arr[i))
                     arr.forEach((e, i) => {
-                        this.values.push(new Node(i, e));
+                        this.values.push(new Node(i.toString(), e));
                         this.idxs[i] = i;
                     });
                 }
