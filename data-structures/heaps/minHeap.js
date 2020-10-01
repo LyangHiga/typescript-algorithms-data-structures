@@ -1,12 +1,8 @@
 "use strict";
-class Node {
-    constructor(key, val) {
-        this.key = key;
-        this.val = val;
-        this.key = key;
-        this.val = val;
-    }
-}
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+const bHNode_1 = __importDefault(require("./bHNode"));
 class MinHeap {
     constructor() {
         //   **********************************************************
@@ -117,7 +113,7 @@ class MinHeap {
                         // Avoiding duplicate keys
                         if (this.contains(keys[i]))
                             return false;
-                        this.values.push(new Node(keys[i], arr[i]));
+                        this.values.push(new bHNode_1.default(keys[i], arr[i]));
                         this.idxs[keys[i]] = i;
                     }
                 }
@@ -127,7 +123,7 @@ class MinHeap {
                     this.size = arr.length;
                     // inject arr in this.value (i,arr[i))
                     arr.forEach((e, i) => {
-                        this.values.push(new Node(i.toString(), e));
+                        this.values.push(new bHNode_1.default(i.toString(), e));
                         this.idxs[i] = i;
                     });
                 }
@@ -135,7 +131,7 @@ class MinHeap {
             else if (arr instanceof Map) {
                 let i = 0;
                 arr.forEach((value, key) => {
-                    this.values.push(new Node(key, value));
+                    this.values.push(new bHNode_1.default(key, value));
                     this.idxs[key] = i;
                     i++;
                     this.size++;
@@ -148,7 +144,7 @@ class MinHeap {
                 this.size = Object.keys(arr).length;
                 // inject each element of arr (key, val) to this.value
                 for (const [key, val] of Object.entries(arr)) {
-                    this.values.push(new Node(key, val));
+                    this.values.push(new bHNode_1.default(key, val));
                     this.idxs[key] = i;
                     i++;
                 }
@@ -196,7 +192,7 @@ class MinHeap {
             // to avoid duplicate keys
             if (this.contains(key))
                 return false;
-            let node = new Node(key, val);
+            let node = new bHNode_1.default(key, val);
             this.values.push(node);
             this.size++;
             // last position to insert this new node

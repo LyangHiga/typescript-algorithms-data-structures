@@ -2,6 +2,7 @@ import Queue from "./basics/queue";
 import Stack from "./basics/stack";
 import Node from "./basics/node";
 import MinHeap from "./heaps/minHeap";
+import BHNode from "./heaps/bHNode";
 import FibonacciHeap from "./heaps/fibonacciHeap";
 import fs from "fs";
 
@@ -566,26 +567,13 @@ class Graph {
   //    h: to choose between binary and fibonacci heap
   //     'b' (default) for binaryHeap
   //     'f' for FibonacciHeap
-  dijkstra = (s: string, h = "b") => {
-    let heap: MinHeap | FibonacciHeap;
-    switch (h) {
-      case "b":
-      // any value of h different than "b" and "h"
-      default:
-        // we should use 'var' declaration get a function scope
-        heap = new MinHeap();
-      case "f":
-        heap = new FibonacciHeap();
-        // to keep track of node to make decrease key when distances get smaller
-        // FIXME: map node key to Node itself
-        var pointers: Map<string, any> = new Map();
-    }
+  dijkstra = (s: string) => {
+    const heap = new MinHeap();
     let dequeues = 0;
     // objs to map key to distance and key to parents
     const distances: Map<string, number> = new Map();
     const parents: Map<string, null | string> = new Map();
-    // FIXME: type Node
-    let smallest;
+    let smallest: string;
     for (let vertex in this.list) {
       if (vertex !== s) {
         distances.set(vertex, Infinity);
@@ -594,12 +582,10 @@ class Graph {
     distances.set(s, 0);
     heap.enqueue(s, 0);
     parents.set(s, null);
-    // FIXME: boolean or heap Node
-    let deacrease: any = false;
+    let deacrease: boolean | BHNode = false;
     // while we have nodes to visite:
     while (!heap.isEmpty()) {
       smallest = heap.dequeue()!.key;
-      //   console.log(`smallest: ${smallest}, dist: ${distances[smallest]}`);
       dequeues++;
       if (smallest || distances.get(smallest) !== Infinity) {
         for (let neighbour in this.list[smallest]) {
@@ -612,34 +598,18 @@ class Graph {
             distances.set(nextNode.node, d);
             parents.set(nextNode.node, smallest);
             // try to deacrease key
-            if (heap instanceof MinHeap) {
-              // binary heap we just need the key of the node to be decreased
-              deacrease = heap.decreaseKey(nextNode.node, d);
-            } else {
-              //FH we need a pointer to the node to be decreased
-              deacrease = heap.decreaseKey(pointers.get(nextNode.node), d);
-              // heap.enqueue(nextNode.node, d);
-            }
+            deacrease = heap.decreaseKey(nextNode.node, d);
             if (!deacrease) {
               // if this node is not in heap(wasn't decrease) add to the Heap
-              if (h === "f") {
-                const node = heap.enqueue(nextNode.node, d);
-                pointers.set(nextNode.node, node);
-              } else {
-                heap.enqueue(nextNode.node, d);
-              }
-            } else {
-              if (h === "f") {
-                pointers.set(nextNode.node, deacrease);
-              }
+              heap.enqueue(nextNode.node, d);
             }
           }
         }
       }
     }
-    console.log(
-      `dequeues: ${dequeues},size: ${this.size}, h.size: ${heap.size}`
-    );
+    // console.log(
+    //   `dequeues: ${dequeues},size: ${this.size}, h.size: ${heap.size}`
+    // );
     return { distances, parents };
   };
 

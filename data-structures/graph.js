@@ -5,7 +5,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 const queue_1 = __importDefault(require("./basics/queue"));
 const stack_1 = __importDefault(require("./basics/stack"));
 const minHeap_1 = __importDefault(require("./heaps/minHeap"));
-const fibonacciHeap_1 = __importDefault(require("./heaps/fibonacciHeap"));
 const fs_1 = __importDefault(require("fs"));
 // Returns a random number between [min,max)
 const random = (min, max) => {
@@ -516,25 +515,12 @@ class Graph {
         //    h: to choose between binary and fibonacci heap
         //     'b' (default) for binaryHeap
         //     'f' for FibonacciHeap
-        this.dijkstra = (s, h = "b") => {
-            let heap;
-            switch (h) {
-                case "b":
-                // any value of h different than "b" and "h"
-                default:
-                    // we should use 'var' declaration get a function scope
-                    heap = new minHeap_1.default();
-                case "f":
-                    heap = new fibonacciHeap_1.default();
-                    // to keep track of node to make decrease key when distances get smaller
-                    // FIXME: map node key to Node itself
-                    var pointers = new Map();
-            }
+        this.dijkstra = (s) => {
+            const heap = new minHeap_1.default();
             let dequeues = 0;
             // objs to map key to distance and key to parents
             const distances = new Map();
             const parents = new Map();
-            // FIXME: type Node
             let smallest;
             for (let vertex in this.list) {
                 if (vertex !== s) {
@@ -544,12 +530,10 @@ class Graph {
             distances.set(s, 0);
             heap.enqueue(s, 0);
             parents.set(s, null);
-            // FIXME: boolean or heap Node
             let deacrease = false;
             // while we have nodes to visite:
             while (!heap.isEmpty()) {
                 smallest = heap.dequeue().key;
-                //   console.log(`smallest: ${smallest}, dist: ${distances[smallest]}`);
                 dequeues++;
                 if (smallest || distances.get(smallest) !== Infinity) {
                     for (let neighbour in this.list[smallest]) {
@@ -562,35 +546,18 @@ class Graph {
                             distances.set(nextNode.node, d);
                             parents.set(nextNode.node, smallest);
                             // try to deacrease key
-                            if (heap instanceof minHeap_1.default) {
-                                // binary heap we just need the key of the node to be decreased
-                                deacrease = heap.decreaseKey(nextNode.node, d);
-                            }
-                            else {
-                                //FH we need a pointer to the node to be decreased
-                                deacrease = heap.decreaseKey(pointers.get(nextNode.node), d);
-                                // heap.enqueue(nextNode.node, d);
-                            }
+                            deacrease = heap.decreaseKey(nextNode.node, d);
                             if (!deacrease) {
                                 // if this node is not in heap(wasn't decrease) add to the Heap
-                                if (h === "f") {
-                                    const node = heap.enqueue(nextNode.node, d);
-                                    pointers.set(nextNode.node, node);
-                                }
-                                else {
-                                    heap.enqueue(nextNode.node, d);
-                                }
-                            }
-                            else {
-                                if (h === "f") {
-                                    pointers.set(nextNode.node, deacrease);
-                                }
+                                heap.enqueue(nextNode.node, d);
                             }
                         }
                     }
                 }
             }
-            console.log(`dequeues: ${dequeues},size: ${this.size}, h.size: ${heap.size}`);
+            // console.log(
+            //   `dequeues: ${dequeues},size: ${this.size}, h.size: ${heap.size}`
+            // );
             return { distances, parents };
         };
         // Returns the MST and its cost
