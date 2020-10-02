@@ -1,28 +1,8 @@
-class Node {
-  parent: null | Node;
-  child: null | Node;
-  left: null | Node;
-  right: null | Node;
-  degree: number;
-  mark: boolean;
-
-  constructor(public key: string, public val: number) {
-    // LCRS representation
-    this.parent = null;
-    this.child = null;
-    // siblings
-    this.left = null;
-    this.right = null;
-    // number of children
-    this.degree = 0;
-    // to control child lost
-    this.mark = false;
-  }
-}
+import FHNode from "./fHNode";
 
 class FibonacciHeap {
   size: number;
-  min: null | Node;
+  min: null | FHNode;
   constructor() {
     this.size = 0;
     this.min = null;
@@ -46,7 +26,7 @@ class FibonacciHeap {
   // If this FH is empty: Create the root list containing just node
   //    node becomes min and points to itself
   //    An only child points to itself in left and right
-  addToRootList = (node: Node) => {
+  addToRootList = (node: FHNode) => {
     if (this.isEmpty() || this.min === null) {
       this.min = node;
       this.min.left = node;
@@ -66,7 +46,7 @@ class FibonacciHeap {
   // Concatenates this min root list with root list of a given node( min of h2 = min2)
   // [...] <-> min1 <-> t1 <-> [...], [...] <-> t2 <-> min2 <-> [...]
   // [...] t2 <-> t1 <->[...] <-> min1 <-> min2 <-> [...]
-  concatenate = (node: Node) => {
+  concatenate = (node: FHNode) => {
     const t1 = this.min!.right;
     const t2 = node.left;
     this.min!.right = node;
@@ -80,7 +60,7 @@ class FibonacciHeap {
   // [...] <-> t <-> t2 <-> [...]
   // Returns false if node is not in Root List
   // Removing node from root list does not change any attribute in node
-  removeFromRootList = (node: Node): boolean | void => {
+  removeFromRootList = (node: FHNode): boolean | void => {
     // check if node is in Root list
     if (node.parent !== null || node.left === null || node.right === null) {
       return false;
@@ -93,7 +73,7 @@ class FibonacciHeap {
   };
 
   // Makes y node child of x node
-  makeYchildOfX = (x: Node, y: Node) => {
+  makeYchildOfX = (x: FHNode, y: FHNode) => {
     y.parent = x;
     // check if y is the first child
     if (x.degree === 0) {
@@ -117,7 +97,7 @@ class FibonacciHeap {
 
   // Removes x from the child list of y, and decremente y degree
   // Removing x from child list of y does not change any attribute in x
-  removeXFromParentY = (x: Node, y: Node) => {
+  removeXFromParentY = (x: FHNode, y: FHNode) => {
     // check if x was only child
     if (y.degree === 1) {
       y.child = null;
@@ -148,7 +128,7 @@ class FibonacciHeap {
   // Removes x from child list of y
   // Add x to child list (update parent of x to null)
   // clear x.mark
-  cut = (x: Node, y: Node) => {
+  cut = (x: FHNode, y: FHNode) => {
     // Remove x from child list of y and decrease degree of y
     this.removeXFromParentY(x, y);
     // add to root and update x.parent to null
@@ -161,7 +141,7 @@ class FibonacciHeap {
   // cut link between y and y.parent and call cascading cut to y.parent
   // if is the first child that y lost, mark y
   // if y is already a root it doesn't matter
-  cascadingCut = (y: Node) => {
+  cascadingCut = (y: FHNode) => {
     const z = y.parent;
     // check if y is not a root
     if (z !== null) {
@@ -181,7 +161,7 @@ class FibonacciHeap {
   // Links two roots, which have same degree, into a single one
   // x will be the parent, so x MUST to be smaller than y
   // Returns false if x is greater than y
-  link = (x: Node, y: Node): boolean | void => {
+  link = (x: FHNode, y: FHNode): boolean | void => {
     // check if x.val < y.val
     if (y.val < x.val) return false;
     this.removeFromRootList(y);
@@ -264,7 +244,7 @@ class FibonacciHeap {
   buildHeap = (map: Map<string, number>) => {
     // Returns false if this heap is not empty
     if (!this.isEmpty()) return false;
-    const pointers: Map<string, Node> = new Map();
+    const pointers: Map<string, FHNode> = new Map();
     // inject each element of arr (key, val) to this.value
     map.forEach((value, key) => {
       const node = this.enqueue(key, value);
@@ -280,7 +260,7 @@ class FibonacciHeap {
   // Inserts a node (key,val) in the root List
   // Returns the node inserted
   enqueue = (key: string, val: number) => {
-    const node = new Node(key, val);
+    const node = new FHNode(key, val);
     // if heap is empty or min is null, set node as min
     this.addToRootList(node);
     if (node.val < this.min!.val) {
@@ -343,9 +323,9 @@ class FibonacciHeap {
 
   // Removes the node from this respect key
   // Returns this HEAP
-  deleteKey = (x: Node) => {
-    // if x is not an instance of Node returns false
-    if (!(x instanceof Node)) return false;
+  deleteKey = (x: FHNode) => {
+    // if x is not an instance of FHNode returns false
+    if (!(x instanceof FHNode)) return false;
     this.decreaseKey(x, Number.NEGATIVE_INFINITY);
     this.dequeue();
     return this;
@@ -374,12 +354,12 @@ class FibonacciHeap {
   //   **********************************************************
 
   // Update the val of node x
-  // Returns false if x is not an instance of Node
+  // Returns false if x is not an instance of FHNode
   // Returns false if newVal is not smaller than the actual val
   // if new val and the actual val of x are the same returns node x
-  decreaseKey = (x: Node, newVal: number) => {
-    // if x is not an instance of Node returns false
-    if (!(x instanceof Node)) return false;
+  decreaseKey = (x: FHNode, newVal: number) => {
+    // if x is not an instance of FHNode returns false
+    if (!(x instanceof FHNode)) return false;
     // to ensure newVal < val
     if (newVal > x.val) return false;
     // if they are the same return this

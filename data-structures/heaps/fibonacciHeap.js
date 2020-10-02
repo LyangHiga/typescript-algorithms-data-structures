@@ -1,20 +1,8 @@
 "use strict";
-class Node {
-    constructor(key, val) {
-        this.key = key;
-        this.val = val;
-        // LCRS representation
-        this.parent = null;
-        this.child = null;
-        // siblings
-        this.left = null;
-        this.right = null;
-        // number of children
-        this.degree = 0;
-        // to control child lost
-        this.mark = false;
-    }
-}
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+const fHNode_1 = __importDefault(require("./fHNode"));
 class FibonacciHeap {
     constructor() {
         //   **********************************************************
@@ -263,7 +251,7 @@ class FibonacciHeap {
         // Inserts a node (key,val) in the root List
         // Returns the node inserted
         this.enqueue = (key, val) => {
-            const node = new Node(key, val);
+            const node = new fHNode_1.default(key, val);
             // if heap is empty or min is null, set node as min
             this.addToRootList(node);
             if (node.val < this.min.val) {
@@ -326,8 +314,8 @@ class FibonacciHeap {
         // Removes the node from this respect key
         // Returns this HEAP
         this.deleteKey = (x) => {
-            // if x is not an instance of Node returns false
-            if (!(x instanceof Node))
+            // if x is not an instance of FHNode returns false
+            if (!(x instanceof fHNode_1.default))
                 return false;
             this.decreaseKey(x, Number.NEGATIVE_INFINITY);
             this.dequeue();
@@ -354,12 +342,12 @@ class FibonacciHeap {
         //                            UPDATE
         //   **********************************************************
         // Update the val of node x
-        // Returns false if x is not an instance of Node
+        // Returns false if x is not an instance of FHNode
         // Returns false if newVal is not smaller than the actual val
         // if new val and the actual val of x are the same returns node x
         this.decreaseKey = (x, newVal) => {
-            // if x is not an instance of Node returns false
-            if (!(x instanceof Node))
+            // if x is not an instance of FHNode returns false
+            if (!(x instanceof fHNode_1.default))
                 return false;
             // to ensure newVal < val
             if (newVal > x.val)

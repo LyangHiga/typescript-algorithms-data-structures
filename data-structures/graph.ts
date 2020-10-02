@@ -3,7 +3,8 @@ import Stack from "./basics/stack";
 import Node from "./basics/node";
 import MinHeap from "./heaps/minHeap";
 import BHNode from "./heaps/bHNode";
-import FibonacciHeap from "./heaps/fibonacciHeap";
+// import FibonacciHeap from "./heaps/fibonacciHeap";
+// import FHNode from "./heaps/fHNode";
 import fs from "fs";
 
 // Returns a random number between [min,max)
@@ -561,12 +562,8 @@ class Graph {
     return leader;
   };
 
+  // TODO: USE FIBONACCI HEAP (DECREASE KEY)
   // Returns the distance from s to each vertex and their parents
-  // Inputs:
-  //    s: source vertex
-  //    h: to choose between binary and fibonacci heap
-  //     'b' (default) for binaryHeap
-  //     'f' for FibonacciHeap
   dijkstra = (s: string) => {
     const heap = new MinHeap();
     let dequeues = 0;
@@ -581,6 +578,7 @@ class Graph {
     }
     distances.set(s, 0);
     heap.enqueue(s, 0);
+    // heap.buildHeap(distances)
     parents.set(s, null);
     let deacrease: boolean | BHNode = false;
     // while we have nodes to visite:
@@ -599,23 +597,24 @@ class Graph {
             parents.set(nextNode.node, smallest);
             // try to deacrease key
             deacrease = heap.decreaseKey(nextNode.node, d);
+            // if this node is not in heap(wasn't decrease) add to the Heap
             if (!deacrease) {
-              // if this node is not in heap(wasn't decrease) add to the Heap
               heap.enqueue(nextNode.node, d);
             }
           }
         }
       }
     }
-    // console.log(
-    //   `dequeues: ${dequeues},size: ${this.size}, h.size: ${heap.size}`
-    // );
+    console.log(
+      `dequeues: ${dequeues},size: ${this.size}, h.size: ${heap.size}`
+    );
     return { distances, parents };
   };
 
+  // TODO: USE FIBONACCI HEAP (DECREASE KEY)
   // Returns the MST and its cost
   prim = (s: string) => {
-    let heap = new MinHeap();
+    const heap = new MinHeap();
     const mst = new Graph();
     // map to keep track what element is already in mst
     // we dont need this in Dijkstra because dist always encrease
@@ -626,15 +625,17 @@ class Graph {
     let cost = 0;
     let dequeues = 0;
     let smallest: string;
-    let deacrease = false;
+    let deacrease: boolean | BHNode = false;
     for (let vertex in this.list) {
       if (vertex !== s) {
         edgeCost.set(vertex, Infinity);
         mstSet.set(vertex, false);
       }
     }
+    // setting start node
     edgeCost.set(s, 0);
-    heap.buildHeap(edgeCost);
+    heap.enqueue(s, 0);
+    // heap.buildHeap(edgeCost);
     parents.set(s, null);
     mstSet.set(s, true);
     while (!heap.isEmpty()) {
@@ -660,14 +661,18 @@ class Graph {
             //   updating edgeCost and parents
             edgeCost.set(nextNode.node, nextNode.weight!);
             parents.set(nextNode.node, smallest);
-            // try to deacrease key, if isConnect always will decrease
+            // try to deacrease key
             deacrease = heap.decreaseKey(nextNode.node, nextNode.weight!);
+            // if this node is not in heap(wasn't decrease) add to the Heap
+            if (!deacrease) {
+              heap.enqueue(nextNode.node, nextNode.weight!);
+            }
           }
         }
       }
     }
     console.log(
-      `dequeues: ${dequeues}, size: ${this.size}, h.size: ${heap.size}`
+      `dequeues: ${dequeues},size: ${this.size}, h.size: ${heap.size}`
     );
     return { cost, mst };
   };

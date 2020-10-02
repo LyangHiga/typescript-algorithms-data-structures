@@ -5,6 +5,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 const queue_1 = __importDefault(require("./basics/queue"));
 const stack_1 = __importDefault(require("./basics/stack"));
 const minHeap_1 = __importDefault(require("./heaps/minHeap"));
+// import FibonacciHeap from "./heaps/fibonacciHeap";
+// import FHNode from "./heaps/fHNode";
 const fs_1 = __importDefault(require("fs"));
 // Returns a random number between [min,max)
 const random = (min, max) => {
@@ -509,12 +511,8 @@ class Graph {
             }
             return leader;
         };
+        // TODO: USE FIBONACCI HEAP (DECREASE KEY)
         // Returns the distance from s to each vertex and their parents
-        // Inputs:
-        //    s: source vertex
-        //    h: to choose between binary and fibonacci heap
-        //     'b' (default) for binaryHeap
-        //     'f' for FibonacciHeap
         this.dijkstra = (s) => {
             const heap = new minHeap_1.default();
             let dequeues = 0;
@@ -529,6 +527,7 @@ class Graph {
             }
             distances.set(s, 0);
             heap.enqueue(s, 0);
+            // heap.buildHeap(distances)
             parents.set(s, null);
             let deacrease = false;
             // while we have nodes to visite:
@@ -547,22 +546,21 @@ class Graph {
                             parents.set(nextNode.node, smallest);
                             // try to deacrease key
                             deacrease = heap.decreaseKey(nextNode.node, d);
+                            // if this node is not in heap(wasn't decrease) add to the Heap
                             if (!deacrease) {
-                                // if this node is not in heap(wasn't decrease) add to the Heap
                                 heap.enqueue(nextNode.node, d);
                             }
                         }
                     }
                 }
             }
-            // console.log(
-            //   `dequeues: ${dequeues},size: ${this.size}, h.size: ${heap.size}`
-            // );
+            console.log(`dequeues: ${dequeues},size: ${this.size}, h.size: ${heap.size}`);
             return { distances, parents };
         };
+        // TODO: USE FIBONACCI HEAP (DECREASE KEY)
         // Returns the MST and its cost
         this.prim = (s) => {
-            let heap = new minHeap_1.default();
+            const heap = new minHeap_1.default();
             const mst = new Graph();
             // map to keep track what element is already in mst
             // we dont need this in Dijkstra because dist always encrease
@@ -580,8 +578,10 @@ class Graph {
                     mstSet.set(vertex, false);
                 }
             }
+            // setting start node
             edgeCost.set(s, 0);
-            heap.buildHeap(edgeCost);
+            heap.enqueue(s, 0);
+            // heap.buildHeap(edgeCost);
             parents.set(s, null);
             mstSet.set(s, true);
             while (!heap.isEmpty()) {
@@ -605,13 +605,17 @@ class Graph {
                             //   updating edgeCost and parents
                             edgeCost.set(nextNode.node, nextNode.weight);
                             parents.set(nextNode.node, smallest);
-                            // try to deacrease key, if isConnect always will decrease
+                            // try to deacrease key
                             deacrease = heap.decreaseKey(nextNode.node, nextNode.weight);
+                            // if this node is not in heap(wasn't decrease) add to the Heap
+                            if (!deacrease) {
+                                heap.enqueue(nextNode.node, nextNode.weight);
+                            }
                         }
                     }
                 }
             }
-            console.log(`dequeues: ${dequeues}, size: ${this.size}, h.size: ${heap.size}`);
+            console.log(`dequeues: ${dequeues},size: ${this.size}, h.size: ${heap.size}`);
             return { cost, mst };
         };
         this.list = {};
