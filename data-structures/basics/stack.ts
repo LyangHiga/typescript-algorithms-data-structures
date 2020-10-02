@@ -13,7 +13,7 @@ class Stack {
   }
 
   // add a node at the beginning and return the size of this stack
-  push(key: string) {
+  push(key: any) {
     let node = new Node(key);
     if (this.size === 0) {
       this.first = node;

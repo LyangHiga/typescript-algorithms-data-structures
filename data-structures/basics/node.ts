@@ -1,7 +1,7 @@
 class Node {
   next: null | Node;
 
-  constructor(public key: string) {
+  constructor(public key: any) {
     this.next = null;
   }
 }

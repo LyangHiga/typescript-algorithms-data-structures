@@ -12,7 +12,7 @@ class Queue {
   }
 
   // add to the end and return the size of this queue
-  enQueue(key: string) {
+  enQueue(key: any) {
     let node: Node = new Node(key);
     if (this.size === 0) {
       this.first = node;
