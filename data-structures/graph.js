@@ -7,6 +7,7 @@ const stack_1 = __importDefault(require("./basics/stack"));
 const minHeap_1 = __importDefault(require("./heaps/minHeap"));
 // import FibonacciHeap from "./heaps/fibonacciHeap";
 // import FHNode from "./heaps/fHNode";
+const listSet_1 = __importDefault(require("./disjoint-sets/listSet"));
 const fs_1 = __importDefault(require("fs"));
 // Returns a random number between [min,max)
 const random = (min, max) => {
@@ -134,6 +135,31 @@ class Graph {
                 }
             }
             return g;
+        };
+        // returns a sort arr of edges {u: key of first vertex, v: key of second vertex, w: weight}
+        //    Assumes Weighted Graph
+        this.sortEdges = () => {
+            const arr = [];
+            for (let u in this.list) {
+                for (let v in this.list[u]) {
+                    arr.push({
+                        u: u,
+                        v: this.list[u][v].node,
+                        w: this.list[u][v].weight,
+                    });
+                }
+            }
+            const sortArr = arr.sort((a, b) => a.w - b.w);
+            return sortArr;
+        };
+        // Test if T.union(u,v) creates a cycle
+        this.hasCycles = (T, u, v) => {
+            const uLeader = T.findSet(u);
+            const vLeader = T.findSet(v);
+            if (uLeader && vLeader && uLeader.key === vLeader.key) {
+                return true;
+            }
+            return false;
         };
         //   **********************************************************
         //                            INSERT
@@ -617,6 +643,52 @@ class Graph {
             }
             console.log(`dequeues: ${dequeues},size: ${this.size}, h.size: ${heap.size}`);
             return { cost, mst };
+        };
+        this.kruskal = () => {
+            const sortEdges = this.sortEdges();
+            const T = new listSet_1.default();
+            const MST = new Graph();
+            let cost = 0;
+            for (let i = 0; i < sortEdges.length; i++) {
+                let u = sortEdges[i].u;
+                let v = sortEdges[i].v;
+                if (!this.hasCycles(T, u, v)) {
+                    if (!T.findSet(u) && !T.findSet(v)) {
+                        const s1 = T.makeSet(sortEdges[i].u);
+                        const s2 = T.makeSet(sortEdges[i].v);
+                        T.union(s1.node, s2.node);
+                        MST.addVertecesAndEdge(s1.node.key, s2.node.key, sortEdges[i].w);
+                        cost += sortEdges[i].w;
+                    }
+                    else {
+                        // only u is in T
+                        if (T.findSet(u) && !T.findSet(v)) {
+                            const s1 = T.makeSet(sortEdges[i].v);
+                            T.union(u, s1.node);
+                            MST.addVertecesAndEdge(u, s1.node.key, sortEdges[i].w);
+                            cost += sortEdges[i].w;
+                        }
+                        else {
+                            // only v is in T
+                            if (!T.findSet(u) && T.findSet(v)) {
+                                const s1 = T.makeSet(sortEdges[i].u);
+                                T.union(s1.node, v);
+                                MST.addVertecesAndEdge(s1.node.key, v, sortEdges[i].w);
+                                cost += sortEdges[i].w;
+                            }
+                            else {
+                                // both in T but in different sets
+                                if (T.findSet(u) && T.findSet(v)) {
+                                    T.union(u, v);
+                                    MST.addVertecesAndEdge(u, v, sortEdges[i].w);
+                                    cost += sortEdges[i].w;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return { cost, MST };
         };
         this.list = {};
         this.currentLabel = null;
