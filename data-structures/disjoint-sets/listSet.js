@@ -11,7 +11,6 @@ class ListSet {
             const node = list.push(x);
             this.lists.set(x, list);
             this.pointers.set(x, node);
-            return { list, node };
         };
         this.findSet = (x) => {
             if (!this.pointers.get(x))

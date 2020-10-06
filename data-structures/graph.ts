@@ -6,6 +6,7 @@ import BHNode from "./heaps/bHNode";
 // import FibonacciHeap from "./heaps/fibonacciHeap";
 // import FHNode from "./heaps/fHNode";
 import ListSet from "./disjoint-sets/listSet";
+import ForestSet from "./disjoint-sets/forestSet";
 import fs from "fs";
 
 // Returns a random number between [min,max)
@@ -173,7 +174,7 @@ class Graph {
   };
 
   // Test if T.union(u,v) creates a cycle
-  hasCycles = (T: ListSet, u: string, v: string) => {
+  hasCycles = (T: ListSet | ForestSet, u: string, v: string) => {
     const uLeader = T.findSet(u);
     const vLeader = T.findSet(v);
     if (uLeader && vLeader && uLeader.key === vLeader.key) {
@@ -707,39 +708,39 @@ class Graph {
 
   kruskal = () => {
     const sortEdges = this.sortEdges();
-    const T = new ListSet();
+    // const T = new ListSet();
+    const T = new ForestSet();
     const MST = new Graph();
     let cost = 0;
     for (let i = 0; i < sortEdges.length; i++) {
-      let u = sortEdges[i].u;
-      let v = sortEdges[i].v;
+      let { u, v, w } = sortEdges[i];
       if (!this.hasCycles(T, u, v)) {
         if (!T.findSet(u) && !T.findSet(v)) {
-          const s1 = T.makeSet(sortEdges[i].u);
-          const s2 = T.makeSet(sortEdges[i].v);
-          T.union(s1.node, s2.node);
-          MST.addVertecesAndEdge(s1.node.key, s2.node.key, sortEdges[i].w);
-          cost += sortEdges[i].w;
+          T.makeSet(u);
+          T.makeSet(v);
+          T.union(u, v);
+          MST.addVertecesAndEdge(u, v, w);
+          cost += w;
         } else {
           // only u is in T
           if (T.findSet(u) && !T.findSet(v)) {
-            const s1 = T.makeSet(sortEdges[i].v);
-            T.union(u, s1.node)!;
-            MST.addVertecesAndEdge(u, s1.node.key, sortEdges[i].w);
-            cost += sortEdges[i].w;
+            T.makeSet(v);
+            T.union(u, v);
+            MST.addVertecesAndEdge(u, v, w);
+            cost += w;
           } else {
             // only v is in T
             if (!T.findSet(u) && T.findSet(v)) {
-              const s1 = T.makeSet(sortEdges[i].u);
-              T.union(s1.node, v)!;
-              MST.addVertecesAndEdge(s1.node.key, v, sortEdges[i].w);
+              T.makeSet(u);
+              T.union(u, v);
+              MST.addVertecesAndEdge(u, v, w);
               cost += sortEdges[i].w;
             } else {
               // both in T but in different sets
               if (T.findSet(u) && T.findSet(v)) {
                 T.union(u, v)!;
-                MST.addVertecesAndEdge(u, v, sortEdges[i].w);
-                cost += sortEdges[i].w;
+                MST.addVertecesAndEdge(u, v, w);
+                cost += w;
               }
             }
           }

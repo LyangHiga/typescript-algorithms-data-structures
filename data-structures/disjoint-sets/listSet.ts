@@ -16,7 +16,6 @@ class ListSet {
     const node = list.push(x);
     this.lists.set(x, list);
     this.pointers.set(x, node);
-    return { list, node };
   };
 
   findSet = (x: string) => {
