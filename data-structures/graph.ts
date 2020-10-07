@@ -706,43 +706,32 @@ class Graph {
     return { cost, mst };
   };
 
-  kruskal = () => {
+  // Returns the cost and MST
+  // if k=== true
+  //    Single-link Clustering
+  //    return the cost of the very next edge which will not create a cycle.
+  //    USE List Set => f=false
+  kruskal = (f = true, k?: number) => {
     const sortEdges = this.sortEdges();
-    // const T = new ListSet();
-    const T = new ForestSet();
+    const T = f ? new ForestSet() : new ListSet();
+    for (let u in this.list) T.makeSet(u);
     const MST = new Graph();
     let cost = 0;
     for (let i = 0; i < sortEdges.length; i++) {
       let { u, v, w } = sortEdges[i];
       if (!this.hasCycles(T, u, v)) {
-        if (!T.findSet(u) && !T.findSet(v)) {
-          T.makeSet(u);
-          T.makeSet(v);
-          T.union(u, v);
-          MST.addVertecesAndEdge(u, v, w);
-          cost += w;
-        } else {
-          // only u is in T
-          if (T.findSet(u) && !T.findSet(v)) {
-            T.makeSet(v);
-            T.union(u, v);
-            MST.addVertecesAndEdge(u, v, w);
-            cost += w;
-          } else {
-            // only v is in T
-            if (!T.findSet(u) && T.findSet(v)) {
-              T.makeSet(u);
-              T.union(u, v);
-              MST.addVertecesAndEdge(u, v, w);
-              cost += sortEdges[i].w;
-            } else {
-              // both in T but in different sets
-              if (T.findSet(u) && T.findSet(v)) {
-                T.union(u, v)!;
-                MST.addVertecesAndEdge(u, v, w);
-                cost += w;
-              }
+        T.union(u, v)!;
+        MST.addVertecesAndEdge(u, v, w);
+        cost += w;
+        if (k) {
+          if (T instanceof ListSet) {
+            if (T.lists.size === k - 1) {
+              return { w };
+              break;
             }
+          } else {
+            console.log("Please use List Set. f = false");
+            throw "use List Set. f=false";
           }
         }
       }
