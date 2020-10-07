@@ -566,7 +566,7 @@ class Graph {
 
   // Returns the size of each Strong Component
   // the id of each SC is its Leader
-  kojaru = () => {
+  kosaraju = () => {
     // reverse G
     const gRerv = this.reverse();
     // finish order
