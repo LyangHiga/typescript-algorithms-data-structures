@@ -36,7 +36,7 @@ const optS = (arr, m) => {
             i = arr[i].p;
         }
         else {
-            //CASE 2: vn is in S
+            //CASE 2: Ij is in S
             i = i - 1;
         }
     }
