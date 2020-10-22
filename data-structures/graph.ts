@@ -640,6 +640,47 @@ class Graph {
     return { distances, parents };
   };
 
+  // Returns the distance from s to each vertex and their parents
+  // O(mn)
+  bellmanFord = (s: string) => {
+    // O(m) space => to reconstruct path from s to (any) v
+    // use parents map (predecessor pointers)
+    const distances: Map<string, number> = new Map();
+    // predecessor pointers
+    const parents: Map<string, null | string> = new Map();
+    // to stop earlier
+    let stop = true;
+    // for i =0, all dist from s to vertex are infinity
+    for (let vertex in this.list) {
+      if (vertex !== s) {
+        distances.set(vertex, Infinity);
+      }
+    }
+    // dist s to s
+    distances.set(s, 0);
+    parents.set(s, null);
+    // i edges allowed, (n-1) at most => O(n)
+    for (let i = 1; i < this.size; i++) {
+      // if any distance get smaller, we can stop early
+      stop = true;
+      // try a min path for each edge => O(m)
+      for (let v in this.list) {
+        for (let neighbour in this.list[v]) {
+          const w = this.list[v][neighbour];
+          const d = distances.get(w.node)! + w.weight!;
+          if (distances.get(v)! > d) {
+            distances.set(v, d);
+            parents.set(v, w.node);
+            // still getting distances update => dont stop!
+            stop = false;
+          }
+        }
+      }
+      if (stop) break;
+    }
+    return { distances, parents };
+  };
+
   // TODO: USE FIBONACCI HEAP (DECREASE KEY)
   // Returns the MST and its cost
   prim = (s: string) => {
