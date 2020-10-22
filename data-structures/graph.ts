@@ -640,12 +640,14 @@ class Graph {
     return { distances, parents };
   };
 
-  // Returns the distance from s to each vertex and their parents
-  // O(mn)
+  // Returns the distance from s to each vertex and their parents O(mn)
+  // negative costs are allowed
+  // detect negative cycles: boolean output (cycle)
+  // use parents (predecessor pointers) to traverse the cycle
   bellmanFord = (s: string) => {
     // O(m) space => to reconstruct path from s to (any) v
     // use parents map (predecessor pointers)
-    const distances: Map<string, number> = new Map();
+    const costs: Map<string, number> = new Map();
     // predecessor pointers
     const parents: Map<string, null | string> = new Map();
     // to stop earlier
@@ -653,32 +655,37 @@ class Graph {
     // for i =0, all dist from s to vertex are infinity
     for (let vertex in this.list) {
       if (vertex !== s) {
-        distances.set(vertex, Infinity);
+        costs.set(vertex, Infinity);
       }
     }
     // dist s to s
-    distances.set(s, 0);
+    costs.set(s, 0);
     parents.set(s, null);
     // i edges allowed, (n-1) at most => O(n)
-    for (let i = 1; i < this.size; i++) {
+    // try for n edges to check for negative cycles
+    // if costs get smaller indefinitely (OPT(n,v) !== OPT(n-1,v))
+    // There is a negative cycle
+    for (let i = 1; i < this.size + 1; i++) {
       // if any distance get smaller, we can stop early
+      // if after n-1 steps: the costs still get smaller (with n edges allowed)
+      // negative cycle detected!
       stop = true;
       // try a min path for each edge => O(m)
       for (let v in this.list) {
         for (let neighbour in this.list[v]) {
           const w = this.list[v][neighbour];
-          const d = distances.get(w.node)! + w.weight!;
-          if (distances.get(v)! > d) {
-            distances.set(v, d);
+          const d = costs.get(w.node)! + w.weight!;
+          if (costs.get(v)! > d) {
+            costs.set(v, d);
             parents.set(v, w.node);
-            // still getting distances update => dont stop!
+            // still getting costs update => dont stop!
             stop = false;
           }
         }
       }
       if (stop) break;
     }
-    return { distances, parents };
+    return { costs, parents, cycle: !stop };
   };
 
   // TODO: USE FIBONACCI HEAP (DECREASE KEY)
