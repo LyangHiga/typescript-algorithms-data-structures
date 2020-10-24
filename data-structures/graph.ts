@@ -217,11 +217,34 @@ class Graph {
     return this;
   };
 
+  // adds v to neighbour list of u
+  // ( and v to u neighbour list if it's a undirected graph )
+  // kepp the min cost edge for duplications
+  addEdgeNoDuplicates = (u: string, v: string, weight: number) => {
+    // avoid duplications
+    for (let neighbour in this.list[u]) {
+      const z = this.list[u][neighbour];
+      // if already in list test to decrease with new edge
+      if (v === z.node) {
+        if (weight < z.weight!) {
+          this.list[u][neighbour].weight = weight;
+        }
+        return this;
+      }
+    }
+    this.list[u].push({ node: v, weight });
+    return this;
+  };
+
   // Adds both u and v verteces and their edge w
-  addVertecesAndEdge = (u: string, v: string, w = 0) => {
+  addVertecesAndEdge = (u: string, v: string, w = 0, d = true) => {
     this.addVertex(u);
     this.addVertex(v);
-    this.addEdge(u, v, w);
+    if (d) {
+      this.addEdge(u, v, w);
+    } else {
+      this.addEdgeNoDuplicates(u, v, w);
+    }
   };
 
   //   **********************************************************
@@ -384,7 +407,7 @@ class Graph {
   // File is the adj list of this Graph
   // FORMAT: <first vertex u>' '<second vertex v>
   // it is a drirected graph, the edge goes from u to v, i.e.: u -> v
-  createDirected = (file: string): false | void => {
+  createDirected = (file: string, w = false): false | void => {
     // check if this is a 'empty graph'
     if (this.size !== 0) return false;
     // set this graph as directed
@@ -397,7 +420,18 @@ class Graph {
         line += data[i];
       } else {
         split = line.trim().split(" ");
-        this.addVertecesAndEdge(split[0], split[1]);
+        if (!w) {
+          this.addVertecesAndEdge(split[0], split[1]);
+        } else {
+          // Avoid duplications!
+          this.addVertecesAndEdge(
+            split[0],
+            split[1],
+            parseInt(split[2]),
+            false
+          );
+        }
+
         line = "";
       }
     }
@@ -407,6 +441,8 @@ class Graph {
       this.addVertecesAndEdge(split[0], split[1]);
     }
   };
+
+  // TODO: direcyed weighted: u -> v cost
 
   //   **********************************************************
   //                            ALGORITHMS
@@ -674,10 +710,10 @@ class Graph {
       for (let v in this.list) {
         for (let neighbour in this.list[v]) {
           const w = this.list[v][neighbour];
-          const d = costs.get(w.node)! + w.weight!;
-          if (costs.get(v)! > d) {
-            costs.set(v, d);
-            parents.set(v, w.node);
+          const d = costs.get(v)! + w.weight!;
+          if (costs.get(w.node)! > d) {
+            costs.set(w.node, d);
+            parents.set(w.node, v);
             // still getting costs update => dont stop!
             stop = false;
           }
@@ -758,6 +794,8 @@ class Graph {
     }
     return { costs, parents };
   };
+
+  // TODO: Johnson's Algorithm?
 
   // TODO: USE FIBONACCI HEAP (DECREASE KEY)
   // Returns the MST and its cost
