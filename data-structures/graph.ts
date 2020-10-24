@@ -688,6 +688,77 @@ class Graph {
     return { costs, parents, cycle: !stop };
   };
 
+  // Returns the distance from all pair of vertices (u,v) in V
+  // negative costs are allowed
+  // use parents (predecessor pointers) to traverse the cycle
+  floydWarshall = () => {
+    let costs = new Map();
+    // predecessor pointers
+    const parents = new Map();
+    // Initialize maps
+    // i: starter vertex, j: target vertex
+    // K: set of allowed vertex, k: last vertex in K
+    // K = {"0", "a", "1", ... k}
+    // if i === j  costs[i][j][0] = 0
+    // if i !== j costs[i][j][0] = Infinity
+    // O(n2)
+    for (let i in this.list) {
+      for (let j in this.list) {
+        if (!costs.get(i)) {
+          costs.set(i, new Map());
+          parents.set(i, new Map());
+        }
+        if (!costs.get(i).get(j)) {
+          costs.get(i).set(j, new Map());
+          parents.get(i).set(j, new Map());
+        }
+        if (!costs.get(i).get(j).get("0")) {
+          costs.get(i).get(j).set(0, new Map());
+        }
+        if (i === j) {
+          costs.get(i).get(j).set("0", 0);
+          parents.get(i).set(i, null);
+        } else {
+          costs.get(i).get(j).set("0", Infinity);
+        }
+      }
+    }
+    // update neighbour distances
+    // O(m)
+    for (let i in this.list) {
+      for (let neighbour in this.list[i]) {
+        const w = this.list[i][neighbour];
+        // costs.get(i).get(w.node).set(0, w.weight!);
+        costs.get(i).get(w.node).set("0", w.weight!);
+      }
+    }
+    let oldK = "0";
+    // to expand K to the next vertex of this.list
+    for (let k in this.list) {
+      for (let i in this.list) {
+        for (let j in this.list) {
+          // to initialize a new map for this new set K
+          if (!costs.get(i).get(j).get(k)) {
+            costs.get(i).get(j).set(k, new Map());
+          }
+          // min {path without new k (as intermediary), path i to k + path k to j}
+          const lastD = costs.get(i).get(j).get(oldK);
+          const d =
+            costs.get(i).get(k).get(oldK) + costs.get(k).get(j).get(oldK);
+          if (d < lastD) {
+            costs.get(i).get(j).set(k, d);
+            parents.get(i).set(j, k);
+          } else {
+            costs.get(i).get(j).set(k, lastD);
+          }
+        }
+      }
+      // update oldK
+      oldK = k;
+    }
+    return { costs, parents };
+  };
+
   // TODO: USE FIBONACCI HEAP (DECREASE KEY)
   // Returns the MST and its cost
   prim = (s: string) => {
