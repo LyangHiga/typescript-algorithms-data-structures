@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.tsp_nnh = exports.tsp_bsf = void 0;
+exports.tsp_nnh = exports.tsp_bfs = void 0;
 // Euclidian Distance
 const distance = (a, b) => {
     return Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2));
@@ -50,11 +50,11 @@ const minTour = (tourArr) => {
             minT = tour;
         }
     }
-    return { min, minT };
+    return { min, minTour };
 };
 // Return min Tour cost and min Tour
 // Brute-force Search
-exports.tsp_bsf = (arr) => {
+exports.tsp_bfs = (arr) => {
     // make all (n)! permutaions
     const permutations = permutator(arr);
     // return min cost, min tour cost

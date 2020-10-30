@@ -55,12 +55,12 @@ const minTour = (tourArr: City[][]) => {
       minT = tour;
     }
   }
-  return { min, minT };
+  return { min, minTour };
 };
 
 // Return min Tour cost and min Tour
 // Brute-force Search
-export const tsp_bsf = (arr: City[]) => {
+export const tsp_bfs = (arr: City[]) => {
   // make all (n)! permutaions
   const permutations = permutator(arr);
   // return min cost, min tour cost
