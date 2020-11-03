@@ -22,6 +22,21 @@ All Example Test Cases are from [stanford-algs](https://github.com/beaunus/stanf
 - [Programming Assignment #3](https://github.com/LyangHiga/javaScript-algorithms-data-structures/blob/master/algorithms-specialization-coursera/course2/week3/exe.ts) - (Median Maintenance )
 - [Programming Assignment #4](https://github.com/LyangHiga/javaScript-algorithms-data-structures/blob/master/algorithms-specialization-coursera/course2/week4/exe.ts) - (2-SUM Problem)
 
+#### [Greedy Algorithms, Minimum Spanning Trees, and Dynamic Programming](https://www.coursera.org/learn/algorithms-greedy/home/welcome)
+
+- [Programming Assignment #1.1 and #1.2](https://github.com/LyangHiga/typescript-algorithms-data-structures/blob/master/algorithms-specialization-coursera/course3/week1/exe1-2/exe.ts) - (scheduling application)
+- [Programming Assignment #1.3](https://github.com/LyangHiga/typescript-algorithms-data-structures/blob/master/algorithms-specialization-coursera/course3/week1/exe3/exe3.ts) - (Min Spanning Tree: Prim and Kruskal)
+- [Programming Assignment #2.1](https://github.com/LyangHiga/typescript-algorithms-data-structures/blob/master/algorithms-specialization-coursera/course3/week2/exe1/exe.ts) - (Single-Link Clustering)
+- [Programming Assignment #3.1 and #3.2](https://github.com/LyangHiga/typescript-algorithms-data-structures/blob/master/algorithms-specialization-coursera/course3/week3/exe1-2/exe.ts) - (Huffman coding)
+- [Programming Assignment #3.3](https://github.com/LyangHiga/typescript-algorithms-data-structures/blob/master/algorithms-specialization-coursera/course3/week3/exe3/exe3.ts) - (Max Weight Independent Set)
+- [Programming Assignment #4](https://github.com/LyangHiga/typescript-algorithms-data-structures/blob/master/algorithms-specialization-coursera/course3/week4/exe.ts) - (Knapsack Problem)
+
+#### [Shortest Paths Revisited, NP-Complete Problems and What To Do About Them](https://www.coursera.org/learn/algorithms-npcomplete/home/welcome)
+
+- [Programming Assignment #1](https://github.com/LyangHiga/typescript-algorithms-data-structures/blob/master/algorithms-specialization-coursera/course4/week1/exe.ts) - (All Pairs Shortest Path)
+- [Programming Assignment #2](https://github.com/LyangHiga/typescript-algorithms-data-structures/blob/master/algorithms-specialization-coursera/course4/week2/exe.ts) - (TSP)
+- [Programming Assignment #3](https://github.com/LyangHiga/typescript-algorithms-data-structures/blob/master/algorithms-specialization-coursera/course4/week3/exe.ts) - (Nearest Neighbor Heuristic TSP)
+
 ### Data Structures
 
 ##### Basics:
@@ -47,21 +62,26 @@ All Example Test Cases are from [stanford-algs](https://github.com/beaunus/stanf
 
 - [Separate Chaining](https://github.com/LyangHiga/javaScript-algorithms-data-structures/blob/master/data-structures/hash-tables/hashTable.ts)
 
-##### Graph:
+##### Disjoint-set (Union-Find):
 
-- [Graph](https://github.com/LyangHiga/javaScript-algorithms-data-structures/blob/master/data-structures/graph.ts)
+- [Linked List Representation](https://github.com/LyangHiga/typescript-algorithms-data-structures/blob/master/data-structures/disjoint-sets/listSet.ts)
+- [Forest Representation](https://github.com/LyangHiga/typescript-algorithms-data-structures/blob/master/data-structures/disjoint-sets/forestSet.ts)
+
+##### [Graph:](https://github.com/LyangHiga/javaScript-algorithms-data-structures/blob/master/data-structures/graph.ts)
+
+- Karger Minimum Cut
+- BFS
+- Undirected connectivity
+- DFS
+- Topological Sorting
+- Kosaraju Strongly Connected Components
+- Dijkstra
+- Prim
+- Kruskal
+- Bellman-Ford
+- Floyd-Warshall
 
 To visualize some Pathfinding Algorithms checks: [Pathfinding Visualizer](https://lyanghiga.github.io/pathfinding-visualizer/)
-
-### Divide and Conquer
-
-- [Karatsuba Multiplication](https://github.com/LyangHiga/javaScript-algorithms-data-structures/blob/master/divide-and-conquer/karatsuba.ts)
-- [Merge Sort](https://github.com/LyangHiga/javaScript-algorithms-data-structures/blob/master/sort/mergeSort.ts)
-- [Counting Inversions](https://github.com/LyangHiga/javaScript-algorithms-data-structures/blob/master/divide-and-conquer/countingInversions.ts)
-- [Maximum Sum Subarray Problem](https://github.com/LyangHiga/javaScript-algorithms-data-structures/blob/master/divide-and-conquer/maxSubarr.ts)
-- [Closest Pair of Points Problem](https://github.com/LyangHiga/javaScript-algorithms-data-structures/blob/master/divide-and-conquer/closestPair.ts)
-- [Quicksort](https://github.com/LyangHiga/javaScript-algorithms-data-structures/blob/master/sort/quickSort.ts)
-- [Linear Time Selection: Random and Deterministic](https://github.com/LyangHiga/javaScript-algorithms-data-structures/blob/master/divide-and-conquer/selection.ts)
 
 ### Sorting
 
@@ -74,3 +94,31 @@ To visualize some Pathfinding Algorithms checks: [Pathfinding Visualizer](https:
 - [Radix Sort](https://github.com/LyangHiga/JavaScript-Algorithms-and-Data-Structures-Masterclass/blob/master/sort/radixSort.ts)
 
 To visualize some of them check [Sorting Visualizer](https://lyanghiga.github.io/sorting-visualizer/)
+
+### Divide and Conquer
+
+- [Karatsuba Multiplication](https://github.com/LyangHiga/javaScript-algorithms-data-structures/blob/master/divide-and-conquer/karatsuba.ts)
+- [Merge Sort](https://github.com/LyangHiga/javaScript-algorithms-data-structures/blob/master/sort/mergeSort.ts)
+- [Counting Inversions](https://github.com/LyangHiga/javaScript-algorithms-data-structures/blob/master/divide-and-conquer/countingInversions.ts)
+- [Maximum Sum Subarray Problem](https://github.com/LyangHiga/javaScript-algorithms-data-structures/blob/master/divide-and-conquer/maxSubarr.ts)
+- [Closest Pair of Points Problem](https://github.com/LyangHiga/javaScript-algorithms-data-structures/blob/master/divide-and-conquer/closestPair.ts)
+- [Quicksort](https://github.com/LyangHiga/javaScript-algorithms-data-structures/blob/master/sort/quickSort.ts)
+- [Linear Time Selection: Random and Deterministic](https://github.com/LyangHiga/javaScript-algorithms-data-structures/blob/master/divide-and-conquer/selection.ts)
+
+### Greedy
+
+- [Dijkstra](https://github.com/LyangHiga/typescript-algorithms-data-structures/blob/master/data-structures/graph.ts)
+- [Prim](https://github.com/LyangHiga/typescript-algorithms-data-structures/blob/master/data-structures/graph.ts)
+- [Kruskal - Single-Link Clustering](https://github.com/LyangHiga/typescript-algorithms-data-structures/blob/master/data-structures/graph.ts)
+- [Scheduling Application](https://github.com/LyangHiga/typescript-algorithms-data-structures/blob/master/greedy/scheduling/scheduling.ts)
+- [Huffman Coding](https://github.com/LyangHiga/typescript-algorithms-data-structures/blob/master/greedy/huffman-coding/huffman.ts)
+- [Nearest Neighbor Heuristic TSP](https://github.com/LyangHiga/typescript-algorithms-data-structures/blob/master/tsp/tsp.ts)
+
+### Dynamic Programming
+
+- [Weighted Interval Scheduling](https://github.com/LyangHiga/typescript-algorithms-data-structures/blob/master/dynamic-programming/weighted-interval-scheduling/wis.ts)
+- [Max Weight Independent Set](https://github.com/LyangHiga/typescript-algorithms-data-structures/blob/master/dynamic-programming/mwis.ts)
+- [Knapsack](https://github.com/LyangHiga/typescript-algorithms-data-structures/blob/master/dynamic-programming/knapsack/knapsack.ts)
+- [Sequence Alignment](https://github.com/LyangHiga/typescript-algorithms-data-structures/blob/master/dynamic-programming/sequenceAlignment.ts)
+- [Bellman-Ford](https://github.com/LyangHiga/typescript-algorithms-data-structures/blob/master/data-structures/graph.ts)
+- [Floyd-Warshall](https://github.com/LyangHiga/typescript-algorithms-data-structures/blob/master/data-structures/graph.ts)
