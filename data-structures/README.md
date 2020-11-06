@@ -33,5 +33,11 @@ I used a lot of references, in this section I will try to point the ones that we
   - [Fibonacci Heap Introduction Lecture](https://www.youtube.com/watch?v=E_AgyAI8lsc&ab_channel=JeffZhang)
 
 - Hash Table (Separate Chaining):
+
   - [Hash Table Lectures](https://www.coursera.org/learn/algorithms-graphs-data-structures/lecture/Ob0K7/hash-tables-implementation-details-part-i)
   - [Introduction to Algorithms, 3rd Edition](https://en.wikipedia.org/wiki/Introduction_to_Algorithms)
+
+- Disjoint-Sets (Union-find): Linked list and Forest Representation
+  - [Lecture](https://www.coursera.org/learn/algorithms-greedy/lecture/WX3tg/lazy-unions-advanced-optional)
+  - [Introduction to Algorithms, 3rd Edition](https://en.wikipedia.org/wiki/Introduction_to_Algorithms)
+  - [Algorithm Design 1st Edition](https://www.amazon.com/Algorithm-Design-Jon-Kleinberg/dp/0321295358)
