@@ -29,18 +29,23 @@ class MinHeap {
             // left 2 * i + 1 , right 2 * idx + 2
             return [2 * i + 1, 2 * i + 2];
         };
-        // Rearrange values and dict
+        // swap idxs elements in map key to idx
+        this.swapIdxs = (a, b) => {
+            const temp = this.idxs.get(a);
+            this.idxs.set(a, this.idxs.get(b));
+            this.idxs.set(b, temp);
+        };
+        // Rearrange values and map
         this.bubbleUp = (i, j) => {
             //swap i and j
             [this.values[i], this.values[j]] = [this.values[j], this.values[i]];
-            // swap idxs elements in dict key to idx
-            [this.idxs[this.values[i].key], this.idxs[this.values[j].key]] = [
-                this.idxs[this.values[j].key],
-                this.idxs[this.values[i].key],
-            ];
+            // swap idxs elements in map key to idx
+            const a = this.values[i].key;
+            const b = this.values[j].key;
+            this.swapIdxs(a, b);
         };
         // Returns the smmaller child idx
-        // Rearrange values and dict
+        // Rearrange values and map
         this.bubbleDown = (idx, l, r) => {
             // to keep track of the smallest child
             let smallIdx;
@@ -59,17 +64,16 @@ class MinHeap {
                 this.values[smallIdx],
                 this.values[idx],
             ];
-            // swap idxs elements in dict key to idx
-            [this.idxs[this.values[idx].key], this.idxs[this.values[smallIdx].key]] = [
-                this.idxs[this.values[smallIdx].key],
-                this.idxs[this.values[idx].key],
-            ];
+            // swap idxs elements in map key to idx
+            const a = this.values[idx].key;
+            const b = this.values[smallIdx].key;
+            this.swapIdxs(a, b);
             return smallIdx;
         };
         // Returns true if this heap constains this key
         // Otherwise returns false
         this.contains = (key) => {
-            if (this.values[this.idxs[key]] === undefined)
+            if (this.idxs.get(key) === undefined)
                 return false;
             return true;
         };
@@ -81,21 +85,18 @@ class MinHeap {
         //   **********************************************************
         //                            CREATING
         //   **********************************************************
-        // arr: array, object or Map
-        // keys: array or nul
-        // If arr is an array and keys is also an array:
+        // arr: array, Map
+        // keys: array
+        // If arr is an array
         //    Each node of this Heap will be the (keys[i], arr[i]) where i is the index,
         //    arr and keys MUST have the same size
         //    Duplicate keys are not allowed. Returns false
-        // If arr is an array and keys is null:
-        //    Each node of this Heap will be the (i, arr[i]) where i is the index,
-        //    IOW the index of arr became the key of each node
-        // If arr is an object:
+        // If arr is a Map:
         //    each node of this Heap will be the (key, val) of each element of arr
         //    In this case second param <keys> is not used
         // In any case the Heap is build in linear time
         // Returns: this Heap
-        this.buildHeap = (arr, keys = null) => {
+        this.buildHeap = (arr, keys) => {
             // Returns false if this heap is not empty
             if (!this.isEmpty())
                 return false;
@@ -114,40 +115,19 @@ class MinHeap {
                         if (this.contains(keys[i]))
                             return false;
                         this.values.push(new bHNode_1.default(keys[i], arr[i]));
-                        this.idxs[keys[i]] = i;
+                        // this.idxs[keys[i]] = i;
+                        this.idxs.set(keys[i], i);
                     }
-                }
-                //   arr is array and keys is null
-                else {
-                    // set size of this heap to the size of arr
-                    this.size = arr.length;
-                    // inject arr in this.value (i,arr[i))
-                    arr.forEach((e, i) => {
-                        this.values.push(new bHNode_1.default(i.toString(), e));
-                        this.idxs[i] = i;
-                    });
                 }
             }
             else if (arr instanceof Map) {
                 let i = 0;
                 arr.forEach((value, key) => {
                     this.values.push(new bHNode_1.default(key, value));
-                    this.idxs[key] = i;
+                    this.idxs.set(keys[i], i);
                     i++;
                     this.size++;
                 });
-            }
-            // arr is an object
-            else {
-                let i = 0;
-                //   set size of this heap to the size of arr
-                this.size = Object.keys(arr).length;
-                // inject each element of arr (key, val) to this.value
-                for (const [key, val] of Object.entries(arr)) {
-                    this.values.push(new bHNode_1.default(key, val));
-                    this.idxs[key] = i;
-                    i++;
-                }
             }
             // to heapify all sub heaps with root in index i
             // all leaves are already heaps
@@ -179,7 +159,7 @@ class MinHeap {
         this.valueOf = (key) => {
             if (!this.contains(key))
                 return null;
-            const idx = this.idxs[key];
+            const idx = this.idxs.get(key);
             return this.values[idx];
         };
         //   **********************************************************
@@ -197,8 +177,8 @@ class MinHeap {
             this.size++;
             // last position to insert this new node
             let idx = this.size - 1;
-            // add the idx of this key on the dict
-            this.idxs[key] = idx;
+            // add the idx of this key on the map
+            this.idxs.set(key, idx);
             let parentIdx = this.myParentIdx(idx);
             // bubble-up (while this new node is smaller than its parent)
             while (this.lessThan(idx, parentIdx)) {
@@ -213,22 +193,21 @@ class MinHeap {
         //                            UPDATE
         //   **********************************************************
         // Update the val of this key
-        // Returns true
+        // Returns true if works
         // Returns false if there is not any node with this key in this heap
-        // Returns false if newVal is not smaller than the actual val of key
+        // Returns undefined if newVal is equal to the actual val of key
+        // Returns -1 if newVal is greater than the actual val of key
         this.decreaseKey = (key, newVal) => {
             // check whether this key belongs to this heap
             if (!this.contains(key))
                 return false;
-            //   get idx of this key
-            let idx = this.idxs[key];
-            // TODO: Dont return the same if not contains or if new val cant be decreased
+            let idx = this.idxs.get(key);
             // to ensure newVal < val
             if (newVal > this.values[idx].val)
-                return false;
-            // if they are the same return this
+                return -1;
+            // if they are the same just return
             if (newVal === this.values[idx].val)
-                return false;
+                return;
             //   update node with new val
             this.values[idx].val = newVal;
             let parentIdx = this.myParentIdx(idx);
@@ -242,21 +221,21 @@ class MinHeap {
             return true;
         };
         // Update the val of this key
-        // Returns true
+        // Returns true if works
         // Returns false if there is not any node with this key in this heap
-        // Returns false if newVal is greater than the actual val
+        // Returns undefined if newVal is equal to the actual val
+        // Returns -1 if newVal is smaller than the actual val
         this.increaseKey = (key, newVal) => {
             // check whether this key belongs to this heap
             if (!this.contains(key))
                 return false;
-            //   get idx of this key
-            let idx = this.idxs[key];
+            let idx = this.idxs.get(key);
             // to ensure newVal > val
             if (newVal < this.values[idx].val)
-                return false;
-            // if they are the same return this
+                return -1;
+            // if they are the same just return
             if (newVal === this.values[idx].val)
-                return this;
+                return;
             //   update node with new val
             this.values[idx].val = newVal;
             let [lChild, rChild] = this.myChildrenIdx(idx);
@@ -269,17 +248,16 @@ class MinHeap {
             return true;
         };
         // Returns false if there is not any node with this key in this heap
-        // Returns false if newVal equals to the actual val
+        // Returns undefined if newVal equals to the actual val
         // if newVal is greater than the actual val calls increaseKey
         // if newVal is smaller than the actual val calls decreaseKey
         this.updateKey = (key, newVal) => {
             // check whether this key belongs to this heap
             if (!this.contains(key))
                 return false;
-            //   get idx of this key
-            let idx = this.idxs[key];
+            let idx = this.idxs.get(key);
             if (newVal === this.values[idx].val)
-                return false;
+                return;
             if (newVal > this.values[idx].val)
                 return this.increaseKey(key, newVal);
             if (newVal < this.values[idx].val)
@@ -302,10 +280,10 @@ class MinHeap {
             // replace the root with the last element
             this.values[0] = this.values.pop();
             this.size--;
-            // delete from dict
-            delete this.idxs[min.key];
-            // update idx of the 'new root' in the dict
-            this.idxs[this.values[0].key] = 0;
+            // delete from map
+            this.idxs.delete(min.key);
+            // update idx of the 'new root' in the map
+            this.idxs.set(this.values[0].key, 0);
             // index of this node we have to rearrange and the idx of its children
             let idx = 0;
             let [lChild, rChild] = this.myChildrenIdx(idx);
@@ -324,22 +302,23 @@ class MinHeap {
             if (!this.contains(key))
                 return false;
             // if it is the last element of values: we dont need to rearrange
-            if (this.idxs[key] === this.size - 1) {
+            if (this.idxs.get(key) === this.size - 1) {
                 this.values.pop();
-                delete this.idxs[key];
+                this.idxs.delete(key);
                 this.size--;
                 return true;
             }
             //   get idx of this key
-            let idx = this.idxs[key];
+            let idx = this.idxs.get(key);
             // replace this node with the last one
             this.values[idx] = this.values.pop();
             this.size--;
-            // delete from dict
-            delete this.idxs[key];
-            // update idx of the 'new node in idx position' in the dict
+            // delete from map
+            this.idxs.delete(key);
+            // update idx of the 'new node in idx position' in the map
             // we need to rearrange from idx to bellow
-            this.idxs[this.values[idx].key] = idx;
+            // this.idxs[this.values[idx].key] = idx;
+            this.idxs.set(this.values[idx].key, idx);
             // get the children of idx
             let [lChild, rChild] = this.myChildrenIdx(idx);
             // bubble-down (while any child is smaller than the parent)
@@ -355,12 +334,12 @@ class MinHeap {
             this.size = 0;
             while (!this.isEmpty())
                 this.values.pop();
-            for (let k in this.idxs)
-                delete this.idxs[k];
+            for (let k of this.idxs)
+                this.idxs.delete(k[0]);
         };
         this.values = [];
-        // dict: key to array idx => you say the key it returns the idx
-        this.idxs = {};
+        // map: key to array idx => you say the key it returns the idx
+        this.idxs = new Map();
         this.size = 0;
     }
 }

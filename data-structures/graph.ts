@@ -630,7 +630,7 @@ class Graph {
   // TODO: USE FIBONACCI HEAP (DECREASE KEY)
   // Returns the distance from s to each vertex and their parents
   dijkstra = (s: string) => {
-    const heap = new MinHeap();
+    const heap = new MinHeap<string>();
     let dequeues = 0;
     // objs to map key to distance and key to parents
     const distances: Map<string, number> = new Map();
@@ -645,7 +645,7 @@ class Graph {
     heap.enqueue(s, 0);
     // heap.buildHeap(distances)
     parents.set(s, null);
-    let deacrease: boolean | BHNode = false;
+    let deacrease: boolean | number | BHNode<string> | undefined = false;
     // while we have nodes to visite:
     while (!heap.isEmpty()) {
       smallest = heap.dequeue()!.key;
@@ -663,7 +663,7 @@ class Graph {
             // try to deacrease key
             deacrease = heap.decreaseKey(nextNode.node, d);
             // if this node is not in heap(wasn't decrease) add to the Heap
-            if (!deacrease) {
+            if (deacrease === false) {
               heap.enqueue(nextNode.node, d);
             }
           }
@@ -749,7 +749,7 @@ class Graph {
           parents.get(i).set(j, new Map());
         }
         if (!costs.get(i).get(j).get("0")) {
-          costs.get(i).get(j).set(0, new Map());
+          costs.get(i).get(j).set("0", new Map());
         }
         if (i === j) {
           costs.get(i).get(j).set("0", 0);
@@ -800,7 +800,7 @@ class Graph {
   // TODO: USE FIBONACCI HEAP (DECREASE KEY)
   // Returns the MST and its cost
   prim = (s: string) => {
-    const heap = new MinHeap();
+    const heap = new MinHeap<string>();
     const mst = new Graph();
     // map to keep track what element is already in mst
     // we dont need this in Dijkstra because dist always encrease
@@ -811,7 +811,7 @@ class Graph {
     let cost = 0;
     let dequeues = 0;
     let smallest: string;
-    let deacrease: boolean | BHNode = false;
+    let deacrease: boolean | BHNode<string> | number | undefined = false;
     for (let vertex in this.list) {
       if (vertex !== s) {
         edgeCost.set(vertex, Infinity);
@@ -850,7 +850,7 @@ class Graph {
             // try to deacrease key
             deacrease = heap.decreaseKey(nextNode.node, nextNode.weight!);
             // if this node is not in heap(wasn't decrease) add to the Heap
-            if (!deacrease) {
+            if (deacrease === false) {
               heap.enqueue(nextNode.node, nextNode.weight!);
             }
           }

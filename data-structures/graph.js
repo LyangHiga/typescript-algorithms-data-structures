@@ -604,7 +604,7 @@ class Graph {
                             // try to deacrease key
                             deacrease = heap.decreaseKey(nextNode.node, d);
                             // if this node is not in heap(wasn't decrease) add to the Heap
-                            if (!deacrease) {
+                            if (deacrease === false) {
                                 heap.enqueue(nextNode.node, d);
                             }
                         }
@@ -687,7 +687,7 @@ class Graph {
                         parents.get(i).set(j, new Map());
                     }
                     if (!costs.get(i).get(j).get("0")) {
-                        costs.get(i).get(j).set(0, new Map());
+                        costs.get(i).get(j).set("0", new Map());
                     }
                     if (i === j) {
                         costs.get(i).get(j).set("0", 0);
@@ -785,7 +785,7 @@ class Graph {
                             // try to deacrease key
                             deacrease = heap.decreaseKey(nextNode.node, nextNode.weight);
                             // if this node is not in heap(wasn't decrease) add to the Heap
-                            if (!deacrease) {
+                            if (deacrease === false) {
                                 heap.enqueue(nextNode.node, nextNode.weight);
                             }
                         }

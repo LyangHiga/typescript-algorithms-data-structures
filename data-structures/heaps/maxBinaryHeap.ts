@@ -1,13 +1,13 @@
 import BHNode from "./bHNode";
 
-class MaxBinaryHeap {
-  values: BHNode[];
-  idxs: { [key: string]: number };
+class MaxBinaryHeap<T> {
+  values: BHNode<T>[];
+  idxs: Map<T, number>;
   size: number;
   constructor() {
     this.values = [];
-    // dict: key to array idx => you say the key it returns the idx
-    this.idxs = {};
+    // map: key to array idx => you say the key it returns the idx
+    this.idxs = new Map();
     this.size = 0;
   }
 
@@ -35,20 +35,26 @@ class MaxBinaryHeap {
     return [2 * i + 1, 2 * i + 2];
   };
 
-  // Rearrange values and dict
+  // swap idxs elements in map key to idx
+  swapIdxs = (a: T, b: T) => {
+    const temp = this.idxs.get(a)!;
+    this.idxs.set(a, this.idxs.get(b)!);
+    this.idxs.set(b, temp);
+  };
+
+  // Rearrange values and map
   bubbleUp = (i: number, j: number) => {
     //swap i and j
     [this.values[i], this.values[j]] = [this.values[j], this.values[i]];
 
-    // swap idxs elements in dict key to idx
-    [this.idxs[this.values[i].key], this.idxs[this.values[j].key]] = [
-      this.idxs[this.values[j].key],
-      this.idxs[this.values[i].key],
-    ];
+    // swap idxs elements in map key to idx
+    const a = this.values[i].key;
+    const b = this.values[j].key;
+    this.swapIdxs(a, b);
   };
 
   // Returns the greater child idx
-  // Rearrange values and dict
+  // Rearrange values and map
   bubbleDown = (idx: number, l: number, r: number) => {
     // to keep track of the greater child
     let greatIdx;
@@ -66,19 +72,17 @@ class MaxBinaryHeap {
       this.values[idx],
     ];
 
-    // swap idxs elements in dict key to idx
-    [this.idxs[this.values[idx].key], this.idxs[this.values[greatIdx].key]] = [
-      this.idxs[this.values[greatIdx].key],
-      this.idxs[this.values[idx].key],
-    ];
+    const a = this.values[idx].key;
+    const b = this.values[greatIdx].key;
+    this.swapIdxs(a, b);
 
     return greatIdx;
   };
 
   // Returns true if this heap constains this key
   // Otherwise returns false
-  contains = (key: string) => {
-    if (this.values[this.idxs[key]] === undefined) return false;
+  contains = (key: T) => {
+    if (this.idxs.get(key) === undefined) return false;
     return true;
   };
 
@@ -92,24 +96,18 @@ class MaxBinaryHeap {
   //                            CREATING
   //   **********************************************************
 
-  // arr: array or object or Map
-  // keys: array or nul
-  // If arr is an array and keys is also an array:
+  // arr: array or Map
+  // keys: array
+  // If arr is an array
   //    Each node of this Heap will be the (keys[i], arr[i]) where i is the index,
   //    arr and keys MUST have the same size
   //    Duplicate keys are not allowed. Returns false
-  // If arr is an array and keys is null:
-  //    Each node of this Heap will be the (i, arr[i]) where i is the index,
-  //    IOW the index of arr became the key of each node
-  // If arr is an object:
+  // If arr is a Map:
   //    each node of this Heap will be the (key, val) of each element of arr
   //    In this case second param <keys> is not used
   // In any case the Heap is build in linear time
   // Returns: this Heap
-  buildHeap(
-    arr: number[] | { [key: string]: number } | Map<string, number>,
-    keys: null | string[] = null
-  ) {
+  buildHeap = (arr: number[] | Map<T, number>, keys: T[]) => {
     // Returns false if this heap is not empty
     if (!this.isEmpty()) return false;
     // arr is an array
@@ -125,39 +123,17 @@ class MaxBinaryHeap {
           // Avoiding duplicate keys
           if (this.contains(keys[i])) return false;
           this.values.push(new BHNode(keys[i], arr[i]));
-          this.idxs[keys[i]] = i;
+          this.idxs.set(keys[i], i);
         }
-      }
-      //   arr is array and keys is null
-      else {
-        // set size of this heap to the size of arr
-        this.size = arr.length;
-        // inject arr in this.value (i,arr[i))
-        arr.forEach((e, i) => {
-          this.values.push(new BHNode(i.toString(), e));
-          this.idxs[i] = i;
-        });
       }
     } else if (arr instanceof Map) {
       let i = 0;
       arr.forEach((value, key) => {
         this.values.push(new BHNode(key, value));
-        this.idxs[key] = i;
+        this.idxs.set(key, i);
         i++;
         this.size++;
       });
-    }
-    // arr is an object
-    else {
-      let i = 0;
-      //   set size of this heap to the size of arr
-      this.size = Object.keys(arr).length;
-      // inject each element of arr (key, val) to this.value
-      for (const [key, val] of Object.entries(arr)) {
-        this.values.push(new BHNode(key, val));
-        this.idxs[key] = i;
-        i++;
-      }
     }
     // to heapify all sub heaps with root in index i
     // all leaves are already heaps
@@ -173,7 +149,7 @@ class MaxBinaryHeap {
       }
     }
     return this;
-  }
+  };
 
   //   **********************************************************
   //                            ACCESSING
@@ -188,9 +164,9 @@ class MaxBinaryHeap {
 
   // Returns the value of this key
   // Returns null whether this key does not belong to this heap
-  valueOf = (key: string) => {
+  valueOf = (key: T) => {
     if (!this.contains(key)) return null;
-    const idx = this.idxs[key];
+    const idx = this.idxs.get(key)!;
     return this.values[idx];
   };
 
@@ -201,15 +177,15 @@ class MaxBinaryHeap {
   // Inserts a node (key,val) in the last position and rearrange
   // Returns Heap
   // Returns false whether this key is already in this heap
-  enqueue = (key: string, val: number) => {
+  enqueue = (key: T, val: number) => {
     // to avoid duplicate keys
     if (this.contains(key)) return false;
     let node = new BHNode(key, val);
     this.values.push(node);
     // insert in the last position
     let idx = this.values.length - 1;
-    // add the idx of this key on the dict
-    this.idxs[key] = idx;
+    // add the idx of this key on the map
+    this.idxs.set(key, idx);
     this.size++;
     let parentIdx = this.myParentIdx(idx);
     // bubble-up (while this new node is greater than its parent)
@@ -227,19 +203,18 @@ class MaxBinaryHeap {
   //   **********************************************************
 
   // Update the val of this key
-  // Returns this heap
+  // Returns true if works
   // Returns false if there is not any node with this key in this heap
-  // Returns false if newVal is not smaller than the actual val of key
-  decreaseKey = (key: string, newVal: number) => {
+  // Returns undefined if newVal is equal to the actual val of key
+  // Returns -1 if newVal is greater than the actual val of key
+  decreaseKey = (key: T, newVal: number) => {
     // check whether this key belongs to this heap
     if (!this.contains(key)) return false;
-    // get idx of this key
-    let idx = this.idxs[key];
-    // TODO: Dont return the same if not contains or if new val cant be decreased
+    let idx = this.idxs.get(key)!;
     // to ensure newVal < val
-    if (newVal > this.values[idx].val) return false;
+    if (newVal > this.values[idx].val) return -1;
     // if they are the same return this
-    if (newVal === this.values[idx].val) return this;
+    if (newVal === this.values[idx].val) return;
     // update node with new val
     this.values[idx].val = newVal;
     let [lChild, rChild] = this.myChildrenIdx(idx);
@@ -249,22 +224,22 @@ class MaxBinaryHeap {
       idx = this.bubbleDown(idx, lChild, rChild);
       [lChild, rChild] = this.myChildrenIdx(idx);
     }
-    return this;
+    return true;
   };
 
   // Update the val of this key
-  // Returns this heap
+  // Returns true if works
   // Returns false if there is not any node with this key in this heap
-  // Returns false if newVal is greater than the actual val
-  increaseKey = (key: string, newVal: number) => {
+  // Returns undefined if newVal is equal to the actual val
+  // Returns -1 if newVal is smaller than the actual val
+  increaseKey = (key: T, newVal: number) => {
     // check whether this key belongs to this heap
     if (!this.contains(key)) return false;
-    // get idx of this key
-    let idx = this.idxs[key];
+    let idx = this.idxs.get(key)!;
     // to ensure newVal > val
-    if (newVal < this.values[idx].val) return false;
-    // if they are the same return this
-    if (newVal === this.values[idx].val) return this;
+    if (newVal < this.values[idx].val) return -1;
+    // if they are the same just return this
+    if (newVal === this.values[idx].val) return;
     // update node with new val
     this.values[idx].val = newVal;
     let parentIdx = this.myParentIdx(idx);
@@ -279,15 +254,15 @@ class MaxBinaryHeap {
   };
 
   // Returns false if there is not any node with this key in this heap
-  // Returns this heap if newVal equals to the actual val
+  // Returns undefined if newVal equals to the actual val
   // if newVal is greater than the actual val calls increaseKey
   // if newVal is smaller than the actual val calls decreaseKey
-  updateKey = (key: string, newVal: number) => {
+  updateKey = (key: T, newVal: number) => {
     // check whether this key belongs to this heap
     if (!this.contains(key)) return false;
     //   get idx of this key
-    let idx = this.idxs[key];
-    if (newVal === this.values[idx].val) return this;
+    let idx = this.idxs.get(key)!;
+    if (newVal === this.values[idx].val) return;
     if (newVal > this.values[idx].val) return this.increaseKey(key, newVal);
     if (newVal < this.values[idx].val) return this.decreaseKey(key, newVal);
   };
@@ -309,10 +284,10 @@ class MaxBinaryHeap {
     // replace the root with the last element
     this.values[0] = this.values.pop()!;
     this.size--;
-    // delete the last root node from dict
-    delete this.idxs[max.key];
-    // update idx of the 'new root' in the dict
-    this.idxs[this.values[0].key] = 0;
+    // delete the last root node from map
+    this.idxs.delete(max.key);
+    // update idx of the 'new root' in the map
+    this.idxs.set(this.values[0].key, 0);
     // index of this node we have to rearrange and the idx of its children
     let idx = 0;
     let [lChild, rChild] = this.myChildrenIdx(idx);
@@ -328,25 +303,24 @@ class MaxBinaryHeap {
   // Removes the node from this respect key
   // Returns this HEAP
   // Returns false whether this key does not belong to this heap
-  deleteKey = (key: string) => {
+  deleteKey = (key: T) => {
     if (!this.contains(key)) return false;
     // if it is the last element of values: we dont need to rearrange
-    if (this.idxs[key] === this.size - 1) {
+    if (this.idxs.get(key) === this.size - 1) {
       this.values.pop();
-      delete this.idxs[key];
+      this.idxs.delete(key);
       this.size--;
       return this;
     }
-    //   get idx of this key
-    let idx = this.idxs[key];
+    let idx = this.idxs.get(key)!;
     // replace this node with the last one
     this.values[idx] = this.values.pop()!;
     this.size--;
-    // delete from dict
-    delete this.idxs[key];
-    // update idx of the 'new node in idx position' in the dict
+    // delete from map
+    this.idxs.delete(key);
+    // update idx of the 'new node in idx position' in the map
     // we need to rearrange from idx to bellow
-    this.idxs[this.values[idx].key] = idx;
+    this.idxs.set(this.values[idx].key, idx);
     // get the children of idx
     let [lChild, rChild] = this.myChildrenIdx(idx);
     // bubble-down (while any child is greater than the parent)
@@ -362,7 +336,7 @@ class MaxBinaryHeap {
   clear() {
     this.size = 0;
     while (!this.isEmpty()) this.values.pop();
-    for (let k in this.idxs) delete this.idxs[k];
+    for (let k of this.idxs) this.idxs.delete(k[0]);
   }
 }
 
