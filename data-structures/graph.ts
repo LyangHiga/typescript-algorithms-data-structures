@@ -14,25 +14,24 @@ const random = (min: number, max: number) => {
   return Math.floor(Math.random() * (max - min)) + min;
 };
 
-interface Vertex {
-  // Vertex Key MUST be string
-  node: string;
+interface Vertex<T> {
+  node: T;
   weight?: number;
 }
 
-const isWeighted = (v: Vertex) => {
+const isWeighted = <T>(v: Vertex<T>) => {
   if (v.weight) return true;
   return false;
 };
 
-class Graph {
-  // list adj: key (string) -> Vertex
-  list: { [key: string]: Vertex[] };
+class Graph<T> {
+  // list adj: Map(key,array of vertex)
+  list: Map<T, Vertex<T>[]>;
   // to implement topologicalSort
   currentLabel: null | number;
   private size: number;
   constructor(public directed = false) {
-    this.list = {};
+    this.list = new Map();
     this.currentLabel = null;
     this.size = 0;
   }
@@ -44,23 +43,19 @@ class Graph {
   // print this Graph
   //   FORMAT: <first vertex u> - <second vertex v> - <edge w>
   print = () => {
-    for (let u in this.list) {
-      for (let v in this.list[u]) {
+    for (let [u, vertexList] of this.list) {
+      for (let v of vertexList) {
         if (!this.directed) {
-          if (isWeighted(this.list[u][v])) {
-            console.log(
-              `${u} - ${this.list[u][v].node} - ${this.list[u][v].weight}`
-            );
+          if (isWeighted(v)) {
+            console.log(`${u} - ${v.node} - ${v.weight}`);
           } else {
-            console.log(`${u} - ${this.list[u][v].node}`);
+            console.log(`${u} - ${v.node}`);
           }
         } else {
-          if (isWeighted(this.list[u][v])) {
-            console.log(
-              `${u} -> ${this.list[u][v].node} - ${this.list[u][v].weight}`
-            );
+          if (isWeighted(v)) {
+            console.log(`${u} -> ${v.node} - ${v.weight}`);
           } else {
-            console.log(`${u} -> ${this.list[u][v].node}`);
+            console.log(`${u} -> ${v.node}`);
           }
         }
       }
@@ -69,28 +64,31 @@ class Graph {
 
   // Returns true if this list constains this vertex (key v)
   // Otherwise returns false
-  contains = (v: string) => {
-    if (this.list[v] === undefined) return false;
+  contains = (v: T) => {
+    if (this.list.get(v) === undefined) return false;
     return true;
   };
 
   // Returns true if v is a neighbour of u
   // otherwise returns false
-  isNeighbour = (u: string, v: string) => {
+  isNeighbour = (u: T, v: T) => {
     // check if u is already in this list
     if (!this.contains(u)) return false;
+    const vertexList = this.list.get(u)!;
     // if v is already in list[u] return true
-    for (let i = 0; i < this.list[u].length; i++) {
-      if (this.list[u][i].node === v) return true;
+    for (let i = 0; i < vertexList.length; i++) {
+      if (vertexList[i].node === v) return true;
     }
     return false;
   };
 
   // Returns how many edges are between verteces u and v
-  hme = (u: string | number, v: string | number) => {
+  hme = (u: T, v: T) => {
+    if (!this.contains(u)) return false;
+    const vertexList = this.list.get(u)!;
     let c = 0;
-    for (let i = 0; i < this.list[u].length; i++) {
-      if (this.list[u][i].node === v) c++;
+    for (let i = 0; i < vertexList.length; i++) {
+      if (vertexList[i].node === v) c++;
     }
     return c;
   };
@@ -98,8 +96,8 @@ class Graph {
   // Returns the number of edges of this graph
   countEdges = () => {
     let c = 0;
-    for (let u in this.list) {
-      for (let v in this.list[u]) {
+    for (let [u, vertexList] of this.list) {
+      for (let v of vertexList) {
         c++;
       }
     }
@@ -107,21 +105,22 @@ class Graph {
   };
 
   // Returns the key of two neighbours [u,v]
-  pickRandomEdge = (): [string, string] => {
-    const keys = Object.keys(this.list);
+  pickRandomEdge = () => {
+    const keys = [...this.list.keys()];
     const uIdx = random(0, keys.length);
     const u = keys[uIdx];
-    const vIdx = random(0, this.list[u].length);
-    const v = this.list[u][vIdx].node;
+    const vertexList = this.list.get(u)!;
+    const vIdx = random(0, vertexList.length);
+    const v = vertexList[vIdx].node;
     return [u, v];
   };
 
   // Merge two verteces into a single one
-  mergeVerteces = (u: string, v: string) => {
+  mergeVerteces = (u: T, v: T) => {
     // adds all neighbours of v to u
     // and removes from v
     while (this.contains(v) && this.size > 2 && this.contains(u)) {
-      const w = this.list[v][0].node;
+      const w = this.list.get(v)![0].node;
       // not allow self-loops
       if (w !== u) {
         if (this.contains(w) && this.contains(u)) {
@@ -143,13 +142,13 @@ class Graph {
   reverse = () => {
     // if this is not a directed graph returns false
     if (!this.directed) return false;
-    const g = new Graph(true);
-    for (let u in this.list) {
-      for (let v in this.list[u]) {
-        if (isWeighted(this.list[u][v])) {
-          g.addVertecesAndEdge(this.list[u][v].node, u, this.list[u][v].weight);
+    const g = new Graph<T>(true);
+    for (let [u, vertexList] of this.list) {
+      for (let v in vertexList) {
+        if (isWeighted(vertexList[v])) {
+          g.addVertecesAndEdge(vertexList[v].node, u, vertexList[v].weight);
         } else {
-          g.addVertecesAndEdge(this.list[u][v].node, u);
+          g.addVertecesAndEdge(vertexList[v].node, u);
         }
       }
     }
@@ -159,13 +158,13 @@ class Graph {
   // returns a sort arr of edges {u: key of first vertex, v: key of second vertex, w: weight}
   //    Assumes Weighted Graph
   sortEdges = () => {
-    const arr: { u: string; v: string; w: number }[] = [];
-    for (let u in this.list) {
-      for (let v in this.list[u]) {
+    const arr: { u: T; v: T; w: number }[] = [];
+    for (let [u, vertexList] of this.list) {
+      for (let v in vertexList) {
         arr.push({
           u: u,
-          v: this.list[u][v].node,
-          w: this.list[u][v].weight!,
+          v: vertexList[v].node,
+          w: vertexList[v].weight!,
         });
       }
     }
@@ -174,7 +173,7 @@ class Graph {
   };
 
   // Test if T.union(u,v) creates a cycle
-  hasCycles = (T: ListSet | ForestSet, u: string, v: string) => {
+  hasCycles = (T: ListSet<T> | ForestSet<T>, u: T, v: T) => {
     const uLeader = T.findSet(u);
     const vLeader = T.findSet(v);
     if (uLeader && vLeader && uLeader.key === vLeader.key) {
@@ -190,9 +189,9 @@ class Graph {
   // Adds an empty array to the new vertice v
   // Returns this list
   // If v is already in this list do nothing
-  addVertex = (v: string | number) => {
-    if (!this.list[v]) {
-      this.list[v] = [];
+  addVertex = (v: T) => {
+    if (!this.list.get(v)) {
+      this.list.set(v, []);
       this.size++;
       return this;
     }
@@ -204,40 +203,57 @@ class Graph {
   // ( and v to u neighbour list if it's a undirected graph )
   // O(1) - but dont check for duplications
   // DONT PASS DUPLICATES !
-  addEdge = (u: string, v: string, weight = 0) => {
+  addEdge = (u: T, v: T, weight = 0) => {
+    if (!this.contains(u) || !this.contains(v)) return false;
+    let vertexList = this.list.get(u)!;
     // unweighted graph
     if (weight === 0) {
-      this.list[u].push({ node: v });
-      if (!this.directed) this.list[v].push({ node: u });
+      vertexList.push({ node: v });
+      this.list.set(u, vertexList);
+      if (!this.directed) {
+        // vertex list of v
+        let vvl = this.list.get(v)!;
+        vvl.push({ node: u });
+        this.list.set(v, vvl);
+      }
       return this;
     }
     // weighted graph
-    this.list[u].push({ node: v, weight });
-    if (!this.directed) this.list[v].push({ node: u, weight });
+    vertexList.push({ node: v, weight });
+    this.list.set(u, vertexList);
+    if (!this.directed) {
+      let vvl = this.list.get(v)!;
+      vvl.push({ node: u, weight });
+      this.list.set(v, vvl);
+    }
     return this;
   };
 
   // adds v to neighbour list of u
   // ( and v to u neighbour list if it's a undirected graph )
   // kepp the min cost edge for duplications
-  addEdgeNoDuplicates = (u: string, v: string, weight: number) => {
+  addEdgeNoDuplicates = (u: T, v: T, weight: number) => {
+    if (!this.contains(u) || !this.contains(v)) return false;
+    const vertexList = this.list.get(u)!;
     // avoid duplications
-    for (let neighbour in this.list[u]) {
-      const z = this.list[u][neighbour];
+    for (let neighbour in vertexList) {
+      const z = vertexList[neighbour];
       // if already in list test to decrease with new edge
       if (v === z.node) {
         if (weight < z.weight!) {
-          this.list[u][neighbour].weight = weight;
+          vertexList[neighbour].weight = weight;
+          this.list.set(u, vertexList);
         }
         return this;
       }
     }
-    this.list[u].push({ node: v, weight });
+    vertexList.push({ node: v, weight });
+    this.list.set(u, vertexList);
     return this;
   };
 
   // Adds both u and v verteces and their edge w
-  addVertecesAndEdge = (u: string, v: string, w = 0, d = true) => {
+  addVertecesAndEdge = (u: T, v: T, w = 0, d = true) => {
     this.addVertex(u);
     this.addVertex(v);
     if (d) {
@@ -253,22 +269,30 @@ class Graph {
 
   // Removes v from neighbour list of u (and v from u neighbour list if undirected)
   // Returns this list
-  removeEdge = (u: string, v: string) => {
-    this.list[u] = this.list[u].filter((w: { node: string }) => w.node !== v);
+  removeEdge = (u: T, v: T) => {
+    if (!this.contains(u) || !this.contains(v)) return false;
+    let vertexList = this.list.get(u)!;
+    vertexList = vertexList.filter((w: { node: T }) => w.node !== v);
     if (!this.directed) {
-      this.list[v] = this.list[v].filter((w: { node: string }) => w.node !== u);
+      // vertex list of v
+      let vvl = this.list.get(v)!;
+      vvl = vvl.filter((w: { node: T }) => w.node !== u);
+      this.list.set(v, vvl);
     }
+    this.list.set(u, vertexList);
     return this;
   };
 
   // Removes all edges of v and v itself
   //  Returns this list
-  removeVertex = (v: string) => {
-    while (this.list[v].length) {
-      const u = this.list[v].pop()!;
+  removeVertex = (v: T) => {
+    if (!this.contains(v)) return false;
+    const vertexList = this.list.get(v)!;
+    while (vertexList.length) {
+      const u = vertexList.pop()!;
       this.removeEdge(u.node, v);
     }
-    delete this.list[v];
+    this.list.delete(v);
     this.size--;
     return this;
   };
@@ -277,9 +301,10 @@ class Graph {
   // Removes u
   // Returns this graph
   // Returns false if u is not in this graph
-  removeDegreeZero = (u: string) => {
+  removeDegreeZero = (u: T) => {
     if (!this.contains(u)) return false;
-    if (this.list[u].length === 0) {
+    const vertexList = this.list.get(u)!;
+    if (vertexList.length === 0) {
       // if v was the only neighbour of v (the adj list of u is now empty)
       // removes u
       this.removeVertex(u);
@@ -294,9 +319,8 @@ class Graph {
   // Add all verteces and edges to this graph from a file
   // File is the adj list of this Graph
   // FORMAT: <first vertex u>' '<second vertex v>' ' <edge w>
-  create = (file: string): false | void => {
-    // check if this is a 'empty graph'
-    if (this.size !== 0) return false;
+  static create = (file: string) => {
+    const g = new Graph<string>();
     const data = fs.readFileSync(file, { encoding: "utf8", flag: "r" });
     let line = "";
     let split = [];
@@ -306,24 +330,24 @@ class Graph {
         line += data[i];
       } else {
         split = line.trim().split(" ");
-        this.addVertecesAndEdge(split[0], split[1], parseInt(split[2]));
+        g.addVertecesAndEdge(split[0], split[1], parseInt(split[2]));
         line = "";
       }
     }
     // check if the last line is empty
     if (line !== "") {
       split = line.trim().split(" ");
-      this.addVertecesAndEdge(split[0], split[1], parseInt(split[2]));
+      g.addVertecesAndEdge(split[0], split[1], parseInt(split[2]));
     }
+    return g;
   };
 
   // Add all verteces and edges to this graph from a file
   // File is the adj list of this Graph
   // FORMAT: <vertex u>' => neighbours: '<vertex v>' ... '<vertex n>'
   // This format allow duplicate edges, we need to handle
-  createListAdj = (file: string): false | void => {
-    // check if this is a 'empty graph'
-    if (this.size !== 0) return false;
+  static createListAdj = (file: string) => {
+    const g = new Graph<string>();
     const data = fs.readFileSync(file, { encoding: "utf8", flag: "r" });
     let line = "";
     let split = [];
@@ -336,9 +360,9 @@ class Graph {
         while (split.length > 1) {
           const v = split.pop()!;
           // to avoid duplicate edges
-          if (!this.isNeighbour(u, v)) {
+          if (!g.isNeighbour(u, v)) {
             // whether v is not neighbour of u
-            this.addVertecesAndEdge(u, v);
+            g.addVertecesAndEdge(u, v);
           }
         }
         line = "";
@@ -351,21 +375,21 @@ class Graph {
       while (split.length > 1) {
         const v = split.pop()!;
         // to avoid duplicate edges
-        if (!this.isNeighbour(u, v)) {
+        if (!g.isNeighbour(u, v)) {
           // whether v is not neighbour of u
-          this.addVertecesAndEdge(u, v);
+          g.addVertecesAndEdge(u, v);
         }
       }
     }
+    return g;
   };
 
   // Add all verteces and edges to this graph from a file
   // File is the adj list of this Graph
   // FORMAT: <vertex u>' => neighbours: '<vertex v>,weight' ... '<vertex n>,weight'
   // This format allow duplicate edges, we need to handle
-  createListAdjWeighted = (file: string): false | void => {
-    // check if this is a 'empty graph'
-    if (this.size !== 0) return false;
+  static createListAdjWeighted = (file: string) => {
+    const g = new Graph<string>();
     const data = fs.readFileSync(file, { encoding: "utf8", flag: "r" });
     let line = "";
     let split = [];
@@ -379,9 +403,9 @@ class Graph {
           const t = split.pop()!;
           const v = t.split(",");
           // to avoid duplicate edges
-          if (!this.isNeighbour(u, v[0])) {
+          if (!g.isNeighbour(u, v[0])) {
             // whether v is not neighbour of u
-            this.addVertecesAndEdge(u, v[0], parseInt(v[1]));
+            g.addVertecesAndEdge(u, v[0], parseInt(v[1]));
           }
         }
         line = "";
@@ -395,23 +419,22 @@ class Graph {
         const t = split.pop()!;
         const v = t.split(",");
         // to avoid duplicate edges
-        if (!this.isNeighbour(u, v[0])) {
+        if (!g.isNeighbour(u, v[0])) {
           // whether v is not neighbour of u
-          this.addVertecesAndEdge(u, v[0], parseInt(v[1]));
+          g.addVertecesAndEdge(u, v[0], parseInt(v[1]));
         }
       }
     }
+    return g;
   };
 
   // Add all verteces and edges to this graph from a file
   // File is the adj list of this Graph
   // FORMAT: <first vertex u>' '<second vertex v>
   // it is a drirected graph, the edge goes from u to v, i.e.: u -> v
-  createDirected = (file: string, w = false): false | void => {
-    // check if this is a 'empty graph'
-    if (this.size !== 0) return false;
+  static createDirected = (file: string, w = false) => {
     // set this graph as directed
-    this.directed = true;
+    const g = new Graph<string>(true);
     const data = fs.readFileSync(file, { encoding: "utf8", flag: "r" });
     let line = "";
     let split = [];
@@ -421,15 +444,10 @@ class Graph {
       } else {
         split = line.trim().split(" ");
         if (!w) {
-          this.addVertecesAndEdge(split[0], split[1]);
+          g.addVertecesAndEdge(split[0], split[1]);
         } else {
           // Avoid duplications!
-          this.addVertecesAndEdge(
-            split[0],
-            split[1],
-            parseInt(split[2]),
-            false
-          );
+          g.addVertecesAndEdge(split[0], split[1], parseInt(split[2]), false);
         }
 
         line = "";
@@ -438,8 +456,9 @@ class Graph {
     // check if the last line is empty
     if (line !== "") {
       split = line.trim().split(" ");
-      this.addVertecesAndEdge(split[0], split[1]);
+      g.addVertecesAndEdge(split[0], split[1]);
     }
+    return g;
   };
 
   // TODO: direcyed weighted: u -> v cost
@@ -464,14 +483,14 @@ class Graph {
   //    the parent of each visited vertex
   //    the distance of s to each visited vertex
   //    all visited verteces
-  bfs = (s: string) => {
+  bfs = (s: T) => {
     // the order of each vertex is dequeue (Array of Keys)
-    const result: Array<string> = new Array();
+    const result: T[] = new Array();
     // Maps the key of each vertex to its distance from vertex s
-    const dist: Map<string, number> = new Map();
+    const dist: Map<T, number> = new Map();
     // Maps the key of each vertex to its parents key
-    const parents: Map<string, null | string> = new Map();
-    const visited: Map<string, boolean> = new Map();
+    const parents: Map<T, null | string> = new Map();
+    const visited: Map<T, boolean> = new Map();
     const q: Queue = new Queue();
     // add s to the queue
     q.enQueue(s);
@@ -483,7 +502,7 @@ class Graph {
     while (q.size !== 0) {
       v = q.deQueue()!;
       result.push(v.key);
-      this.list[v.key].forEach((u) => {
+      this.list.get(v.key)!.forEach((u) => {
         // if u unvisited
         if (!visited.get(u.node)) {
           // mark u as visited
@@ -500,10 +519,10 @@ class Graph {
 
   // Returns a list with all connected components of G
   undirectConnectivity = () => {
-    const components: Array<Array<string>> = new Array();
-    const isVisited: Map<string, boolean> = new Map();
+    const components: Array<Array<T>> = new Array();
+    const isVisited: Map<T, boolean> = new Map();
     // a single component after to execute one bfs
-    for (let u in this.list) {
+    for (let [u] of this.list) {
       // check if node u was already visited before
       if (!isVisited.get(u)) {
         const { result, visited } = this.bfs(u);
@@ -519,15 +538,15 @@ class Graph {
   };
 
   // dfs iterative
-  dfs = (s: string) => {
-    const result: Array<string> = new Array();
-    const dist: Map<string, number> = new Map();
-    const parents: Map<string, null | string> = new Map();
-    const visited: Map<string, boolean> = new Map();
+  dfs = (s: T) => {
+    const result: Array<T> = new Array();
+    const dist: Map<T, number> = new Map();
+    const parents: Map<T, null | T> = new Map();
+    const visited: Map<T, boolean> = new Map();
     // key to label order
-    const labeledOrder: Map<string, number | null> = new Map();
+    const labeledOrder: Map<T, number | null> = new Map();
     // finish order
-    const finish: Array<string> = new Array();
+    const finish: Array<T> = new Array();
     const stack = new Stack();
     // add s tothe stack
     stack.push(s);
@@ -548,7 +567,7 @@ class Graph {
       }
       i++;
       // for every edge of v
-      this.list[v.key].forEach((u) => {
+      this.list.get(v.key)!.forEach((u) => {
         //  v unvisited
         if (!visited.get(u.node)) {
           // mark u as visited
@@ -578,13 +597,13 @@ class Graph {
   // Returns the labeled order and finish order
   // Does not work for cycled graphs, only DAGs
   topologicalSort() {
-    const labeledOrder: Map<string, number | null> = new Map();
-    const visited: Map<string, boolean> = new Map();
-    const finish: Array<string> = new Array();
+    const labeledOrder: Map<T, number | null> = new Map();
+    const visited: Map<T, boolean> = new Map();
+    const finish: Array<T> = new Array();
     // to keep track of ordering
     this.currentLabel = 0;
     let r;
-    for (let u in this.list) {
+    for (let [u] of this.list) {
       if (!visited.get(u)) {
         const r = this.dfs(u);
         // update values
@@ -608,9 +627,9 @@ class Graph {
     // finish order
     if (gRerv === false) return false;
     const { finish } = gRerv.topologicalSort();
-    const visited: Map<string, boolean> = new Map();
+    const visited: Map<T, boolean> = new Map();
     // the vertex who calls dfs (maps leader's vertex key to the size of the Strong Component)
-    const leader: Map<string, number> = new Map();
+    const leader: Map<T, number> = new Map();
     let u, r;
     for (let i = finish.length - 1; i > 0; i--) {
       u = finish[i];
@@ -629,14 +648,14 @@ class Graph {
 
   // TODO: USE FIBONACCI HEAP (DECREASE KEY)
   // Returns the distance from s to each vertex and their parents
-  dijkstra = (s: string) => {
-    const heap = new MinHeap<string>();
+  dijkstra = (s: T) => {
+    const heap = new MinHeap<T>();
     let dequeues = 0;
     // objs to map key to distance and key to parents
-    const distances: Map<string, number> = new Map();
-    const parents: Map<string, null | string> = new Map();
-    let smallest: string;
-    for (let vertex in this.list) {
+    const distances: Map<T, number> = new Map();
+    const parents: Map<T, null | T> = new Map();
+    let smallest: T;
+    for (let [vertex] of this.list) {
       if (vertex !== s) {
         distances.set(vertex, Infinity);
       }
@@ -651,8 +670,9 @@ class Graph {
       smallest = heap.dequeue()!.key;
       dequeues++;
       if (smallest || distances.get(smallest) !== Infinity) {
-        for (let neighbour in this.list[smallest]) {
-          let nextNode = this.list[smallest][neighbour];
+        const vertexList = this.list.get(smallest)!;
+        for (let neighbour in vertexList) {
+          let nextNode = vertexList[neighbour];
           // calculate Dijkstra's  Greedy Criterium
           let d = distances.get(smallest)! + nextNode.weight!;
           //   compare distance calculated with last distance storaged
@@ -680,16 +700,16 @@ class Graph {
   // negative costs are allowed
   // detect negative cycles: boolean output (cycle)
   // use parents (predecessor pointers) to traverse the cycle
-  bellmanFord = (s: string) => {
+  bellmanFord = (s: T) => {
     // O(m) space => to reconstruct path from s to (any) v
     // use parents map (predecessor pointers)
-    const costs: Map<string, number> = new Map();
+    const costs: Map<T, number> = new Map();
     // predecessor pointers
-    const parents: Map<string, null | string> = new Map();
+    const parents: Map<T, null | T> = new Map();
     // to stop earlier
     let stop = true;
     // for i =0, all dist from s to vertex are infinity
-    for (let vertex in this.list) {
+    for (let [vertex] of this.list) {
       if (vertex !== s) {
         costs.set(vertex, Infinity);
       }
@@ -707,9 +727,9 @@ class Graph {
       // negative cycle detected!
       stop = true;
       // try a min path for each edge => O(m)
-      for (let v in this.list) {
-        for (let neighbour in this.list[v]) {
-          const w = this.list[v][neighbour];
+      for (let [v, vertexList] of this.list) {
+        for (let neighbour in vertexList) {
+          const w = vertexList[neighbour];
           const d = costs.get(v)! + w.weight!;
           if (costs.get(w.node)! > d) {
             costs.set(w.node, d);
@@ -727,6 +747,7 @@ class Graph {
   // Returns the distance from all pair of vertices (u,v) in V
   // negative costs are allowed
   // use parents (predecessor pointers) to traverse the cycle
+  // FIXME:
   floydWarshall = () => {
     let costs = new Map();
     // predecessor pointers
@@ -738,8 +759,8 @@ class Graph {
     // if i === j  costs[i][j][0] = 0
     // if i !== j costs[i][j][0] = Infinity
     // O(n2)
-    for (let i in this.list) {
-      for (let j in this.list) {
+    for (let [i] of this.list) {
+      for (let [j] of this.list) {
         if (!costs.get(i)) {
           costs.set(i, new Map());
           parents.set(i, new Map());
@@ -748,31 +769,32 @@ class Graph {
           costs.get(i).set(j, new Map());
           parents.get(i).set(j, new Map());
         }
-        if (!costs.get(i).get(j).get("0")) {
-          costs.get(i).get(j).set("0", new Map());
+        if (!costs.get(i).get(j).get(i)) {
+          costs.get(i).get(j).set(i, new Map());
         }
         if (i === j) {
-          costs.get(i).get(j).set("0", 0);
+          costs.get(i).get(j).set(i, 0);
           parents.get(i).set(i, null);
         } else {
-          costs.get(i).get(j).set("0", Infinity);
+          costs.get(i).get(j).set(i, Infinity);
         }
       }
     }
     // update neighbour distances
     // O(m)
-    for (let i in this.list) {
-      for (let neighbour in this.list[i]) {
-        const w = this.list[i][neighbour];
-        // costs.get(i).get(w.node).set(0, w.weight!);
-        costs.get(i).get(w.node).set("0", w.weight!);
+    for (let [i, vertexList] of this.list) {
+      for (let neighbour in vertexList) {
+        const w = vertexList[neighbour];
+        costs.get(i).get(w.node).set(i, w.weight!);
       }
     }
-    let oldK = "0";
+    // FIXME: Use K set again
+    // let oldK = "0";
     // to expand K to the next vertex of this.list
-    for (let k in this.list) {
-      for (let i in this.list) {
-        for (let j in this.list) {
+    for (let [k] of this.list) {
+      let oldK = k;
+      for (let [i] of this.list) {
+        for (let [j] of this.list) {
           // to initialize a new map for this new set K
           if (!costs.get(i).get(j).get(k)) {
             costs.get(i).get(j).set(k, new Map());
@@ -799,20 +821,20 @@ class Graph {
 
   // TODO: USE FIBONACCI HEAP (DECREASE KEY)
   // Returns the MST and its cost
-  prim = (s: string) => {
-    const heap = new MinHeap<string>();
+  prim = (s: T) => {
+    const heap = new MinHeap<T>();
     const mst = new Graph();
     // map to keep track what element is already in mst
     // we dont need this in Dijkstra because dist always encrease
-    const mstSet: Map<string, boolean> = new Map();
-    const edgeCost: Map<string, number> = new Map();
-    const parents: Map<string, null | string> = new Map();
+    const mstSet: Map<T, boolean> = new Map();
+    const edgeCost: Map<T, number> = new Map();
+    const parents: Map<T, null | T> = new Map();
     // sum of each MST's edge
     let cost = 0;
     let dequeues = 0;
-    let smallest: string;
-    let deacrease: boolean | BHNode<string> | number | undefined = false;
-    for (let vertex in this.list) {
+    let smallest: T;
+    let deacrease: boolean | BHNode<T> | number | undefined = false;
+    for (let [vertex] of this.list) {
       if (vertex !== s) {
         edgeCost.set(vertex, Infinity);
         mstSet.set(vertex, false);
@@ -836,8 +858,9 @@ class Graph {
         mst.addEdge(smallest, parents.get(smallest)!, edgeCost.get(smallest)!);
       }
       if (smallest || edgeCost.get(smallest) !== Infinity) {
-        for (let neighbour in this.list[smallest]) {
-          let nextNode = this.list[smallest][neighbour];
+        const vertexList = this.list.get(smallest)!;
+        for (let neighbour in vertexList) {
+          let nextNode = vertexList[neighbour];
           // compare the cost of this edge with the last one storaged
           //   and check if this node is already in mstSet
           if (
@@ -870,9 +893,9 @@ class Graph {
   //    USE List Set => f=false
   kruskal = (f = true, k?: number) => {
     const sortEdges = this.sortEdges();
-    const T = f ? new ForestSet() : new ListSet();
-    for (let u in this.list) T.makeSet(u);
-    const MST = new Graph();
+    const T = f ? new ForestSet<T>() : new ListSet<T>();
+    for (let [u] of this.list) T.makeSet(u);
+    const MST = new Graph<T>();
     let cost = 0;
     for (let i = 0; i < sortEdges.length; i++) {
       let { u, v, w } = sortEdges[i];
