@@ -20,9 +20,9 @@ class ListSet {
             return l.head;
         };
         this.union = (x, y) => {
-            if (typeof x === "string" && !this.pointers.get(x))
+            if (!(x instanceof llNode_1.default) && !this.pointers.get(x))
                 return null;
-            if (typeof y === "string" && !this.pointers.get(y))
+            if (!(y instanceof llNode_1.default) && !this.pointers.get(y))
                 return null;
             const xNode = x instanceof llNode_1.default ? x : this.pointers.get(x);
             const yNode = y instanceof llNode_1.default ? y : this.pointers.get(y);

@@ -1,18 +1,18 @@
 import ForestNode from "./forestNode";
 
-class ForestSet {
+class ForestSet<T> {
   // node key to node
-  pointers: Map<string, ForestNode>;
+  pointers: Map<T, ForestNode<T>>;
   constructor() {
     this.pointers = new Map();
   }
 
-  makeSet = (x: string) => {
-    const node = new ForestNode(x);
+  makeSet = (x: T) => {
+    const node = new ForestNode<T>(x);
     this.pointers.set(x, node);
   };
 
-  findSet = (x: string) => {
+  findSet = (x: T) => {
     if (!this.pointers.get(x)) return null;
     let node = this.pointers.get(x)!;
 
@@ -23,7 +23,7 @@ class ForestSet {
     return node.parent;
   };
 
-  link = (x: ForestNode, y: ForestNode) => {
+  link = (x: ForestNode<T>, y: ForestNode<T>) => {
     // Union by Rank
     if (x.rank > y.rank) {
       y.parent = x;
@@ -33,7 +33,7 @@ class ForestSet {
     }
   };
 
-  union = (x: string, y: string) => {
+  union = (x: T, y: T) => {
     this.link(this.findSet(x)!, this.findSet(y)!);
   };
 }

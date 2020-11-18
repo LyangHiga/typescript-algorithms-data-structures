@@ -1,33 +1,33 @@
 import LinkedList from "../basics/linkedList";
 import LLNode from "../basics/llNode";
 
-class ListSet {
+class ListSet<T> {
   // leader key to Linked List
-  lists: Map<string, LinkedList>;
+  lists: Map<T, LinkedList<T>>;
   // node key to node
-  pointers: Map<string, LLNode>;
+  pointers: Map<T, LLNode<T>>;
   constructor() {
     this.lists = new Map();
     this.pointers = new Map();
   }
 
-  makeSet = (x: string) => {
-    const list = new LinkedList();
+  makeSet = (x: T) => {
+    const list = new LinkedList<T>();
     const node = list.push(x);
     this.lists.set(x, list);
     this.pointers.set(x, node);
   };
 
-  findSet = (x: string) => {
+  findSet = (x: T) => {
     if (!this.pointers.get(x)) return null;
     const node = this.pointers.get(x);
     const l = node!.list;
     return l.head;
   };
 
-  union = (x: LLNode | string, y: LLNode | string) => {
-    if (typeof x === "string" && !this.pointers.get(x)) return null;
-    if (typeof y === "string" && !this.pointers.get(y)) return null;
+  union = (x: LLNode<T> | T, y: LLNode<T> | T) => {
+    if (!(x instanceof LLNode) && !this.pointers.get(x)) return null;
+    if (!(y instanceof LLNode) && !this.pointers.get(y)) return null;
 
     const xNode = x instanceof LLNode ? x : this.pointers.get(x)!;
     const yNode = y instanceof LLNode ? y : this.pointers.get(y)!;

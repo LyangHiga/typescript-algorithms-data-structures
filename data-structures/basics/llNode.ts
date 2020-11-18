@@ -1,7 +1,7 @@
 import LinkedList from "./linkedList";
-class LLNode {
-  next: null | LLNode;
-  constructor(public key: string, public list: LinkedList) {
+class LLNode<T> {
+  next: null | LLNode<T>;
+  constructor(public key: T, public list: LinkedList<T>) {
     this.next = null;
   }
 }

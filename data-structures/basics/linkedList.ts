@@ -1,8 +1,8 @@
 import LLNode from "./llNode";
 
-class LinkedList {
-  head: null | LLNode;
-  tail: null | LLNode;
+class LinkedList<T> {
+  head: null | LLNode<T>;
+  tail: null | LLNode<T>;
   length: number;
   constructor() {
     this.head = null;
@@ -11,7 +11,7 @@ class LinkedList {
   }
 
   // add an element at the last position
-  push = (key: string) => {
+  push = (key: T) => {
     const node = new LLNode(key, this);
     if (!this.head) {
       this.head = node;
@@ -67,7 +67,7 @@ class LinkedList {
   };
 
   // add an element in the beginning of the list
-  unshift = (key: string) => {
+  unshift = (key: T) => {
     let node = new LLNode(key, this);
 
     if (!this.head) {
@@ -97,7 +97,7 @@ class LinkedList {
   };
 
   // set the kth element with val
-  set = (k: number, key: string) => {
+  set = (k: number, key: T) => {
     let node = this.get(k);
     if (!node) return false;
     node.key = key;
@@ -105,7 +105,7 @@ class LinkedList {
   };
 
   // insert a new node in the kth position
-  insert = (k: number, key: string) => {
+  insert = (k: number, key: T) => {
     if (k < 0 || k > this.length) return false;
     if (k === 0) {
       this.unshift(key);
