@@ -2,22 +2,18 @@
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-const queue_1 = __importDefault(require("./basics/queue"));
-const stack_1 = __importDefault(require("./basics/stack"));
-const minHeap_1 = __importDefault(require("./heaps/minHeap"));
+const queue_1 = __importDefault(require("../basics/queue"));
+const stack_1 = __importDefault(require("../basics/stack"));
+const minHeap_1 = __importDefault(require("../heaps/minHeap"));
 // import FibonacciHeap from "./heaps/fibonacciHeap";
 // import FHNode from "./heaps/fHNode";
-const listSet_1 = __importDefault(require("./disjoint-sets/listSet"));
-const forestSet_1 = __importDefault(require("./disjoint-sets/forestSet"));
+const listSet_1 = __importDefault(require("../disjoint-sets/listSet"));
+const forestSet_1 = __importDefault(require("../disjoint-sets/forestSet"));
 const fs_1 = __importDefault(require("fs"));
+const vertex_1 = require("./vertex");
 // Returns a random number between [min,max)
 const random = (min, max) => {
     return Math.floor(Math.random() * (max - min)) + min;
-};
-const isWeighted = (v) => {
-    if (v.weight)
-        return true;
-    return false;
 };
 class Graph {
     constructor(directed = false) {
@@ -31,7 +27,7 @@ class Graph {
             for (let [u, vertexList] of this.list) {
                 for (let v of vertexList) {
                     if (!this.directed) {
-                        if (isWeighted(v)) {
+                        if (vertex_1.isWeighted(v)) {
                             console.log(`${u} - ${v.node} - ${v.weight}`);
                         }
                         else {
@@ -39,7 +35,7 @@ class Graph {
                         }
                     }
                     else {
-                        if (isWeighted(v)) {
+                        if (vertex_1.isWeighted(v)) {
                             console.log(`${u} -> ${v.node} - ${v.weight}`);
                         }
                         else {
@@ -132,7 +128,7 @@ class Graph {
             const g = new Graph(true);
             for (let [u, vertexList] of this.list) {
                 for (let v in vertexList) {
-                    if (isWeighted(vertexList[v])) {
+                    if (vertex_1.isWeighted(vertexList[v])) {
                         g.addVertecesAndEdge(vertexList[v].node, u, vertexList[v].weight);
                     }
                     else {
@@ -547,11 +543,14 @@ class Graph {
         // Returns the distance from all pair of vertices (u,v) in V
         // negative costs are allowed
         // use parents (predecessor pointers) to traverse the cycle
-        // FIXME:
+        // Also returns the last node used in set K
         this.floydWarshall = () => {
             let costs = new Map();
             // predecessor pointers
             const parents = new Map();
+            const keys = [...this.list.keys()];
+            // last vertex in K
+            let oldK = keys[0];
             // Initialize maps
             // i: starter vertex, j: target vertex
             // K: set of allowed vertex, k: last vertex in K
@@ -567,17 +566,13 @@ class Graph {
                     }
                     if (!costs.get(i).get(j)) {
                         costs.get(i).set(j, new Map());
-                        parents.get(i).set(j, new Map());
-                    }
-                    if (!costs.get(i).get(j).get(i)) {
-                        costs.get(i).get(j).set(i, new Map());
                     }
                     if (i === j) {
-                        costs.get(i).get(j).set(i, 0);
+                        costs.get(i).get(j).set(oldK, 0);
                         parents.get(i).set(i, null);
                     }
                     else {
-                        costs.get(i).get(j).set(i, Infinity);
+                        costs.get(i).get(j).set(oldK, Infinity);
                     }
                 }
             }
@@ -586,20 +581,13 @@ class Graph {
             for (let [i, vertexList] of this.list) {
                 for (let neighbour in vertexList) {
                     const w = vertexList[neighbour];
-                    costs.get(i).get(w.node).set(i, w.weight);
+                    costs.get(i).get(w.node).set(oldK, w.weight);
                 }
             }
-            // FIXME: Use K set again
-            // let oldK = "0";
             // to expand K to the next vertex of this.list
-            for (let [k] of this.list) {
-                let oldK = k;
+            for (let k of keys) {
                 for (let [i] of this.list) {
                     for (let [j] of this.list) {
-                        // to initialize a new map for this new set K
-                        if (!costs.get(i).get(j).get(k)) {
-                            costs.get(i).get(j).set(k, new Map());
-                        }
                         // min {path without new k (as intermediary), path i to k + path k to j}
                         const lastD = costs.get(i).get(j).get(oldK);
                         const d = costs.get(i).get(k).get(oldK) + costs.get(k).get(j).get(oldK);
@@ -615,7 +603,7 @@ class Graph {
                 // update oldK
                 oldK = k;
             }
-            return { costs, parents };
+            return { costs, parents, oldK };
         };
         // TODO: Johnson's Algorithm?
         // TODO: USE FIBONACCI HEAP (DECREASE KEY)

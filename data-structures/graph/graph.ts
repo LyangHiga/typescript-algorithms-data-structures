@@ -1,27 +1,18 @@
-import Queue from "./basics/queue";
-import Stack from "./basics/stack";
-import Node from "./basics/node";
-import MinHeap from "./heaps/minHeap";
-import BHNode from "./heaps/bHNode";
+import Queue from "../basics/queue";
+import Stack from "../basics/stack";
+import Node from "../basics/node";
+import MinHeap from "../heaps/minHeap";
+import BHNode from "../heaps/bHNode";
 // import FibonacciHeap from "./heaps/fibonacciHeap";
 // import FHNode from "./heaps/fHNode";
-import ListSet from "./disjoint-sets/listSet";
-import ForestSet from "./disjoint-sets/forestSet";
+import ListSet from "../disjoint-sets/listSet";
+import ForestSet from "../disjoint-sets/forestSet";
 import fs from "fs";
+import { Vertex, isWeighted } from "./vertex";
 
 // Returns a random number between [min,max)
 const random = (min: number, max: number) => {
   return Math.floor(Math.random() * (max - min)) + min;
-};
-
-interface Vertex<T> {
-  node: T;
-  weight?: number;
-}
-
-const isWeighted = <T>(v: Vertex<T>) => {
-  if (v.weight) return true;
-  return false;
 };
 
 class Graph<T> {
@@ -747,11 +738,14 @@ class Graph<T> {
   // Returns the distance from all pair of vertices (u,v) in V
   // negative costs are allowed
   // use parents (predecessor pointers) to traverse the cycle
-  // FIXME:
+  // Also returns the last node used in set K
   floydWarshall = () => {
-    let costs = new Map();
+    let costs = new Map<T, Map<T, Map<T, number>>>();
     // predecessor pointers
-    const parents = new Map();
+    const parents = new Map<T, Map<T, T | null>>();
+    const keys = [...this.list.keys()];
+    // last vertex in K
+    let oldK = keys[0];
     // Initialize maps
     // i: starter vertex, j: target vertex
     // K: set of allowed vertex, k: last vertex in K
@@ -762,21 +756,17 @@ class Graph<T> {
     for (let [i] of this.list) {
       for (let [j] of this.list) {
         if (!costs.get(i)) {
-          costs.set(i, new Map());
-          parents.set(i, new Map());
+          costs.set(i, new Map<T, Map<T, number>>());
+          parents.set(i, new Map<T, T | null>());
         }
-        if (!costs.get(i).get(j)) {
-          costs.get(i).set(j, new Map());
-          parents.get(i).set(j, new Map());
-        }
-        if (!costs.get(i).get(j).get(i)) {
-          costs.get(i).get(j).set(i, new Map());
+        if (!costs.get(i)!.get(j)) {
+          costs.get(i)!.set(j, new Map<T, number>());
         }
         if (i === j) {
-          costs.get(i).get(j).set(i, 0);
-          parents.get(i).set(i, null);
+          costs.get(i)!.get(j)!.set(oldK, 0);
+          parents.get(i)!.set(i, null);
         } else {
-          costs.get(i).get(j).set(i, Infinity);
+          costs.get(i)!.get(j)!.set(oldK, Infinity);
         }
       }
     }
@@ -785,36 +775,29 @@ class Graph<T> {
     for (let [i, vertexList] of this.list) {
       for (let neighbour in vertexList) {
         const w = vertexList[neighbour];
-        costs.get(i).get(w.node).set(i, w.weight!);
+        costs.get(i)!.get(w.node)!.set(oldK, w.weight!);
       }
     }
-    // FIXME: Use K set again
-    // let oldK = "0";
     // to expand K to the next vertex of this.list
-    for (let [k] of this.list) {
-      let oldK = k;
+    for (let k of keys) {
       for (let [i] of this.list) {
         for (let [j] of this.list) {
-          // to initialize a new map for this new set K
-          if (!costs.get(i).get(j).get(k)) {
-            costs.get(i).get(j).set(k, new Map());
-          }
           // min {path without new k (as intermediary), path i to k + path k to j}
-          const lastD = costs.get(i).get(j).get(oldK);
-          const d =
-            costs.get(i).get(k).get(oldK) + costs.get(k).get(j).get(oldK);
+          const lastD = costs.get(i)!.get(j)!.get(oldK)!;
+          const d: number =
+            costs.get(i)!.get(k)!.get(oldK)! + costs.get(k)!.get(j)!.get(oldK)!;
           if (d < lastD) {
-            costs.get(i).get(j).set(k, d);
-            parents.get(i).set(j, k);
+            costs.get(i)!.get(j)!.set(k, d);
+            parents.get(i)!.set(j, k);
           } else {
-            costs.get(i).get(j).set(k, lastD);
+            costs.get(i)!.get(j)!.set(k, lastD);
           }
         }
       }
       // update oldK
       oldK = k;
     }
-    return { costs, parents };
+    return { costs, parents, oldK };
   };
 
   // TODO: Johnson's Algorithm?
