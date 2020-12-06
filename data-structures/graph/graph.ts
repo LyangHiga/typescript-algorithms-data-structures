@@ -8,7 +8,7 @@ import BHNode from "../heaps/bHNode";
 import ListSet from "../disjoint-sets/listSet";
 import ForestSet from "../disjoint-sets/forestSet";
 import fs from "fs";
-import { Vertex, isWeighted } from "./vertex";
+import Vertex from "./vertex";
 
 // Returns a random number between [min,max)
 const random = (min: number, max: number) => {
@@ -20,7 +20,7 @@ class Graph<T> {
   list: Map<T, Vertex<T>[]>;
   // to implement topologicalSort
   currentLabel: null | number;
-  private size: number;
+  size: number;
   constructor(public directed = false) {
     this.list = new Map();
     this.currentLabel = null;
@@ -37,17 +37,9 @@ class Graph<T> {
     for (let [u, vertexList] of this.list) {
       for (let v of vertexList) {
         if (!this.directed) {
-          if (isWeighted(v)) {
-            console.log(`${u} - ${v.node} - ${v.weight}`);
-          } else {
-            console.log(`${u} - ${v.node}`);
-          }
+          console.log(`${u} - ${v.node} - ${v.weight}`);
         } else {
-          if (isWeighted(v)) {
-            console.log(`${u} -> ${v.node} - ${v.weight}`);
-          } else {
-            console.log(`${u} -> ${v.node}`);
-          }
+          console.log(`${u} -> ${v.node} - ${v.weight}`);
         }
       }
     }
@@ -136,11 +128,7 @@ class Graph<T> {
     const g = new Graph<T>(true);
     for (let [u, vertexList] of this.list) {
       for (let v in vertexList) {
-        if (isWeighted(vertexList[v])) {
-          g.addVertecesAndEdge(vertexList[v].node, u, vertexList[v].weight);
-        } else {
-          g.addVertecesAndEdge(vertexList[v].node, u);
-        }
+        g.addVertecesAndEdge(vertexList[v].node, u, vertexList[v].weight);
       }
     }
     return g;
@@ -197,19 +185,6 @@ class Graph<T> {
   addEdge = (u: T, v: T, weight = 0) => {
     if (!this.contains(u) || !this.contains(v)) return false;
     let vertexList = this.list.get(u)!;
-    // unweighted graph
-    if (weight === 0) {
-      vertexList.push({ node: v });
-      this.list.set(u, vertexList);
-      if (!this.directed) {
-        // vertex list of v
-        let vvl = this.list.get(v)!;
-        vvl.push({ node: u });
-        this.list.set(v, vvl);
-      }
-      return this;
-    }
-    // weighted graph
     vertexList.push({ node: v, weight });
     this.list.set(u, vertexList);
     if (!this.directed) {
@@ -423,7 +398,8 @@ class Graph<T> {
   // File is the adj list of this Graph
   // FORMAT: <first vertex u>' '<second vertex v>
   // it is a drirected graph, the edge goes from u to v, i.e.: u -> v
-  static createDirected = (file: string, w = false) => {
+  // d to allow duplication
+  static createDirected = (file: string, w = false, d = false) => {
     // set this graph as directed
     const g = new Graph<string>(true);
     const data = fs.readFileSync(file, { encoding: "utf8", flag: "r" });
@@ -435,10 +411,10 @@ class Graph<T> {
       } else {
         split = line.trim().split(" ");
         if (!w) {
-          g.addVertecesAndEdge(split[0], split[1]);
+          g.addVertecesAndEdge(split[0], split[1], 0, d);
         } else {
           // Avoid duplications!
-          g.addVertecesAndEdge(split[0], split[1], parseInt(split[2]), false);
+          g.addVertecesAndEdge(split[0], split[1], parseInt(split[2]), d);
         }
 
         line = "";
@@ -681,14 +657,15 @@ class Graph<T> {
         }
       }
     }
-    console.log(
-      `dequeues: ${dequeues},size: ${this.size}, h.size: ${heap.size}`
-    );
+    // console.log(
+    //   `dequeues: ${dequeues},size: ${this.size}, h.size: ${heap.size}`
+    // );
     return { distances, parents };
   };
 
   // Returns the distance from s to each vertex and their parents O(mn)
   // negative costs are allowed
+  // SSSP (Single Source Shortest Problemß)
   // detect negative cycles: boolean output (cycle)
   // use parents (predecessor pointers) to traverse the cycle
   bellmanFord = (s: T) => {
@@ -699,6 +676,7 @@ class Graph<T> {
     const parents: Map<T, null | T> = new Map();
     // to stop earlier
     let stop = true;
+    // i: number of edges allowed
     // for i =0, all dist from s to vertex are infinity
     for (let [vertex] of this.list) {
       if (vertex !== s) {
@@ -737,6 +715,7 @@ class Graph<T> {
 
   // Returns the distance from all pair of vertices (u,v) in V
   // negative costs are allowed
+  // APSP (All Pairs Shortest Path)
   // use parents (predecessor pointers) to traverse the cycle
   // Also returns the last node used in set K
   floydWarshall = () => {
@@ -779,12 +758,13 @@ class Graph<T> {
       }
     }
     // to expand K to the next vertex of this.list
+    //  O(n3)
     for (let k of keys) {
       for (let [i] of this.list) {
         for (let [j] of this.list) {
           // min {path without new k (as intermediary), path i to k + path k to j}
           const lastD = costs.get(i)!.get(j)!.get(oldK)!;
-          const d: number =
+          const d =
             costs.get(i)!.get(k)!.get(oldK)! + costs.get(k)!.get(j)!.get(oldK)!;
           if (d < lastD) {
             costs.get(i)!.get(j)!.set(k, d);
@@ -800,13 +780,81 @@ class Graph<T> {
     return { costs, parents, oldK };
   };
 
-  // TODO: Johnson's Algorithm?
+  // Returns the distance from all pair of vertices (u,v) in V
+  // negative costs are allowed
+  // Report a negative Cycle (cycle: true)
+  // APSP (All Pairs Shortest Path)
+  // use parents (predecessor pointers) to traverse the cycle
+  //  O(mnlog(n))
+  johnson = (s: T) => {
+    // map distance between vertex u to v
+    const dist = new Map<T, Map<T, number>>();
+    // map parent of v when u is the start vertex
+    const par = new Map<T, Map<T, T | null>>();
+
+    // Form G': equal to G, only add vertex <s>
+    const newG = new Graph<T>(true);
+    // O(m)
+    for (let [u, vertexList] of this.list) {
+      for (let v of vertexList) {
+        newG.addVertecesAndEdge(u, v.node, v.weight);
+      }
+    }
+    // Add a new vertex <s> connect to all v in G, with edge cost = 0
+    // O(n)
+    newG.addVertex(s);
+    for (let [v] of this.list) {
+      if (s !== v) newG.addEdge(s, v, 0);
+    }
+
+    // runs BF in G' using <s> as start vertex
+    // BF: O(mn)
+    const { costs, cycle } = newG.bellmanFord(s);
+    // check for a negative cycle
+    if (cycle) return { cycle: true };
+
+    // calcule ce' = ce + pu - pv
+    // pu and pv are the costs from BF for a pair (u,v) of vertex
+    // O(m)
+    for (let [u, vertexList] of this.list) {
+      for (let v of vertexList) {
+        const newCost = v.weight + costs.get(u)! - costs.get(v.node)!;
+        v.weight = newCost;
+        this.list.set(u, vertexList);
+      }
+    }
+
+    // run dijkstra for each vertex (using ce')
+    // ce' is not negative, but dijkstra will retun: d'(u,v)
+    // d'(u,v) = d(u,v) + pu - pv
+    // Dijkstra n times: O(nmlog(n))
+    for (let [u] of this.list) {
+      const { distances, parents } = this.dijkstra(u);
+      dist.set(u, distances);
+      par.set(u, parents);
+    }
+
+    // we nedd to calculate d(u,v)
+    // d(u,v) = d'(u,v) - pu + pv
+    // O(n2)
+    for (let [u] of this.list) {
+      for (let [v] of this.list) {
+        if (u !== v) {
+          const d = dist.get(u)!.get(v)!;
+          const pu = costs.get(u)!;
+          const pv = costs.get(v)!;
+          dist.get(u)!.set(v, d - pu + pv);
+        }
+      }
+    }
+    return { costs: dist, parents: par, cycle };
+  };
 
   // TODO: USE FIBONACCI HEAP (DECREASE KEY)
   // Returns the MST and its cost
   prim = (s: T) => {
     const heap = new MinHeap<T>();
-    const mst = new Graph();
+    const mst = new Graph<T>();
     // map to keep track what element is already in mst
     // we dont need this in Dijkstra because dist always encrease
     const mstSet: Map<T, boolean> = new Map();

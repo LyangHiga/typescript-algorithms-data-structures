@@ -1,9 +1,6 @@
-export interface Vertex<T> {
+interface Vertex<T> {
   node: T;
-  weight?: number;
+  weight: number;
 }
 
-export const isWeighted = <T>(v: Vertex<T>) => {
-  if (v.weight) return true;
-  return false;
-};
+export = Vertex;
