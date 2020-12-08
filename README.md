@@ -6,36 +6,9 @@ But the objective of this project has increased, I want to implement algorithms 
 
 ### [Algorithms Specialization](https://www.coursera.org/specializations/algorithms).
 
-All Example Test Cases are from [stanford-algs](https://github.com/beaunus/stanford-algs).
+You can found Example Test Cases: [stanford-algs](https://github.com/beaunus/stanford-algs).
 
-#### [Divide and Conquer, Sorting and Searching, and Randomized Algorithms](https://www.coursera.org/learn/algorithms-divide-conquer/home/welcome)
-
-- [Programming Assignment #1](https://github.com/LyangHiga/javaScript-algorithms-data-structures/blob/master/algorithms-specialization-coursera/course1/week1/exe.ts) - (Karatsuba Multiplication)
-- [Programming Assignment #2](https://github.com/LyangHiga/javaScript-algorithms-data-structures/blob/master/algorithms-specialization-coursera/course1/week2/exe.ts) - (Counting Inversions)
-- [Programming Assignment #3](https://github.com/LyangHiga/javaScript-algorithms-data-structures/blob/master/algorithms-specialization-coursera/course1/week3/exe.ts) - (QuickSort)
-- [Programming Assignment #4](https://github.com/LyangHiga/javaScript-algorithms-data-structures/blob/master/algorithms-specialization-coursera/course1/week4/exe.ts) - (Karger Min Cut)
-
-#### [Graph Search, Shortest Paths, and Data Structures](https://www.coursera.org/learn/algorithms-graphs-data-structures/home/welcome)
-
-- [Programming Assignment #1](https://github.com/LyangHiga/javaScript-algorithms-data-structures/blob/master/algorithms-specialization-coursera/course2/week1/exe.ts) - (Kosaraju's algorithm - Strongly Connected Components)
-- [Programming Assignment #2](https://github.com/LyangHiga/javaScript-algorithms-data-structures/blob/master/algorithms-specialization-coursera/course2/week2/exe.ts) - (Dijkstra)
-- [Programming Assignment #3](https://github.com/LyangHiga/javaScript-algorithms-data-structures/blob/master/algorithms-specialization-coursera/course2/week3/exe.ts) - (Median Maintenance )
-- [Programming Assignment #4](https://github.com/LyangHiga/javaScript-algorithms-data-structures/blob/master/algorithms-specialization-coursera/course2/week4/exe.ts) - (2-SUM Problem)
-
-#### [Greedy Algorithms, Minimum Spanning Trees, and Dynamic Programming](https://www.coursera.org/learn/algorithms-greedy/home/welcome)
-
-- [Programming Assignment #1.1 and #1.2](https://github.com/LyangHiga/typescript-algorithms-data-structures/blob/master/algorithms-specialization-coursera/course3/week1/exe1-2/exe.ts) - (scheduling application)
-- [Programming Assignment #1.3](https://github.com/LyangHiga/typescript-algorithms-data-structures/blob/master/algorithms-specialization-coursera/course3/week1/exe3/exe3.ts) - (Min Spanning Tree: Prim and Kruskal)
-- [Programming Assignment #2.1](https://github.com/LyangHiga/typescript-algorithms-data-structures/blob/master/algorithms-specialization-coursera/course3/week2/exe1/exe.ts) - (Single-Link Clustering)
-- [Programming Assignment #3.1 and #3.2](https://github.com/LyangHiga/typescript-algorithms-data-structures/blob/master/algorithms-specialization-coursera/course3/week3/exe1-2/exe.ts) - (Huffman coding)
-- [Programming Assignment #3.3](https://github.com/LyangHiga/typescript-algorithms-data-structures/blob/master/algorithms-specialization-coursera/course3/week3/exe3/exe3.ts) - (Max Weight Independent Set)
-- [Programming Assignment #4](https://github.com/LyangHiga/typescript-algorithms-data-structures/blob/master/algorithms-specialization-coursera/course3/week4/exe.ts) - (Knapsack Problem)
-
-#### [Shortest Paths Revisited, NP-Complete Problems and What To Do About Them](https://www.coursera.org/learn/algorithms-npcomplete/home/welcome)
-
-- [Programming Assignment #1](https://github.com/LyangHiga/typescript-algorithms-data-structures/blob/master/algorithms-specialization-coursera/course4/week1/exe.ts) - (All Pairs Shortest Path)
-- [Programming Assignment #2](https://github.com/LyangHiga/typescript-algorithms-data-structures/blob/master/algorithms-specialization-coursera/course4/week2/exe.ts) - (TSP)
-- [Programming Assignment #3](https://github.com/LyangHiga/typescript-algorithms-data-structures/blob/master/algorithms-specialization-coursera/course4/week3/exe.ts) - (Nearest Neighbor Heuristic TSP)
+Programming assignment solutions are not available in order to respect Coursera Honor Code.
 
 ### Data Structures
 
@@ -80,8 +53,9 @@ All Example Test Cases are from [stanford-algs](https://github.com/beaunus/stanf
 - Kruskal
 - Bellman-Ford
 - Floyd-Warshall
+- Johnson (APSP)
 
-To visualize some Pathfinding Algorithms checks: [Pathfinding Visualizer](https://lyanghiga.github.io/pathfinding-visualizer/)
+To visualize some Pathfinding Algorithms check: [Pathfinding Visualizer](https://lyanghiga.github.io/pathfinding-visualizer/)
 
 ### Sorting
 
