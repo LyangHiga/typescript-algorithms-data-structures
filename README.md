@@ -40,7 +40,7 @@ Programming assignment solutions are not available in order to respect Coursera 
 - [Linked List Representation](https://github.com/LyangHiga/typescript-algorithms-data-structures/blob/master/data-structures/disjoint-sets/listSet.ts)
 - [Forest Representation](https://github.com/LyangHiga/typescript-algorithms-data-structures/blob/master/data-structures/disjoint-sets/forestSet.ts)
 
-##### [Graph:](https://github.com/LyangHiga/javaScript-algorithms-data-structures/blob/master/data-structures/graph.ts)
+##### [Graph:](https://github.com/LyangHiga/typescript-algorithms-data-structures/blob/master/data-structures/graph/graph.ts)
 
 - Karger Minimum Cut
 - BFS

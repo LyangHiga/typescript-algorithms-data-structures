@@ -1,0 +1,36 @@
+- Karger Minimum Cut
+  - [Random Contraction Algorithm - Lecture](https://www.coursera.org/learn/algorithms-divide-conquer/lecture/FKAnq/random-contraction-algorithm)
+- BFS
+  - [BFS' lectures](https://www.coursera.org/learn/algorithms-graphs-data-structures/lecture/JZRXz/breadth-first-search-bfs-the-basics)
+  - [Algorithm Design 1st Edition](https://www.amazon.com/Algorithm-Design-Jon-Kleinberg/dp/0321295358)
+- Undirected connectivity - [BFS and Undirected Connectivity - Lecture
+  ](https://www.coursera.org/learn/algorithms-graphs-data-structures/lecture/BTVWn/bfs-and-undirected-connectivity) - [Algorithm Design 1st Edition](https://www.amazon.com/Algorithm-Design-Jon-Kleinberg/dp/0321295358)
+- DFS
+  - [DFS' lectures](https://www.coursera.org/learn/algorithms-graphs-data-structures/lecture/pKr0Y/depth-first-search-dfs-the-basics)
+  - [Algorithm Design 1st Edition](https://www.amazon.com/Algorithm-Design-Jon-Kleinberg/dp/0321295358)
+- Topological Sorting
+  - [Topological Sorting - Lecture](https://www.coursera.org/learn/algorithms-graphs-data-structures/lecture/yeKm7/topological-sort)
+- Kosaraju Strongly Connected Components
+  - [Computing Strong Components: The Algorithm - Lecture ](https://www.coursera.org/learn/algorithms-graphs-data-structures/lecture/rng2S/computing-strong-components-the-algorithm)
+- Dijkstra's Algorithm
+  - [JavaScript Algorithms and Data Structures Masterclass](https://www.udemy.com/course/js-algorithms-and-data-structures-masterclass/)
+  - [Dijkstra's Algorithm Lecture](https://www.coursera.org/learn/algorithms-graphs-data-structures/lecture/rxrPa/dijkstras-shortest-path-algorithm)
+  - [Why does Dijkstra's algorithm use decrease-key?- StackOverflow](https://stackoverflow.com/questions/9255620/why-does-dijkstras-algorithm-use-decrease-key)
+  - [Algorithm Design 1st Edition](https://www.amazon.com/Algorithm-Design-Jon-Kleinberg/dp/0321295358)
+- Prim's Algorithm
+  - [Prim's Algorithm Lectures](https://www.coursera.org/learn/algorithms-greedy/lecture/tQ6gK/prims-mst-algorithm)
+  - [Algorithm Design 1st Edition](https://www.amazon.com/Algorithm-Design-Jon-Kleinberg/dp/0321295358)
+- Kruskal's Algorithm
+  - [Kruskal's Algorithm Lectures](https://www.coursera.org/learn/algorithms-greedy/lecture/PLdBf/kruskals-mst-algorithm)
+  - [Introduction to Algorithms, 3rd Edition](https://www.amazon.com/Introduction-Algorithms-3rd-MIT-Press/dp/0262033844)
+- Bellman-Ford
+  - [Bellman-Ford Lectures](https://www.coursera.org/learn/algorithms-npcomplete/lecture/g8N36/optimal-substructure)
+  - [Algorithm Design 1st Edition](https://www.amazon.com/Algorithm-Design-Jon-Kleinberg/dp/0321295358)
+  - [Introduction to Algorithms, 3rd Edition](https://en.wikipedia.org/wiki/Introduction_to_Algorithms)
+- Floyd-Warshall
+  - [Floyd-Warshall Lectures](https://www.coursera.org/learn/algorithms-npcomplete/lecture/3BBkw/optimal-substructure)
+  - [Algorithm Design 1st Edition](https://www.amazon.com/Algorithm-Design-Jon-Kleinberg/dp/0321295358)
+  - [Introduction to Algorithms, 3rd Edition](https://en.wikipedia.org/wiki/Introduction_to_Algorithms)
+- Johnson
+  - [Johnson's Algorithm Lectures](https://www.coursera.org/learn/algorithms-npcomplete/lecture/eT0Xt/johnsons-algorithm-i)
+  - [Introduction to Algorithms, 3rd Edition](https://en.wikipedia.org/wiki/Introduction_to_Algorithms)
