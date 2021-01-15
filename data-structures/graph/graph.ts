@@ -161,6 +161,106 @@ class Graph<T> {
     return false;
   };
 
+  // For Ford-Fulkerson
+  // Returns boolean for an existing augmenting path, and the path between s -> t
+  augmentingPath = (s: T, t: T, g: Graph<T>) => {
+    const { dist, parents } = g.bfs(s);
+    const exists = dist.get(t) !== undefined ? true : false;
+    if (!exists) return { exists: false, path: undefined };
+    const path = this.getPath(s, t, parents);
+    return { exists, path };
+  };
+
+  getPath = (s: T, t: T, parents: Map<T, T | null>) => {
+    // go back from t until we reach s
+    const path: Array<T> = [];
+    let a = parents.get(t)!;
+    path.push(t);
+    while (a !== s) {
+      path.push(a);
+      a = parents.get(a)!;
+    }
+    path.push(s);
+    return path.reverse();
+  };
+
+  // Returns the smallest capacity that remains in a path between s - t in a Net-Flow
+  bottleneck = (path: Array<T>, g: Graph<T>) => {
+    let min = Infinity;
+    // for each edge(u,v) of this path check the capacity that remains
+    for (let i = 0; i < path.length - 1; i++) {
+      const u = path[i];
+      const v = path[i + 1];
+      const list = g.list.get(u)!;
+      // search for v in adj list of u
+      for (let node of list) {
+        if (v === node.node) {
+          // check if edge(u,v) < min
+          if (min > node.weight) {
+            min = node.weight;
+          }
+        }
+      }
+    }
+    return min;
+  };
+
+  createResidualGraph = () => {
+    const rg = new Graph<T>(true);
+    for (let [u, vertexList] of this.list) {
+      for (let v in vertexList) {
+        // original edge = c(u,v)
+        rg.addVertecesAndEdge(u, vertexList[v].node, vertexList[v].weight);
+        // residual edges
+        rg.addVertecesAndEdge(vertexList[v].node, u, 0);
+      }
+    }
+    return rg;
+  };
+
+  updateResidualGraph = (g: Graph<T>, path: Array<T>, bottleneck: number) => {
+    // for each edge of this path
+    for (let i = 0; i < path.length - 1; i++) {
+      // we need to check if edge(u,v) is from the original Graph or from the Residual Graph
+      // let isResidual = true;
+      const u = path[i];
+      const v = path[i + 1];
+      const listU = g.list.get(u)!;
+      const listV = g.list.get(v)!;
+      let updatedEdgeUV: Vertex<T>;
+      let updatedEdgeVU: Vertex<T>;
+      // search for edge(u,v) in residual graph
+      for (let i = 0; i < listU.length; i++) {
+        const t = listU[i];
+        if (v == t.node) {
+          updatedEdgeUV = {
+            node: t.node,
+            weight: t.weight - bottleneck,
+          };
+          const updatedList = [...listU];
+          updatedList[i] = updatedEdgeUV;
+          g.list.set(u, updatedList);
+          break;
+        }
+      }
+      // search for edge(v,v) in residual graph
+      for (let i = 0; i < listV.length; i++) {
+        const t = listV[i];
+        if (u == t.node) {
+          updatedEdgeVU = {
+            node: t.node,
+            weight: t.weight + bottleneck,
+          };
+          const updatedList = [...listV];
+          updatedList[i] = updatedEdgeVU;
+          g.list.set(v, updatedList);
+          break;
+        }
+      }
+    }
+    return g;
+  };
+
   //   **********************************************************
   //                            INSERT
   //   **********************************************************
@@ -456,7 +556,7 @@ class Graph<T> {
     // Maps the key of each vertex to its distance from vertex s
     const dist: Map<T, number> = new Map();
     // Maps the key of each vertex to its parents key
-    const parents: Map<T, null | string> = new Map();
+    const parents: Map<T, null | T> = new Map();
     const visited: Map<T, boolean> = new Map();
     const q: Queue = new Queue();
     // add s to the queue
@@ -471,7 +571,7 @@ class Graph<T> {
       result.push(v.key);
       this.list.get(v.key)!.forEach((u) => {
         // if u unvisited
-        if (!visited.get(u.node)) {
+        if (!visited.get(u.node) && u.weight > 0) {
           // mark u as visited
           visited.set(u.node, true);
           // add u to the queue
@@ -948,6 +1048,40 @@ class Graph<T> {
       }
     }
     return { cost, MST };
+  };
+
+  // Returns the final Residual Graph
+  fordFulkerson = (s: T, t: T) => {
+    if (!this.directed) return false;
+    const flow = new Map<T, Map<T, number>>();
+    // Initially f(e)=0 for all e in G
+    // for each edge of G f(u,v) = 0
+    for (let [u, vertexList] of this.list) {
+      flow.set(u, new Map<T, number>());
+      for (let v of vertexList) {
+        flow.get(u)!.set(v.node, 0);
+      }
+    }
+    let residualGraph: Graph<T> = this.createResidualGraph();
+    residualGraph.print();
+    let { exists, path } = this.augmentingPath(s, t, residualGraph);
+    // if there is no path between s - t return false
+    if (!exists || !path) return false;
+
+    const bottleneck = this.bottleneck(path, residualGraph);
+    // while exists a path do augmenting path in Gr
+    while (exists) {
+      const bottleneck = this.bottleneck(path!, residualGraph);
+      residualGraph = this.updateResidualGraph(
+        residualGraph,
+        path!,
+        bottleneck
+      );
+      const ap = this.augmentingPath(s, t, residualGraph);
+      exists = ap.exists;
+      path = ap.path;
+    }
+    return residualGraph;
   };
 }
 

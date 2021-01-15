@@ -1,0 +1,9 @@
+s u 3
+s x 2
+x u 3
+u v 2
+v x 1
+x y 3
+y v 3
+y t 2
+v t 3
