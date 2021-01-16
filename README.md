@@ -54,6 +54,7 @@ Programming assignment solutions are not available in order to respect Coursera 
 - Bellman-Ford
 - Floyd-Warshall
 - Johnson (APSP)
+- Ford-Fulkerson
 
 To visualize some Pathfinding Algorithms check: [Pathfinding Visualizer](https://lyanghiga.github.io/pathfinding-visualizer/)
 

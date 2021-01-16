@@ -19,3 +19,7 @@ I used a lot of references for each problem, in this section I will try to point
   - [Huffman coding Lecture](https://www.coursera.org/learn/algorithms-greedy/lecture/Jo6gK/a-greedy-algorithm)
   - [Algorithm Design 1st Edition](https://www.amazon.com/Algorithm-Design-Jon-Kleinberg/dp/0321295358)
   - [Introduction to Algorithms, 3rd Edition](https://www.amazon.com/Introduction-Algorithms-3rd-MIT-Press/dp/0262033844)
+- Ford-Fulkerson
+  - [Ford-Fulkerson Algorithm Lectures](https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-046j-design-and-analysis-of-algorithms-spring-2015/lecture-videos/lecture-13-incremental-improvement-max-flow-min-cut/)
+  - [Introduction to Algorithms, 3rd Edition](https://en.wikipedia.org/wiki/Introduction_to_Algorithms)
+  - [Algorithm Design 1st Edition](https://www.amazon.com/Algorithm-Design-Jon-Kleinberg/dp/0321295358)

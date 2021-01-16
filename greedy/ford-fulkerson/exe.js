@@ -8,8 +8,7 @@ const test = (file) => {
     const g = graph_1.default.createDirected(file, true, false);
     const rg = g.fordFulkerson("s", "t");
     if (rg) {
-        // console.log("LALALALALALALLA");
-        // rg.print();
+        rg.print();
     }
 };
 test("test.txt");

@@ -3,10 +3,8 @@
 - BFS
   - [BFS' lectures](https://www.coursera.org/learn/algorithms-graphs-data-structures/lecture/JZRXz/breadth-first-search-bfs-the-basics)
   - [Algorithm Design 1st Edition](https://www.amazon.com/Algorithm-Design-Jon-Kleinberg/dp/0321295358)
-- Undirected connectivity 
-  - [BFS and Undirected Connectivity - Lecture
-  ](https://www.coursera.org/learn/algorithms-graphs-data-structures/lecture/BTVWn/bfs-and-undirected-connectivity) 
-  - [Algorithm Design 1st Edition](https://www.amazon.com/Algorithm-Design-Jon-Kleinberg/dp/0321295358)
+- Undirected connectivity - [BFS and Undirected Connectivity - Lecture
+  ](https://www.coursera.org/learn/algorithms-graphs-data-structures/lecture/BTVWn/bfs-and-undirected-connectivity) - [Algorithm Design 1st Edition](https://www.amazon.com/Algorithm-Design-Jon-Kleinberg/dp/0321295358)
 - DFS
   - [DFS' lectures](https://www.coursera.org/learn/algorithms-graphs-data-structures/lecture/pKr0Y/depth-first-search-dfs-the-basics)
   - [Algorithm Design 1st Edition](https://www.amazon.com/Algorithm-Design-Jon-Kleinberg/dp/0321295358)
@@ -36,3 +34,7 @@
 - Johnson
   - [Johnson's Algorithm Lectures](https://www.coursera.org/learn/algorithms-npcomplete/lecture/eT0Xt/johnsons-algorithm-i)
   - [Introduction to Algorithms, 3rd Edition](https://en.wikipedia.org/wiki/Introduction_to_Algorithms)
+- Ford-Fulkerson
+  - [Ford-Fulkerson Algorithm Lectures](https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-046j-design-and-analysis-of-algorithms-spring-2015/lecture-videos/lecture-13-incremental-improvement-max-flow-min-cut/)
+  - [Introduction to Algorithms, 3rd Edition](https://en.wikipedia.org/wiki/Introduction_to_Algorithms)
+  - [Algorithm Design 1st Edition](https://www.amazon.com/Algorithm-Design-Jon-Kleinberg/dp/0321295358)

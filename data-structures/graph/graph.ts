@@ -205,6 +205,8 @@ class Graph<T> {
     return min;
   };
 
+  // Returns the initial Residual Graph (Gr)
+  //  with original edges, and residual edges with zero capacity
   createResidualGraph = () => {
     const rg = new Graph<T>(true);
     for (let [u, vertexList] of this.list) {
@@ -218,39 +220,47 @@ class Graph<T> {
     return rg;
   };
 
+  // Update the edeges (orignal and residual) of Gr that are used in this path
+  // using the bottleneck value
   updateResidualGraph = (g: Graph<T>, path: Array<T>, bottleneck: number) => {
     // for each edge of this path
     for (let i = 0; i < path.length - 1; i++) {
-      // we need to check if edge(u,v) is from the original Graph or from the Residual Graph
-      // let isResidual = true;
+      // nodes u,v from the edge (u,v)
       const u = path[i];
       const v = path[i + 1];
+      // ajd list (capacity of each edge that remains) of u and v
       const listU = g.list.get(u)!;
       const listV = g.list.get(v)!;
+      // values that will be updated
       let updatedEdgeUV: Vertex<T>;
       let updatedEdgeVU: Vertex<T>;
-      // search for edge(u,v) in residual graph
+      // serach for v in adj list of u
       for (let i = 0; i < listU.length; i++) {
         const t = listU[i];
         if (v == t.node) {
+          // remove <bottleneck> from the remaining capacity of the edge (u,v)
           updatedEdgeUV = {
             node: t.node,
             weight: t.weight - bottleneck,
           };
+          // updated adj list of u and set in Gr's map
           const updatedList = [...listU];
           updatedList[i] = updatedEdgeUV;
           g.list.set(u, updatedList);
           break;
         }
       }
-      // search for edge(v,v) in residual graph
+      // search for u in the adj list of v
       for (let i = 0; i < listV.length; i++) {
         const t = listV[i];
         if (u == t.node) {
+          // add <bottleneck> from the remaining capacity of the edge (v,u)
+          // edges (u,v) and (v,u) are complementary, residual and original
           updatedEdgeVU = {
             node: t.node,
             weight: t.weight + bottleneck,
           };
+          // update adj list of v and set to Gr's map
           const updatedList = [...listV];
           updatedList[i] = updatedEdgeVU;
           g.list.set(v, updatedList);
@@ -1052,10 +1062,11 @@ class Graph<T> {
 
   // Returns the final Residual Graph
   fordFulkerson = (s: T, t: T) => {
+    // Net flow must be a directed graph
     if (!this.directed) return false;
     const flow = new Map<T, Map<T, number>>();
-    // Initially f(e)=0 for all e in G
-    // for each edge of G f(u,v) = 0
+    // Initially f(e)=0
+    // for each edge(u,v) of G f(e) = 0
     for (let [u, vertexList] of this.list) {
       flow.set(u, new Map<T, number>());
       for (let v of vertexList) {
@@ -1063,11 +1074,10 @@ class Graph<T> {
       }
     }
     let residualGraph: Graph<T> = this.createResidualGraph();
-    residualGraph.print();
     let { exists, path } = this.augmentingPath(s, t, residualGraph);
     // if there is no path between s - t return false
     if (!exists || !path) return false;
-
+    // min val of flow that still can pass through
     const bottleneck = this.bottleneck(path, residualGraph);
     // while exists a path do augmenting path in Gr
     while (exists) {
