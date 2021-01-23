@@ -573,9 +573,9 @@ class Graph {
         };
         // Returns the distance from s to each vertex and their parents O(mn)
         // negative costs are allowed
-        // SSSP (Single Source Shortest Problemß)
+        // SSSP (Single Source Shortest Problem)
         // detect negative cycles: boolean output (cycle)
-        // use parents (predecessor pointers) to traverse the cycle
+        // use parents (predecessor pointers) to traverse the path
         this.bellmanFord = (s) => {
             // O(m) space => to reconstruct path from s to (any) v
             // use parents map (predecessor pointers)
@@ -605,6 +605,10 @@ class Graph {
                 stop = true;
                 // try a min path for each edge => O(m)
                 for (let [v, vertexList] of this.list) {
+                    // only try for costs that can be decreased
+                    if (costs.get(v) === Infinity) {
+                        continue;
+                    }
                     for (let neighbour in vertexList) {
                         const w = vertexList[neighbour];
                         const d = costs.get(v) + w.weight;
