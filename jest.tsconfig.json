@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+        "target": "es2018" ,
+        "module": "commonjs" ,
+        "types": ["jest", "node"]
+    },
+    "rootDir": "./__test__",
+    "exclude": ["node_modules", "out", ".next"],
+    "include": [
+        "./**/*.ts"
+      ],
+      "preset": "ts-jest"
+}
