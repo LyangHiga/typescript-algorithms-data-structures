@@ -2,7 +2,9 @@
 
 This Repo, at first, was only for [JavaScript Algorithms and Data Structures Masterclass](https://www.udemy.com/course/js-algorithms-and-data-structures-masterclass/).
 
-But the objective of this project has increased, I want to implement algorithms and popular data structures in TypeScript/ JavaScript and solve programming assignments for popular online courses.
+But the objective of this project has increased, I want to implement algorithms and popular data structures in TypeScript/ JavaScript and solve programming assignments for popular online courses. 
+
+For each folder, there is a MD file with my main References for that section.
 
 ### [Algorithms Specialization](https://www.coursera.org/specializations/algorithms).
 
