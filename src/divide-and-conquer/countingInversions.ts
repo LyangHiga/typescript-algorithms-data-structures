@@ -52,4 +52,4 @@ const merge = (left: number[], right: number[]): [number[], number] => {
   return [arr, counter];
 };
 
-export = sortAndCount;
+export default sortAndCount;
