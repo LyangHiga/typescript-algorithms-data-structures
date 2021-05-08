@@ -64,4 +64,4 @@ const mergeSort = (arr: number[]): number[] => {
   return mergeIdx(mergeSort(left), mergeSort(right));
 };
 
-export = mergeSort;
+export default mergeSort;
