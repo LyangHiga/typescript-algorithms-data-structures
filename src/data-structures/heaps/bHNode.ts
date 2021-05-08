@@ -4,4 +4,4 @@ class BHNode<T> {
   constructor(public key: T, public val: number) {}
 }
 
-export = BHNode;
+export default BHNode;

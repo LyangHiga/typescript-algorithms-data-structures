@@ -343,4 +343,4 @@ class MinHeap<T> {
   };
 }
 
-export = MinHeap;
+export default MinHeap;
