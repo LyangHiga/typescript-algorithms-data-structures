@@ -11,4 +11,4 @@ const insertionSort = (arr: number[]) => {
   return arr;
 };
 
-export = insertionSort;
+export default insertionSort;

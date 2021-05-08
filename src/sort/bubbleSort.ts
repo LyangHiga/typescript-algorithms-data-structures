@@ -15,4 +15,4 @@ const bubbleSort = (arr: number[]) => {
   return arr;
 };
 
-export = bubbleSort;
+export default bubbleSort;

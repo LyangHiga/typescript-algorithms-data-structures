@@ -16,4 +16,4 @@ const selectionSort = (arr: number[]) => {
   return arr;
 };
 
-export = selectionSort;
+export default selectionSort;
