@@ -122,7 +122,7 @@ const quickSort = (
   right = arr.length,
   chooseP = 3
 ): [number[], number] => {
-  if (right - left < 1) return [arr, 0];
+  if (right - left <= 1) return [arr, 0];
   // to count the number of comparisons
   const comp = right - left - 1;
   let cl, cr;
