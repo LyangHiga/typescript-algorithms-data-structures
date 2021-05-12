@@ -38,4 +38,4 @@ class ForestSet<T> {
   };
 }
 
-export = ForestSet;
+export default ForestSet;

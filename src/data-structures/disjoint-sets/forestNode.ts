@@ -7,4 +7,4 @@ class ForestNode<T> {
   }
 }
 
-export = ForestNode;
+export default ForestNode;

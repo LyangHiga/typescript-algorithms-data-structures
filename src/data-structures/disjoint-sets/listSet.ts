@@ -66,4 +66,4 @@ class ListSet<T> {
   };
 }
 
-export = ListSet;
+export default ListSet;

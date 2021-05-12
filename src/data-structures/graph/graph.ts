@@ -7,7 +7,7 @@ import BHNode from "../heaps/bHNode";
 // import FHNode from "./heaps/fHNode";
 import ListSet from "../disjoint-sets/listSet";
 import ForestSet from "../disjoint-sets/forestSet";
-import fs from "fs";
+import * as fs from "fs";
 import Vertex from "./vertex";
 
 // Returns a random number between [min,max)
@@ -65,6 +65,7 @@ class Graph<T> {
     return false;
   };
 
+  // FOR karge min cut
   // Returns how many edges are between verteces u and v
   hme = (u: T, v: T) => {
     if (!this.contains(u)) return false;
@@ -76,6 +77,7 @@ class Graph<T> {
     return c;
   };
 
+  // FOR karge min cut
   // Returns the number of edges of this graph
   countEdges = () => {
     let c = 0;
@@ -87,6 +89,7 @@ class Graph<T> {
     return c / 2;
   };
 
+  // FOR karge min cut
   // Returns the key of two neighbours [u,v]
   pickRandomEdge = () => {
     const keys = [...this.list.keys()];
@@ -98,6 +101,7 @@ class Graph<T> {
     return [u, v];
   };
 
+  // FOR karge min cut
   // Merge two verteces into a single one
   mergeVerteces = (u: T, v: T) => {
     // adds all neighbours of v to u
@@ -1099,4 +1103,4 @@ class Graph<T> {
   };
 }
 
-export = Graph;
+export default Graph;

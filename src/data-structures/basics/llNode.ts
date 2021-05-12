@@ -6,4 +6,4 @@ class LLNode<T> {
   }
 }
 
-export = LLNode;
+export default LLNode;

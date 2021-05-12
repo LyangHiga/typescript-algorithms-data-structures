@@ -3,4 +3,4 @@ interface Vertex<T> {
   weight: number;
 }
 
-export = Vertex;
+export default Vertex;

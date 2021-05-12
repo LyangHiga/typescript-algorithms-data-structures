@@ -163,4 +163,4 @@ class LinkedList<T> {
   };
 }
 
-export = LinkedList;
+export default LinkedList;
