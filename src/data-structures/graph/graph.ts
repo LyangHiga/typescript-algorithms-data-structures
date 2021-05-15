@@ -724,7 +724,7 @@ class Graph<T> {
     // the vertex who calls dfs (maps leader's vertex key to the size of the Strong Component)
     const leader: Map<T, number> = new Map();
     let u, r;
-    for (let i = finish.length - 1; i > 0; i--) {
+    for (let i = 0; i < finish.length; i++) {
       u = finish[i];
       if (!visited.get(u)) {
         r = this.dfs(u);

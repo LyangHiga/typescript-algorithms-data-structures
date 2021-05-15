@@ -1,4 +1,4 @@
-import { getTestAnswer } from "../../helperTests";
+import { getTestAnswer, getTestAnswerArr } from "../../helperTests";
 import Graph from "./graph";
 
 describe("Graph class test", () => {
@@ -60,5 +60,41 @@ describe("Graph class test", () => {
     expect(labeledOrder.get("v")).toBeLessThan(4);
     expect(labeledOrder.get("w")).toBeGreaterThan(1);
     expect(labeledOrder.get("w")).toBeLessThan(4);
+  });
+
+  test("Kosaraju's Algorithm, using test cases from stanford-algs repo", () => {
+    const TEST48 = `mostlyCycles_48_12800.txt`;
+    const TEST52 = `mostlyCycles_52_20000.txt`;
+    const TEST56 = `mostlyCycles_56_40000.txt`;
+    const TEST60 = `mostlyCycles_60_80000.txt`;
+    const TEST64 = `mostlyCycles_64_160000.txt`;
+
+    const largest5 = (m: Map<string, number> | boolean) => {
+      if (typeof m === "boolean") return false;
+      let arr = Array.from(m.values());
+      arr = arr.sort((a, b) => b - a);
+      return arr.slice(0, 5);
+    };
+    const test = (file: string) => {
+      const g = Graph.createDirected(
+        `${__dirname}/test-datasets/kosaraju/input_${file}`
+      );
+      const ans = getTestAnswerArr(
+        `${__dirname}/test-datasets/kosaraju/output_${file}`
+      );
+      const m = g.kosaraju();
+      expect(m).not.toBeFalsy();
+      // if m is false, this test already failed
+      const arr = largest5(m) as number[];
+      arr.forEach((n, i) => {
+        expect(n).toBe(ans[i]);
+      });
+    };
+
+    test(TEST48);
+    test(TEST52);
+    test(TEST56);
+    test(TEST60);
+    test(TEST64);
   });
 });
