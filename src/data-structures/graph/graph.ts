@@ -333,7 +333,7 @@ class Graph<T> {
   };
 
   // Adds both u and v verteces and their edge w
-  addVertecesAndEdge = (u: T, v: T, w = 0, d = true) => {
+  addVertecesAndEdge = (u: T, v: T, w = 1, d = true) => {
     this.addVertex(u);
     this.addVertex(v);
     if (d) {
@@ -525,9 +525,8 @@ class Graph<T> {
       } else {
         split = line.trim().split(" ");
         if (!w) {
-          g.addVertecesAndEdge(split[0], split[1], 0, d);
+          g.addVertecesAndEdge(split[0], split[1], 1, d);
         } else {
-          // Avoid duplications!
           g.addVertecesAndEdge(split[0], split[1], parseInt(split[2]), d);
         }
 
@@ -537,7 +536,11 @@ class Graph<T> {
     // check if the last line is empty
     if (line !== "") {
       split = line.trim().split(" ");
-      g.addVertecesAndEdge(split[0], split[1]);
+      if (!w) {
+        g.addVertecesAndEdge(split[0], split[1], 1, d);
+      } else {
+        g.addVertecesAndEdge(split[0], split[1], parseInt(split[2]), d);
+      }
     }
     return g;
   };
@@ -562,7 +565,7 @@ class Graph<T> {
 
   // Returns: a list of all verteces found (in the order of dequeue)
   //    the parent of each visited vertex
-  //    the distance of s to each visited vertex
+  //    the distance from s to each visited vertex
   //    all visited verteces
   bfs = (s: T) => {
     // the order of each vertex is dequeue (Array of Keys)
@@ -619,56 +622,66 @@ class Graph<T> {
   };
 
   // dfs iterative
+  // Returns: a list of all verteces found (in the order of dequeue)
+  //    the parent of each visited vertex
+  //    all visited verteces
   dfs = (s: T) => {
+    //  popped stack order
     const result: Array<T> = new Array();
-    const dist: Map<T, number> = new Map();
     const parents: Map<T, null | T> = new Map();
+    // a node is visited when it is popped from the stack
     const visited: Map<T, boolean> = new Map();
-    // key to label order
-    const labeledOrder: Map<T, number | null> = new Map();
-    // finish order
-    const finish: Array<T> = new Array();
     const stack = new Stack();
-    // add s tothe stack
     stack.push(s);
-    // mark s as visited
-    visited.set(s, true);
-    dist.set(s, 0);
+    parents.set(s, null);
     let v: Node;
-    let i = 0;
+
     while (stack.size !== 0) {
       // take from the top of the stack
       v = stack.pop()!;
-      result.push(v.key);
-      // add parent of v wich is the last one poped
-      if (i === 0) {
-        parents.set(v.key, null);
-      } else {
-        parents.set(v.key, result[i - 1]);
+      if (!visited.get(v.key)) {
+        result.push(v.key);
+        visited.set(v.key, true);
       }
-      i++;
-      // for every edge of v
       this.list.get(v.key)!.forEach((u) => {
-        //  v unvisited
         if (!visited.get(u.node)) {
-          // mark u as visited
-          visited.set(u.node, true);
-          // add u to the stack
+          parents.set(u.node, v.key);
           stack.push(u.node);
-          // calc dist
-          dist.set(u.node, dist.get(v.key)! + 1);
         }
       });
-      if (!labeledOrder.get(v.key)) {
-        labeledOrder.set(v.key, this.currentLabel);
-        this.currentLabel!++;
-        finish.push(v.key);
-      }
     }
     return {
       result,
       parents,
-      dist,
+      visited,
+    };
+  };
+
+  // dfs recursive
+  // Returns: a list of all verteces found (in the order of dequeue)
+  //    the parent of each visited vertex
+  //    all visited verteces
+  dfsRec = (
+    s: T,
+    visited: Map<T, boolean> = new Map(),
+    labeledOrder: Map<T, number | null> = new Map(),
+    finish: Array<T> = new Array()
+  ) => {
+    //  mark s as visited
+    visited.set(s, true);
+    // for every edge of s
+    this.list.get(s)!.forEach((u) => {
+      if (!visited.get(u.node)) {
+        // recursive call
+        this.dfsRec(u.node, visited, labeledOrder, finish);
+      }
+    });
+    if (!labeledOrder.get(s)) {
+      labeledOrder.set(s, this.currentLabel);
+      this.currentLabel!--;
+      finish.push(s);
+    }
+    return {
       labeledOrder,
       visited,
       finish,
@@ -682,11 +695,10 @@ class Graph<T> {
     const visited: Map<T, boolean> = new Map();
     const finish: Array<T> = new Array();
     // to keep track of ordering
-    this.currentLabel = 0;
-    let r;
+    this.currentLabel = this.list.size;
     for (let [u] of this.list) {
       if (!visited.get(u)) {
-        const r = this.dfs(u);
+        const r = this.dfsRec(u);
         // update values
         r.visited.forEach((value, key) => {
           visited.set(key, value);

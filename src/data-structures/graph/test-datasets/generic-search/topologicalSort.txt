@@ -1,0 +1,4 @@
+s v 
+s w
+v t
+w t
