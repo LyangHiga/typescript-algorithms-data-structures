@@ -740,11 +740,12 @@ class Graph<T> {
   };
 
   // TODO: USE FIBONACCI HEAP (DECREASE KEY)
-  // Returns the distance from s to each vertex and their parents
+  // Returns the distance from s to each vertex, their parents, and the number of dequeues
   dijkstra = (s: T) => {
     const heap = new MinHeap<T>();
+    // to count how many dequeues from heap are made
+    // using decrease key will push and dequeue only one time each node
     let dequeues = 0;
-    // objs to map key to distance and key to parents
     const distances: Map<T, number> = new Map();
     const parents: Map<T, null | T> = new Map();
     let smallest: T;
@@ -755,38 +756,34 @@ class Graph<T> {
     }
     distances.set(s, 0);
     heap.enqueue(s, 0);
-    // heap.buildHeap(distances)
     parents.set(s, null);
     let deacrease: boolean | number | BHNode<string> | undefined = false;
     // while we have nodes to visite:
     while (!heap.isEmpty()) {
       smallest = heap.dequeue()!.key;
       dequeues++;
-      if (smallest || distances.get(smallest) !== Infinity) {
-        const vertexList = this.list.get(smallest)!;
-        for (let neighbour in vertexList) {
-          let nextNode = vertexList[neighbour];
-          // calculate Dijkstra's  Greedy Criterium
-          let d = distances.get(smallest)! + nextNode.weight!;
-          //   compare distance calculated with last distance storaged
-          if (d < distances.get(nextNode.node)!) {
-            //   updating distances and parents
-            distances.set(nextNode.node, d);
-            parents.set(nextNode.node, smallest);
-            // try to deacrease key
-            deacrease = heap.decreaseKey(nextNode.node, d);
-            // if this node is not in heap(wasn't decrease) add to the Heap
-            if (deacrease === false) {
-              heap.enqueue(nextNode.node, d);
-            }
+      // while heap is not empty: smallest will exist and
+      // we always will add reachable nodes (i.e. dist < Inf)
+      const vertexList = this.list.get(smallest)!;
+      for (let neighbour in vertexList) {
+        let nextNode = vertexList[neighbour];
+        // calculate Dijkstra's  Greedy Criterium
+        let d = distances.get(smallest)! + nextNode.weight!;
+        //   compare distance calculated with last distance storaged
+        if (d < distances.get(nextNode.node)!) {
+          //   updating distances and parents
+          distances.set(nextNode.node, d);
+          parents.set(nextNode.node, smallest);
+          // try to deacrease key
+          deacrease = heap.decreaseKey(nextNode.node, d);
+          // if this node is not in heap(wasn't decrease) add to the Heap
+          if (deacrease === false) {
+            heap.enqueue(nextNode.node, d);
           }
         }
       }
     }
-    // console.log(
-    //   `dequeues: ${dequeues},size: ${this.size}, h.size: ${heap.size}`
-    // );
-    return { distances, parents };
+    return { distances, parents, dequeues };
   };
 
   // Returns the distance from s to each vertex and their parents O(mn)

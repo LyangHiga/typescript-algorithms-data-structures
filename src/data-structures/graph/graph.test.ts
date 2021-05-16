@@ -97,4 +97,40 @@ describe("Graph class test", () => {
     test(TEST60);
     test(TEST64);
   });
+
+  test("Test for Dijkstra, using test cases from stanford-algs repo", () => {
+    // WARNING: https://github.com/beaunus/stanford-algs/issues/53
+
+    const TEST_1 = "random_1_4.txt";
+    const TEST_4 = "random_4_4.txt";
+    const TEST_5 = "random_5_8.txt";
+    const test = (file: string) => {
+      const g = Graph.createListAdjWeighted(
+        `${__dirname}/test-datasets/SSSP/input_${file}`
+      );
+      const ans = getTestAnswerArr(
+        `${__dirname}/test-datasets/SSSP/output_${file}`
+      );
+      const { distances, dequeues } = g.dijkstra("1");
+      const dist: number[] = new Array();
+      dist.push(distances.get("7")!);
+      dist.push(distances.get("37")!);
+      dist.push(distances.get("59")!);
+      dist.push(distances.get("82")!);
+      dist.push(distances.get("99")!);
+      dist.push(distances.get("115")!);
+      dist.push(distances.get("133")!);
+      dist.push(distances.get("165")!);
+      dist.push(distances.get("188")!);
+      dist.push(distances.get("197")!);
+      dist.forEach((d, i) => {
+        expect(d).toBe(ans[i]);
+      });
+      // only work if G is all connected (i.e., only one Component)
+      expect(dequeues).toBe(g.size);
+    };
+    test(TEST_1);
+    test(TEST_4);
+    test(TEST_5);
+  });
 });
