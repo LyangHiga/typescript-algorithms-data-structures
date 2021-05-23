@@ -1,5 +1,9 @@
-import AVLNode from "./avlNode";
+import BST from "./bst";
+import AVLNode from "./avl_node";
 
+import Stack from "../basics/stack";
+
+// TODO: extend vanilla BST to avoid repeated code
 class AVLTree {
   root: null | AVLNode;
   size: number;
@@ -290,7 +294,8 @@ class AVLTree {
 
   // Inserts a node in the right (correct) position and rearrange
   // Returns this AVL Tree
-  // Returns false whether this val is already in this AVL Tree
+  // Removed: Returns false whether this val is already in this AVL Tree
+  // Duplicated vals allowed, to change just remove comment returning false
   insert = (val: number) => {
     let node = new AVLNode(val);
     if (this.isEmpty()) {
@@ -301,7 +306,7 @@ class AVLTree {
     let current = this.root;
     while (current !== null) {
       // duplicate val
-      if (current.val === node.val) return false;
+      // if (current.val === node.val) return false;
       // check left
       if (current.val > node.val) {
         if (!current.left) {
@@ -378,6 +383,83 @@ class AVLTree {
     this.rebalancing(x);
     this.size--;
   };
+
+  //   **********************************************************
+  //                        TRANSVERSING
+  //   **********************************************************
+
+  preOrderTreeWalk = (x: AVLNode | null, arr: number[] = []) => {
+    if (x) {
+      arr.push(x.val);
+      this.preOrderTreeWalk(x.left, arr);
+      this.preOrderTreeWalk(x.right, arr);
+    }
+    // check if all nodes already visited
+    if (this.size === arr.length) return arr;
+  };
+
+  // to tranverse all BST, in order
+  // expect x = root in 1st call
+  inOrderTreeWalk = (
+    x: AVLNode | null,
+    arr: number[] = []
+  ): number[] | undefined => {
+    if (x) {
+      this.inOrderTreeWalk(x.left, arr);
+      arr.push(x.val);
+      this.inOrderTreeWalk(x.right, arr);
+    }
+    if (this.size === arr.length) return arr;
+  };
+
+  // to tranverse the BST, only add to arr nodes inside [s,t]
+  inOrderTreeWalkInterval = (
+    x: AVLNode | null,
+    s: number,
+    t: number,
+    arr: number[] = []
+  ) => {
+    if (x) {
+      this.inOrderTreeWalkInterval(x.left, s, t, arr);
+      if (x.val >= s && x.val <= t) arr.push(x.val);
+      this.inOrderTreeWalkInterval(x.right, s, t, arr);
+      if (x.val === t) return arr;
+    }
+  };
+
+  inOrderTreeWalkStack = () => {
+    const stack = new Stack();
+    const arr: number[] = [];
+    let current = this.root;
+    while (stack.size !== 0 || current !== null) {
+      if (current) {
+        // stack to remember previous node
+        stack.push(current);
+        current = current.left;
+      } else {
+        // no left child to add (min available node found)
+        // come back to previous node
+        current = stack.pop()!.key;
+        // To add only insede an interval [s,t]:
+        //  check if  s <= current.val <= t
+        //  if we found t we can finish
+        arr.push(current!.val);
+        // lets try right child
+        current = current!.right;
+      }
+    }
+    return arr;
+  };
+
+  posOrderTreeWalk = (x: AVLNode | null, arr: number[] = []) => {
+    if (x) {
+      this.preOrderTreeWalk(x.left, arr);
+      this.preOrderTreeWalk(x.right, arr);
+      arr.push(x.val);
+    }
+    // check if all nodes already visited
+    if (this.size === arr.length) return arr;
+  };
 }
 
-export = AVLTree;
+export default AVLTree;

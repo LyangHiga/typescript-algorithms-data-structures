@@ -11,4 +11,4 @@ class RBNode {
   }
 }
 
-export = RBNode;
+export default RBNode;

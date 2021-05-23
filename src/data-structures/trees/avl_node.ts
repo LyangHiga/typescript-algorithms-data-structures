@@ -11,4 +11,4 @@ class AVLNode {
   }
 }
 
-export = AVLNode;
+export default AVLNode;

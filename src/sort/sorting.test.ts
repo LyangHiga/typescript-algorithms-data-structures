@@ -4,10 +4,15 @@ import radixSort from "./radixSort";
 
 import mergeSort from "./mergeSort";
 import quickSort from "./quickSort";
+import bstSort from "./bstSort";
 import heapSort from "./heapSort";
 import bubbleSort from "./bubbleSort";
 import insertionSort from "./insertionSort";
 import selectionSort from "./selectionSort";
+
+import BST from "../data-structures/trees/bst";
+import AVL from "../data-structures/trees/avl";
+import RBT from "../data-structures/trees/rbt";
 
 interface MethodTime {
   method: string;
@@ -112,6 +117,39 @@ describe("Test of Running Time for Sorting Methods", () => {
         Math.floor(Math.random() * 1000)
       );
       quickSort(arr, 0, arr.length, 4);
+    }
+  });
+
+  // test("Red Black Tree Sort", () => {
+  //   method = "Red Black Tree Sort";
+  //   for (let i = 0; i < nTimes; i++) {
+  //     const arr = Array.from({ length: SIZE }, () =>
+  //       Math.floor(Math.random() * 1000)
+  //     );
+  //     const rbt = new RBT();
+  //     bstSort(rbt, arr);
+  //   }
+  // });
+
+  test("AVL Tree Sort", () => {
+    method = "AVL Tree Sort";
+    for (let i = 0; i < nTimes; i++) {
+      const arr = Array.from({ length: SIZE }, () =>
+        Math.floor(Math.random() * 1000)
+      );
+      const avl = new AVL();
+      bstSort(avl, arr);
+    }
+  });
+
+  test("BST Sort", () => {
+    method = "BST Sort";
+    for (let i = 0; i < nTimes; i++) {
+      const arr = Array.from({ length: SIZE }, () =>
+        Math.floor(Math.random() * 1000)
+      );
+      const bst = new BST();
+      bstSort(bst, arr);
     }
   });
 

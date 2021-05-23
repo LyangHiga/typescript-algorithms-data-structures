@@ -1,6 +1,7 @@
-import BSTNode from "./bSTNode";
-import Queue from "../basics/queue";
+import BSTNode from "./bst_node";
 import Stack from "../basics/stack";
+
+// TODO:  test
 
 class BST {
   root: null | BSTNode;
@@ -45,26 +46,26 @@ class BST {
   //   **********************************************************
 
   // Inserts a node in the right position and rearrange
-  // Returns this BST
+  // Returns the inserted node
   // Returns false whether this val is already in this BST
   insert = (val: number) => {
     let node = new BSTNode(val);
     if (this.isEmpty()) {
       this.size++;
       this.root = node;
-      return this;
+      return node;
     }
     let current = this.root;
     while (current !== null) {
       // duplicate val
-      if (current.val === node.val) return false;
+      // if (current.val === node.val) return false;
       // check left
       if (current.val > node.val) {
         if (!current.left) {
           node.parent = current;
           current.left = node;
           this.size++;
-          return this;
+          return node;
         }
         // update current to left
         current = current.left;
@@ -74,7 +75,7 @@ class BST {
           node.parent = current;
           current.right = node;
           this.size++;
-          return this;
+          return node;
         }
         // update current
         current = current.right;
@@ -85,6 +86,19 @@ class BST {
   //   **********************************************************
   //                            SEARCH
   //   **********************************************************
+
+  search = (val: number) => {
+    if (this.isEmpty()) return false;
+    let current = this.root;
+    while (current !== null) {
+      if (current.val === val) return current;
+      if (current.val > val) {
+        current = current.left;
+      } else {
+        current = current.right;
+      }
+    }
+  };
 
   // Returns true if this BST contains this val,
   // Otherwise returns false
@@ -211,7 +225,7 @@ class BST {
       // OR the sucessor was prepared in the last if
       //    Anyway we just transplant and update pointers to left subtree
       this.transplant(z, sucessor);
-      // uodate sucessor left (from null) to left subtree
+      // update sucessor left (from null) to left subtree
       sucessor.left = z.left;
       // update left subtree parent (from z) to sucessor
       sucessor.left.parent = sucessor;
@@ -223,35 +237,78 @@ class BST {
   //                        TRANSVERSING
   //   **********************************************************
 
-  bfs = () => {
-    if (!this.root) return undefined;
-    let q = new Queue();
-    let visited: Array<number> = [];
-    let current: BSTNode;
-    q.enQueue(this.root);
-    while (q.size !== 0) {
-      current = q.deQueue()!.key;
-      visited.push(current.val);
-      if (current.left) q.enQueue(current.left);
-      if (current.right) q.enQueue(current.right);
+  preOrderTreeWalk = (x: BSTNode | null, arr: number[] = []) => {
+    if (x) {
+      arr.push(x.val);
+      this.preOrderTreeWalk(x.left, arr);
+      this.preOrderTreeWalk(x.right, arr);
     }
-    return visited;
+    // check if all nodes already visited
+    if (this.size === arr.length) return arr;
   };
 
-  dfsPreOrder = () => {
-    if (!this.root) return undefined;
-    let stack = new Stack();
-    let visited: Array<number> = [];
-    let current: BSTNode;
-    stack.push(this.root);
-    while (stack.size !== 0) {
-      current = stack.pop()!.key;
-      visited.push(current.val);
-      if (current.right) stack.push(current.right);
-      if (current.left) stack.push(current.left);
+  // to tranverse all BST, in order
+  // expect x = root in 1st call
+  inOrderTreeWalk = (
+    x: BSTNode | null,
+    arr: number[] = []
+  ): number[] | undefined => {
+    if (x) {
+      this.inOrderTreeWalk(x.left, arr);
+      arr.push(x.val);
+      this.inOrderTreeWalk(x.right, arr);
     }
-    return visited;
+    if (this.size === arr.length) return arr;
+  };
+
+  // to tranverse the BST, only add to arr nodes inside [s,t]
+  inOrderTreeWalkInterval = (
+    x: BSTNode | null,
+    s: number,
+    t: number,
+    arr: number[] = []
+  ) => {
+    if (x) {
+      this.inOrderTreeWalkInterval(x.left, s, t, arr);
+      if (x.val >= s && x.val <= t) arr.push(x.val);
+      this.inOrderTreeWalkInterval(x.right, s, t, arr);
+      if (x.val === t) return arr;
+    }
+  };
+
+  inOrderTreeWalkStack = () => {
+    const stack = new Stack();
+    const arr: number[] = [];
+    let current = this.root;
+    while (stack.size !== 0 || current !== null) {
+      if (current) {
+        // stack to remember previous node
+        stack.push(current);
+        current = current.left;
+      } else {
+        // no left child to add (min available node found)
+        // come back to previous node
+        current = stack.pop()!.key;
+        // To add only insede an interval [s,t]:
+        //  check if  s <= current.val <= t
+        //  if we found t we can finish
+        arr.push(current!.val);
+        // lets try right child
+        current = current!.right;
+      }
+    }
+    return arr;
+  };
+
+  posOrderTreeWalk = (x: BSTNode | null, arr: number[] = []) => {
+    if (x) {
+      this.preOrderTreeWalk(x.left, arr);
+      this.preOrderTreeWalk(x.right, arr);
+      arr.push(x.val);
+    }
+    // check if all nodes already visited
+    if (this.size === arr.length) return arr;
   };
 }
 
-export = BST;
+export default BST;
