@@ -621,70 +621,46 @@ class Graph<T> {
     return components;
   };
 
-  // dfs iterative
-  // Returns: a list of all verteces found (in the order of dequeue)
-  //    the parent of each visited vertex
-  //    all visited verteces
-  dfs = (s: T) => {
-    //  popped stack order
-    const result: Array<T> = new Array();
-    const parents: Map<T, null | T> = new Map();
-    // a node is visited when it is popped from the stack
-    const visited: Map<T, boolean> = new Map();
-    const stack = new Stack();
-    stack.push(s);
-    parents.set(s, null);
-    let v: Node;
-
-    while (stack.size !== 0) {
-      // take from the top of the stack
-      v = stack.pop()!;
-      if (!visited.get(v.key)) {
-        result.push(v.key);
-        visited.set(v.key, true);
-      }
-      this.list.get(v.key)!.forEach((u) => {
-        if (!visited.get(u.node)) {
-          parents.set(u.node, v.key);
-          stack.push(u.node);
-        }
-      });
-    }
-    return {
-      result,
-      parents,
-      visited,
-    };
-  };
-
   // dfs recursive
-  // Returns: a list of all verteces found (in the order of dequeue)
-  //    the parent of each visited vertex
-  //    all visited verteces
-  dfsRec = (
+  dfs = (
     s: T,
-    visited: Map<T, boolean> = new Map(),
+    // white: unvisited node (not used in this implementation)
+    // first time we see a node it is not in the map
+    // gray: visited node, but not finish (all neighbours also visited)
+    // black: finished node
+    color: Map<T, string> = new Map(),
     labeledOrder: Map<T, number | null> = new Map(),
-    finish: Array<T> = new Array()
+    finish: Array<T> = new Array(),
+    parents: Map<T, T> = new Map(),
+    cycle = false
   ) => {
     //  mark s as visited
-    visited.set(s, true);
+    color.set(s, "gray");
     // for every edge of s
     this.list.get(s)!.forEach((u) => {
-      if (!visited.get(u.node)) {
+      if (!color.get(u.node)) {
+        // set u as a child of s
+        parents.set(u.node, s);
         // recursive call
-        this.dfsRec(u.node, visited, labeledOrder, finish);
+        this.dfs(u.node, color, labeledOrder, finish, parents, cycle);
+      } else if (color.get(u.node) === "gray") {
+        // back edge:
+        // u is an ancestor of s (i.e., there is some path u -> s, and now we found an edge s -> u)
+        // forming a cycle
+        cycle = true;
       }
     });
-    if (!labeledOrder.get(s)) {
-      labeledOrder.set(s, this.currentLabel);
-      this.currentLabel!--;
-      finish.push(s);
-    }
+    // all neighbours visited => finished!
+    labeledOrder.set(s, this.currentLabel);
+    color.set(s, "black");
+    this.currentLabel!--;
+    finish.push(s);
     return {
       labeledOrder,
-      visited,
+      color,
       finish,
+      parents,
+      cycle,
     };
   };
 
@@ -692,16 +668,16 @@ class Graph<T> {
   // Does not work for cycled graphs, only DAGs
   topologicalSort() {
     const labeledOrder: Map<T, number | null> = new Map();
-    const visited: Map<T, boolean> = new Map();
+    const color: Map<T, string> = new Map();
     const finish: Array<T> = new Array();
     // to keep track of ordering
     this.currentLabel = this.list.size;
     for (let [u] of this.list) {
-      if (!visited.get(u)) {
-        const r = this.dfsRec(u);
+      if (!color.get(u)) {
+        const r = this.dfs(u);
         // update values
-        r.visited.forEach((value, key) => {
-          visited.set(key, value);
+        r.color.forEach((value, key) => {
+          color.set(key, value);
         });
         r.labeledOrder.forEach((value, key) => {
           labeledOrder.set(key, value);
@@ -720,20 +696,22 @@ class Graph<T> {
     // finish order
     if (gRerv === false) return false;
     const { finish } = gRerv.topologicalSort();
-    const visited: Map<T, boolean> = new Map();
+    const color: Map<T, string> = new Map();
     // the vertex who calls dfs (maps leader's vertex key to the size of the Strong Component)
     const leader: Map<T, number> = new Map();
     let u, r;
-    for (let i = 0; i < finish.length; i++) {
+    // for (let i = 0; i < finish.length; i++) {
+    for (let i = finish.length - 1; i > 0; i--) {
       u = finish[i];
-      if (!visited.get(u)) {
-        r = this.dfs(u);
+      if (!color.get(u)) {
+        // r = this.dfs(u);
+        r = this.dfs(u, color);
         // update visited
-        r.visited.forEach((value, key) => {
-          visited.set(key, value);
+        r.color.forEach((value, key) => {
+          color.set(key, value);
         });
         // all verteces visited have u as leader
-        leader.set(u, r.result.length);
+        leader.set(u, r.finish.length);
       }
     }
     return leader;
