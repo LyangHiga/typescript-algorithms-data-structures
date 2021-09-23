@@ -1,3 +1,5 @@
+// TODO: needlemanWunsch implementation! already done in another repo
+
 // inputs: Stirng X and Y
 //          sigma for gap penalty
 //          Alpha: matrix for mismatch cost
@@ -15,7 +17,7 @@ const sq = (
 
   // for empty strings
   for (let i = 0; i < m; i++) arr[i][0] = i * sigma;
-  for (let j = 0; j < m; j++) arr[0][j] = j * sigma;
+  for (let j = 0; j < n; j++) arr[0][j] = j * sigma;
 
   // case 1: match cost + Xi-1 Yj-1
   // case 2: sigma + Xi-1 Yj

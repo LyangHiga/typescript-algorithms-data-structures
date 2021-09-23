@@ -1,3 +1,5 @@
+// TODO: Add unit test
+
 import BHNode from "./bHNode";
 
 class MinHeap<T> {
@@ -67,7 +69,7 @@ class MinHeap<T> {
     } else {
       smallIdx = l;
     }
-    // swap element from idx with greater
+    // swap parent and smaller child
     [this.values[idx], this.values[smallIdx]] = [
       this.values[smallIdx],
       this.values[idx],
@@ -108,6 +110,7 @@ class MinHeap<T> {
   //    In this case second param <keys> is not used
   // In any case the Heap is build in linear time
   // Returns: this Heap
+  // TODO: static method
   buildHeap = (arr: number[] | Map<T, number>, keys: T[]) => {
     // Returns false if this heap is not empty
     if (!this.isEmpty()) return false;
